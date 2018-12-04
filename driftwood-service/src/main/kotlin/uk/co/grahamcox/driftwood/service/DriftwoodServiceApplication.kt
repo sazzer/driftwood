@@ -1,8 +1,8 @@
 package uk.co.grahamcox.driftwood.service
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Import
 import uk.co.grahamcox.driftwood.service.spring.DriftwoodConfig
@@ -12,6 +12,7 @@ import uk.co.grahamcox.driftwood.service.spring.DriftwoodConfig
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
+@EnableAdminServer
 @Import(DriftwoodConfig::class)
 class DriftwoodServiceApplication
 
