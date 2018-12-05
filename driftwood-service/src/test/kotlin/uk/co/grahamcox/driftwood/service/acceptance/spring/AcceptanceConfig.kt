@@ -1,4 +1,4 @@
-package uk.co.grahamcox.driftwood.service.spring
+package uk.co.grahamcox.driftwood.service.acceptance.spring
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.co.grahamcox.driftwood.service.acceptance.requester.Requester
-import uk.co.grahamcox.driftwood.service.spring.AcceptanceConfig
+import uk.co.grahamcox.driftwood.service.acceptance.spring.AcceptanceConfig
 
 /**
  * Base class for all Acceptance Tests
