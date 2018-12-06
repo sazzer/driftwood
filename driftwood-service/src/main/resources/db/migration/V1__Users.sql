@@ -5,6 +5,5 @@ CREATE TABLE users(
                     updated TIMESTAMP NOT NULL,
                     name VARCHAR(100) NOT NULL,
                     email VARCHAR(260) NULL UNIQUE,
-                    url_slug VARCHAR(300) NOT NULL UNIQUE,
                     authentication JSONB NOT NULL
 );
