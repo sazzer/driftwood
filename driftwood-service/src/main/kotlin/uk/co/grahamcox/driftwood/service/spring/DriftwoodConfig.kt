@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.driftwood.service.VersionController
+import uk.co.grahamcox.driftwood.service.users.spring.UsersConfig
 import java.time.Clock
 
 /**
@@ -12,7 +13,8 @@ import java.time.Clock
  */
 @Configuration
 @Import(
-        DatabaseConfig::class
+        DatabaseConfig::class,
+        UsersConfig::class
 )
 class DriftwoodConfig(context: GenericApplicationContext) {
     init {

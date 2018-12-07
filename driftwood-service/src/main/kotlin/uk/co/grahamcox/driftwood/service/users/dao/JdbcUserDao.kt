@@ -1,14 +1,12 @@
 package uk.co.grahamcox.driftwood.service.users.dao
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
-import uk.co.grahamcox.driftwood.service.users.UserData
-import uk.co.grahamcox.driftwood.service.users.UserId
-import uk.co.grahamcox.driftwood.service.users.UserNotFoundException
-import uk.co.grahamcox.driftwood.service.users.UserRetriever
+import uk.co.grahamcox.driftwood.service.users.*
 import java.sql.ResultSet
 import java.util.*
 
@@ -16,7 +14,10 @@ import java.util.*
  * DAO fro accessing User data
  * @property jdbcTemplate the JDBC Template for accessing the database
  */
-class JdbcUserDao(private val jdbcTemplate: NamedParameterJdbcTemplate) : UserRetriever {
+class JdbcUserDao(
+        private val jdbcTemplate: NamedParameterJdbcTemplate,
+        private val objectMapper: ObjectMapper
+) : UserRetriever {
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(JdbcUserDao::class.java)
@@ -55,10 +56,14 @@ class JdbcUserDao(private val jdbcTemplate: NamedParameterJdbcTemplate) : UserRe
                 updated = rs.getTimestamp("updated").toInstant()
         )
 
+        val providersString = rs.getString("authentication")
+        val providersType = objectMapper.typeFactory.constructCollectionType(Set::class.java, UserLoginData::class.java)
+        val providers: Set<UserLoginData> = objectMapper.readValue(providersString, providersType)
+
         val data = UserData(
                 name = rs.getString("name"),
                 email = rs.getString("email"),
-                logins = emptySet()
+                logins = providers
         )
 
         return Resource(identity, data)

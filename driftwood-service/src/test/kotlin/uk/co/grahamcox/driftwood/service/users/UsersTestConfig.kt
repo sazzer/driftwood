@@ -1,5 +1,6 @@
 package uk.co.grahamcox.driftwood.service.users
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
@@ -18,6 +19,7 @@ class UsersTestConfig(context: GenericApplicationContext) {
         beans {
             bean("userSeeder") {
                 val clock: Clock = ref()
+                val objectMapper: ObjectMapper = ref()
 
                 DatabaseSeeder(
                         ref(),
@@ -44,7 +46,20 @@ class UsersTestConfig(context: GenericApplicationContext) {
                                 "email" to ColumnDetails(),
                                 "logins" to ColumnDetails(
                                         default = { "[]" },
-                                        converter = { "[]" }
+                                        converter = {
+                                            val providers = it.split(";")
+                                                    .map { provider ->
+                                                        val parts = provider.split(",", limit = 3)
+
+                                                        mapOf(
+                                                                "provider" to parts[0],
+                                                                "providerId" to parts[1],
+                                                                "displayName" to parts[2]
+                                                        )
+                                                    }
+
+                                            objectMapper.writeValueAsString(providers)
+                                        }
                                 )
                         )
                 )

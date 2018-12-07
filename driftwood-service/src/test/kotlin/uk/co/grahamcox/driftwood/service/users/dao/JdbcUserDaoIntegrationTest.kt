@@ -26,8 +26,8 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
     private lateinit var userSeeder: DatabaseSeeder
 
     /** The test subject */
-    private val testSubject: JdbcUserDao
-        get() = JdbcUserDao(jdbcTemplate)
+    @Autowired
+    private lateinit var testSubject: JdbcUserDao
 
     /**
      * Gest getting a user by ID when the user doesn't exist
@@ -68,6 +68,41 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
                 Executable { Assertions.assertEquals("Graham", user.data.name) },
                 Executable { Assertions.assertNull(user.data.email) },
                 Executable { Assertions.assertEquals(emptySet<UserLoginData>(), user.data.logins) }
+        )
+    }
+
+    /**
+     * Test getting a user by ID when the user does exist and has fully populated data
+     */
+    @Test
+    fun getFullUserById() {
+        val version = UUID.randomUUID()
+        val now = Instant.parse("2018-12-06T16:31:00Z")
+
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to now.toString(),
+                "updated" to now.toString(),
+                "name" to "Graham",
+                "email" to "graham@example.com",
+                "logins" to "twitter,@graham,@graham;google,123456,graham@example.com"
+        )
+
+        val user = testSubject.getById(USER_ID)
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(USER_ID, user.identity.id) },
+                Executable { Assertions.assertEquals(version, user.identity.version) },
+                Executable { Assertions.assertEquals(now, user.identity.created) },
+                Executable { Assertions.assertEquals(now, user.identity.updated) },
+
+                Executable { Assertions.assertEquals("Graham", user.data.name) },
+                Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
+                Executable { Assertions.assertEquals(setOf(
+                        UserLoginData(provider = "twitter", providerId = "@graham", displayName = "@graham"),
+                        UserLoginData(provider = "google", providerId = "123456", displayName = "graham@example.com")
+                ), user.data.logins) }
         )
     }
 }
