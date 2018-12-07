@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.driftwood.service.VersionController
+import java.time.Clock
 
 /**
  * The main Spring configuration
@@ -16,6 +17,7 @@ import uk.co.grahamcox.driftwood.service.VersionController
 class DriftwoodConfig(context: GenericApplicationContext) {
     init {
         beans {
+            bean { Clock.systemUTC() }
             bean<VersionController>()
         }.initialize(context)
     }

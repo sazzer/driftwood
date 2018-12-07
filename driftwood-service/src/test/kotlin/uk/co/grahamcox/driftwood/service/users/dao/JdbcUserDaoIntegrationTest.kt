@@ -3,7 +3,9 @@ package uk.co.grahamcox.driftwood.service.users.dao
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import uk.co.grahamcox.driftwood.service.DaoTestBase
+import org.springframework.beans.factory.annotation.Autowired
+import uk.co.grahamcox.driftwood.service.dao.DaoTestBase
+import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
 import uk.co.grahamcox.driftwood.service.users.UserId
 import uk.co.grahamcox.driftwood.service.users.UserLoginData
 import uk.co.grahamcox.driftwood.service.users.UserNotFoundException
@@ -18,6 +20,10 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         /** The ID of the user to use */
         private val USER_ID = UserId(UUID.randomUUID())
     }
+
+    /** The means to seed user records */
+    @Autowired
+    private lateinit var userSeeder: DatabaseSeeder
 
     /** The test subject */
     private val testSubject: JdbcUserDao
@@ -36,22 +42,20 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
     }
 
     /**
-     * Gest getting a user by ID when the user does exist and has the most simple of data
+     * Test getting a user by ID when the user does exist and has the most simple of data
      */
     @Test
     fun getSimpleUserById() {
         val version = UUID.randomUUID()
         val now = Instant.parse("2018-12-06T16:31:00Z")
 
-        jdbcTemplate.update("""INSERT INTO users(user_id, version, created, updated, name, email, authentication)
-            VALUES (:id, :version, :now, :now, :name, :email, :authentication::jsonb)""", mapOf(
-                "id" to USER_ID.id,
-                "version" to version,
-                "now" to Date.from(now),
-                "name" to "Graham",
-                "email" to null,
-                "authentication" to "[]"
-        ))
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to now.toString(),
+                "updated" to now.toString(),
+                "name" to "Graham"
+        )
 
         val user = testSubject.getById(USER_ID)
 

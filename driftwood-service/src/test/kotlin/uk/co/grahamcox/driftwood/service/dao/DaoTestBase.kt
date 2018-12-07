@@ -1,4 +1,4 @@
-package uk.co.grahamcox.driftwood.service
+package uk.co.grahamcox.driftwood.service.dao
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
