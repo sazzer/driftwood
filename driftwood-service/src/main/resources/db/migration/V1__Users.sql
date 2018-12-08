@@ -3,7 +3,7 @@ CREATE TABLE users(
                     version UUID NOT NULL,
                     created TIMESTAMP NOT NULL,
                     updated TIMESTAMP NOT NULL,
-                    name VARCHAR(100) NOT NULL,
-                    email VARCHAR(260) NULL UNIQUE,
+                    name TEXT NOT NULL,
+                    email TEXT NULL UNIQUE,
                     authentication JSONB NOT NULL
 );
