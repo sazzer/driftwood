@@ -11,7 +11,7 @@ import java.sql.ResultSet
 import java.util.*
 
 /**
- * DAO fro accessing User data
+ * DAO for accessing User data
  * @property jdbcTemplate the JDBC Template for accessing the database
  */
 class JdbcUserDao(

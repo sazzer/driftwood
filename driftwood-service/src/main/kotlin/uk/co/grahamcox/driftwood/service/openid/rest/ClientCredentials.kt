@@ -1,11 +1,11 @@
 package uk.co.grahamcox.driftwood.service.openid.rest
 
-import uk.co.grahamcox.driftwood.service.client.ClientId
-import uk.co.grahamcox.driftwood.service.client.ClientSecret
+import uk.co.grahamcox.driftwood.service.clients.ClientId
+import uk.co.grahamcox.driftwood.service.clients.ClientSecret
 
 
 /**
- * The credentials of a client
+ * The credentials of a clients
  * @property clientId The Client ID
  * @property clientSecret The Client Secret
  */

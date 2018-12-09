@@ -1,4 +1,4 @@
-package uk.co.grahamcox.driftwood.service.client
+package uk.co.grahamcox.driftwood.service.clients
 
 /**
  * Representation of the different supported Grant Types

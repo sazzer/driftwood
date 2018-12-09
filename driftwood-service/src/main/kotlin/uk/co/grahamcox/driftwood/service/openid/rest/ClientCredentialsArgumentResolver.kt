@@ -6,8 +6,8 @@ import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
-import uk.co.grahamcox.driftwood.service.client.ClientId
-import uk.co.grahamcox.driftwood.service.client.ClientSecret
+import uk.co.grahamcox.driftwood.service.clients.ClientId
+import uk.co.grahamcox.driftwood.service.clients.ClientSecret
 import java.lang.IllegalArgumentException
 import java.util.*
 

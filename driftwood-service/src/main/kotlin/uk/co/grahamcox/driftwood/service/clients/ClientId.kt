@@ -1,4 +1,4 @@
-package uk.co.grahamcox.driftwood.service.client
+package uk.co.grahamcox.driftwood.service.clients
 
 import uk.co.grahamcox.driftwood.service.model.Id
 import java.util.*

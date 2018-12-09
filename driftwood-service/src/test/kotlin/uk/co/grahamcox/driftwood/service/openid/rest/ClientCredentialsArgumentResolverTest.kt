@@ -7,8 +7,8 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 import org.springframework.core.MethodParameter
 import org.springframework.web.context.request.NativeWebRequest
-import uk.co.grahamcox.driftwood.service.client.ClientId
-import uk.co.grahamcox.driftwood.service.client.ClientSecret
+import uk.co.grahamcox.driftwood.service.clients.ClientId
+import uk.co.grahamcox.driftwood.service.clients.ClientSecret
 import java.util.*
 
 /**
