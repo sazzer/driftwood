@@ -42,7 +42,9 @@ class UsersTestConfig(context: GenericApplicationContext) {
                                         default = { Date.from(clock.instant()) },
                                         converter = { Date.from(Instant.parse(it)) }
                                 ),
-                                "name" to ColumnDetails(),
+                                "name" to ColumnDetails(
+                                        default = { "Test User" }
+                                ),
                                 "email" to ColumnDetails(),
                                 "logins" to ColumnDetails(
                                         default = { "[]" },

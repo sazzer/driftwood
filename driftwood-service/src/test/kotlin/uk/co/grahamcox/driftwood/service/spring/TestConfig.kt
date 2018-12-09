@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
+import uk.co.grahamcox.driftwood.service.clients.ClientsTestConfig
 import uk.co.grahamcox.driftwood.service.users.UsersTestConfig
 
 /**
@@ -11,7 +12,8 @@ import uk.co.grahamcox.driftwood.service.users.UsersTestConfig
  */
 @Configuration
 @Import(
-        UsersTestConfig::class
+        UsersTestConfig::class,
+        ClientsTestConfig::class
 )
 class TestConfig(context: GenericApplicationContext) {
     init {
