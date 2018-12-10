@@ -3,12 +3,14 @@ package uk.co.grahamcox.driftwood.service.clients.dao
 import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
-import uk.co.grahamcox.driftwood.service.clients.ClientData
-import uk.co.grahamcox.driftwood.service.clients.ClientId
-import uk.co.grahamcox.driftwood.service.clients.ClientNotFoundException
-import uk.co.grahamcox.driftwood.service.clients.ClientRetriever
+import uk.co.grahamcox.driftwood.service.clients.*
+import uk.co.grahamcox.driftwood.service.database.getStringArray
+import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
+import uk.co.grahamcox.driftwood.service.users.UserId
+import java.net.URI
 import java.sql.ResultSet
+import java.util.*
 
 /**
  * DAO for accessing Client data
@@ -49,6 +51,29 @@ class JdbcClientDao(
      * @return The client
      */
     private fun parseClientRow(rs: ResultSet, index: Int): Resource<ClientId, ClientData> {
-        TODO()
+        val identity = Identity(
+                id = ClientId(UUID.fromString(rs.getString("client_id"))),
+                version = UUID.fromString(rs.getString("version")),
+                created = rs.getTimestamp("created").toInstant(),
+                updated = rs.getTimestamp("updated").toInstant()
+        )
+
+        val data = ClientData(
+                name = rs.getString("name"),
+                owner = UserId(UUID.fromString(rs.getString("owner_id"))),
+                redirectUris = rs.getStringArray("redirect_uris")
+                        .map(::URI)
+                        .toSet(),
+                responseTypes = rs.getStringArray("response_types")
+                        .map(ResponseTypes.Companion::getByValue)
+                        .filterNotNull()
+                        .toSet(),
+                grantTypes = rs.getStringArray("grant_types")
+                        .map(GrantTypes.Companion::getByValue)
+                        .filterNotNull()
+                        .toSet()
+        )
+
+        return Resource(identity, data)
     }
 }
