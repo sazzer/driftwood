@@ -1,10 +1,8 @@
 package uk.co.grahamcox.driftwood.service.openid.rest
 
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 
 /**
  * Controller for handling the calls to the OAuth2 Token endpoint
@@ -34,8 +32,16 @@ class TokenController {
             "client_credentials" -> TODO("Client Credentials Grant")
             "authorization_code" -> TODO("Authorization Code Grant")
             "refresh_token" -> TODO("Refresh Token Grant")
-            null -> TODO("No Grant Type provided")
-            else -> TODO("Unknown Grant Type")
+            null -> throw MissingGrantTypeException()
+            else -> throw UnknownGrantTypeException(grantType)
         }
     }
+
+    /**
+     * Handle when an OpenID Exception occurs
+     * @param e The error to handle
+     */
+    @ExceptionHandler(OpenIDException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleOpenIdException(e: OpenIDException) = e.error
 }
