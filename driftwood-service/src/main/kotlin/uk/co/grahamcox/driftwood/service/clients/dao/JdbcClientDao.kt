@@ -61,6 +61,7 @@ class JdbcClientDao(
         val data = ClientData(
                 name = rs.getString("name"),
                 owner = UserId(UUID.fromString(rs.getString("owner_id"))),
+                secret = ClientSecret(UUID.fromString(rs.getString("client_secret"))),
                 redirectUris = rs.getStringArray("redirect_uris")
                         .map(::URI)
                         .toSet(),

@@ -7,6 +7,7 @@ import java.net.URI
  * Representation of an OpenID Connect Client
  * @property name the name of the clients
  * @property owner The owner of the clients
+ * @property secret The client secret
  * @property redirectUris The supported Redirect URIs for the clients
  * @property responseTypes The supported Response Types for the clients
  * @property grantTypes The supported Grant Types for the clients
@@ -14,6 +15,7 @@ import java.net.URI
 data class ClientData(
         val name: String,
         val owner: UserId,
+        val secret: ClientSecret,
         val redirectUris: Set<URI>,
         val responseTypes: Set<ResponseTypes>,
         val grantTypes: Set<GrantTypes>

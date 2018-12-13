@@ -5,10 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
-import uk.co.grahamcox.driftwood.service.clients.ClientId
-import uk.co.grahamcox.driftwood.service.clients.ClientNotFoundException
-import uk.co.grahamcox.driftwood.service.clients.GrantTypes
-import uk.co.grahamcox.driftwood.service.clients.ResponseTypes
+import uk.co.grahamcox.driftwood.service.clients.*
 import uk.co.grahamcox.driftwood.service.dao.DaoTestBase
 import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
 import uk.co.grahamcox.driftwood.service.users.UserId
@@ -69,6 +66,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
     fun getMinimalClientById() {
         val version = UUID.randomUUID()
         val now = Instant.parse("2018-12-06T16:31:00Z")
+        val clientSecret = UUID.randomUUID()
 
         clientSeeder(
                 "clientId" to CLIENT_ID.id.toString(),
@@ -77,6 +75,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
                 "updated" to now.toString(),
                 "name" to "Example Client",
                 "ownerId" to USER_ID.id.toString(),
+                "clientSecret" to clientSecret.toString(),
                 "redirectUris" to "",
                 "responseTypes" to "",
                 "grantTypes" to ""
@@ -92,6 +91,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
 
                 Executable { Assertions.assertEquals("Example Client", client.data.name) },
                 Executable { Assertions.assertEquals(USER_ID, client.data.owner) },
+                Executable { Assertions.assertEquals(ClientSecret(clientSecret), client.data.secret) },
                 Executable { Assertions.assertEquals(emptySet<URI>(), client.data.redirectUris) },
                 Executable { Assertions.assertEquals(emptySet<ResponseTypes>(), client.data.responseTypes) },
                 Executable { Assertions.assertEquals(emptySet<GrantTypes>(), client.data.grantTypes) }
@@ -99,12 +99,13 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
     }
 
     /**
-     * Gest getting a client by ID when the client does exist and has minimal data
+     * Test getting a client by ID when the client does exist and has minimal data
      */
     @Test
     fun getCompleteClientById() {
         val version = UUID.randomUUID()
         val now = Instant.parse("2018-12-06T16:31:00Z")
+        val clientSecret = UUID.randomUUID()
 
         clientSeeder(
                 "clientId" to CLIENT_ID.id.toString(),
@@ -113,6 +114,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
                 "updated" to now.toString(),
                 "name" to "Example Client",
                 "ownerId" to USER_ID.id.toString(),
+                "clientSecret" to clientSecret.toString(),
                 "redirectUris" to "http://www.google.com,http://www.example.com",
                 "responseTypes" to "code,token",
                 "grantTypes" to "implicit,authorization_code"
@@ -128,6 +130,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
 
                 Executable { Assertions.assertEquals("Example Client", client.data.name) },
                 Executable { Assertions.assertEquals(USER_ID, client.data.owner) },
+                Executable { Assertions.assertEquals(ClientSecret(clientSecret), client.data.secret) },
                 Executable { Assertions.assertEquals(setOf(
                         URI("http://www.google.com"),
                         URI("http://www.example.com")

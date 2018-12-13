@@ -28,8 +28,8 @@ class ClientsTestConfig(context: GenericApplicationContext) {
 
                 DatabaseSeeder(
                         ref(),
-                        """INSERT INTO clients(client_id, version, created, updated, name, owner_id, redirect_uris, response_types, grant_types)
-                            VALUES (:clientId, :version, :created, :updated, :name, :ownerId, :redirectUris::text[], :responseTypes::text[], :grantTypes::text[])""",
+                        """INSERT INTO clients(client_id, version, created, updated, name, owner_id, client_secret, redirect_uris, response_types, grant_types)
+                            VALUES (:clientId, :version, :created, :updated, :name, :ownerId, :clientSecret, :redirectUris::text[], :responseTypes::text[], :grantTypes::text[])""",
                         mapOf(
                                 "clientId" to ColumnDetails(
                                         default = UUID::randomUUID,
@@ -51,6 +51,10 @@ class ClientsTestConfig(context: GenericApplicationContext) {
                                         default = { "Test Client" }
                                 ),
                                 "ownerId" to ColumnDetails(
+                                        converter = UUID::fromString
+                                ),
+                                "clientSecret" to ColumnDetails(
+                                        default = UUID::randomUUID,
                                         converter = UUID::fromString
                                 ),
                                 "redirectUris" to ColumnDetails(

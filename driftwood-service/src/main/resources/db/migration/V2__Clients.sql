@@ -5,6 +5,7 @@ CREATE TABLE clients(
                       updated TIMESTAMP NOT NULL,
                       name TEXT NOT NULL,
                       owner_id UUID NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+                      client_secret UUID NOT NULL,
                       redirect_uris TEXT[] NOT NULL,
                       response_types TEXT[] NOT NULL,
                       grant_types TEXT[] NOT NULL
