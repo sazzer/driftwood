@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.transaction.annotation.Transactional
 import uk.co.grahamcox.driftwood.service.DriftwoodServiceApplication
 import uk.co.grahamcox.driftwood.service.spring.DatabaseCleaner
 import uk.co.grahamcox.driftwood.service.spring.TestConfig
@@ -18,6 +19,7 @@ import uk.co.grahamcox.driftwood.service.spring.TestConfig
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = [DriftwoodServiceApplication::class])
 @ActiveProfiles("test")
 @Import(TestConfig::class)
+@Transactional
 class DaoTestBase {
     /** The database cleaner to use */
     @Autowired

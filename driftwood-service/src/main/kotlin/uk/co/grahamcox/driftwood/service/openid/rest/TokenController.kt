@@ -45,7 +45,7 @@ class TokenController(
         }
 
         val client = try {
-            clientCredentials.let { clientRetriever.getById(it.clientId) }
+            clientCredentials.let { clientRetriever.getByCredentials(it.clientId, it.clientSecret) }
         } catch (e: ClientNotFoundException) {
             LOG.warn("Client ID not found", e)
             throw InvalidClientException()

@@ -48,7 +48,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
     }
 
     /**
-     * Gest getting a client by ID when the client doesn't exist
+     * Test getting a client by ID when the client doesn't exist
      */
     @Test
     fun getUnknownClientById() {
@@ -60,7 +60,7 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
     }
 
     /**
-     * Gest getting a client by ID when the client does exist and has minimal data
+     * Test getting a client by ID when the client does exist and has minimal data
      */
     @Test
     fun getMinimalClientById() {
@@ -139,4 +139,73 @@ internal class JdbcClientDaoIntegrationTest : DaoTestBase() {
                 Executable { Assertions.assertEquals(setOf(GrantTypes.IMPLICIT, GrantTypes.AUTHORIZATION_CODE), client.data.grantTypes) }
         )
     }
+
+
+    /**
+     * Test getting a client by Credentials when the client does exist and has minimal data
+     */
+    @Test
+    fun getClientByCredentials() {
+        val version = UUID.randomUUID()
+        val now = Instant.parse("2018-12-06T16:31:00Z")
+        val clientSecret = UUID.randomUUID()
+
+        clientSeeder(
+                "clientId" to CLIENT_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to now.toString(),
+                "updated" to now.toString(),
+                "name" to "Example Client",
+                "ownerId" to USER_ID.id.toString(),
+                "clientSecret" to clientSecret.toString(),
+                "redirectUris" to "",
+                "responseTypes" to "",
+                "grantTypes" to ""
+        )
+
+        val client = testSubject.getByCredentials(CLIENT_ID, ClientSecret(clientSecret))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(CLIENT_ID, client.identity.id) },
+                Executable { Assertions.assertEquals(version, client.identity.version) },
+                Executable { Assertions.assertEquals(now, client.identity.created) },
+                Executable { Assertions.assertEquals(now, client.identity.updated) },
+
+                Executable { Assertions.assertEquals("Example Client", client.data.name) },
+                Executable { Assertions.assertEquals(USER_ID, client.data.owner) },
+                Executable { Assertions.assertEquals(ClientSecret(clientSecret), client.data.secret) },
+                Executable { Assertions.assertEquals(emptySet<URI>(), client.data.redirectUris) },
+                Executable { Assertions.assertEquals(emptySet<ResponseTypes>(), client.data.responseTypes) },
+                Executable { Assertions.assertEquals(emptySet<GrantTypes>(), client.data.grantTypes) }
+        )
+    }
+
+    /**
+     * Test getting a client by ID when the credentials are wrong
+     */
+    @Test
+    fun getClientByWrongCredentials() {
+        val version = UUID.randomUUID()
+        val now = Instant.parse("2018-12-06T16:31:00Z")
+
+        clientSeeder(
+                "clientId" to CLIENT_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to now.toString(),
+                "updated" to now.toString(),
+                "name" to "Example Client",
+                "ownerId" to USER_ID.id.toString(),
+                "clientSecret" to UUID.randomUUID().toString(),
+                "redirectUris" to "",
+                "responseTypes" to "",
+                "grantTypes" to ""
+        )
+
+        val e = Assertions.assertThrows(ClientNotFoundException::class.java) {
+            testSubject.getByCredentials(CLIENT_ID, ClientSecret(UUID.randomUUID()))
+        }
+
+        Assertions.assertEquals(CLIENT_ID, e.id)
+    }
+
 }

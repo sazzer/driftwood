@@ -36,11 +36,35 @@ class JdbcClientDao(
                     mapOf("clientid" to id.id),
                     ::parseClientRow)!!
         } catch (e: EmptyResultDataAccessException) {
-            LOG.warn("No clients found with ID: {}", id)
+            LOG.warn("No client found with ID: {}", id)
             throw ClientNotFoundException(id)
         }
 
-        LOG.debug("Found clients with ID {}: {}", id, client)
+        LOG.debug("Found client with ID {}: {}", id, client)
+        return client
+    }
+
+    /**
+     * Get the Client with the given ID and Secret
+     * @param id The ID of the client
+     * @param secret The Secret of the client
+     * @return The clients
+     */
+    override fun getByCredentials(id: ClientId, secret: ClientSecret): Resource<ClientId, ClientData> {
+        LOG.debug("Loading Client with ID: {}", id)
+        val client = try {
+            jdbcTemplate.queryForObject("SELECT * FROM clients WHERE client_id = :clientid::uuid AND client_secret = :clientSecret::uuid",
+                    mapOf(
+                            "clientid" to id.id,
+                            "clientSecret" to secret.id
+                    ),
+                    ::parseClientRow)!!
+        } catch (e: EmptyResultDataAccessException) {
+            LOG.warn("No client found with ID: {}", id)
+            throw ClientNotFoundException(id)
+        }
+
+        LOG.debug("Found client with ID {}: {}", id, client)
         return client
     }
 

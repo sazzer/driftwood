@@ -21,10 +21,12 @@ class ClientsTestConfig(context: GenericApplicationContext) {
                 val clock: Clock = ref()
                 val dataSource: DataSource = ref()
                 fun buildStringArray(strings: List<String>) =
-                        dataSource.connection.createArrayOf("text",
-                                strings
-                                        .filter { it.isNotBlank() }
-                                        .toTypedArray())
+                        dataSource.connection.use {conn ->
+                            conn.createArrayOf("text",
+                                    strings
+                                            .filter(String::isNotBlank)
+                                            .toTypedArray())
+                        }
 
                 DatabaseSeeder(
                         ref(),
