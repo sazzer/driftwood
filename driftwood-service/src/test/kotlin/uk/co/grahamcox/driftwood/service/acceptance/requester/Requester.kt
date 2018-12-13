@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
+import java.util.*
 
 /**
  * The mechanism to make HTTP requests to the server under test
@@ -22,8 +23,8 @@ class Requester(
     /** The last response from the server */
     private var lastResponseEntity: ResponseEntity<out Any>? = null
 
-    /** The Access Token to use from the server */
-    var accessToken: String? = null
+    /** The Authorization to use from the server */
+    private var authorization: String? = null
 
     /** Get the last response in a safe manner */
     val lastResponse: Response
@@ -35,7 +36,7 @@ class Requester(
      */
     fun reset() {
         lastResponseEntity = null
-        accessToken = null
+        authorization = null
     }
 
     /**
@@ -86,12 +87,22 @@ class Requester(
     }
 
     /**
+     * Set the authorization header for Basic auth
+     * @param username The username to use
+     * @param password The password to use
+     */
+    fun setBasicAuth(username: String, password: String) {
+        val encoded = Base64.getEncoder().encodeToString("$username:$password".toByteArray())
+        authorization = "Basic $encoded"
+    }
+
+    /**
      * Helper to build the headers needed for this request
      * @return the HTTP Headers
      */
     private fun buildHeaders(): HttpHeaders {
         val headers = HttpHeaders()
-        accessToken?.let { token -> headers.set("Authorization", "Bearer $token") }
+        authorization?.let { authorization -> headers.set("Authorization", authorization) }
         return headers
     }
 }
