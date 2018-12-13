@@ -51,7 +51,7 @@ class TokenController(
             throw InvalidClientException()
         }
 
-        val scopes = params["scopes"]
+        val scopes = params["scope"]
                 ?.let { scopeRegistry.parseScopes(it) }
                 ?: emptySet()
 
