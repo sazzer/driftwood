@@ -157,6 +157,26 @@ class OpenIDTokenErrorAcceptanceTest : AcceptanceTestBase() {
     }
 
     /**
+     * Test when the Grant Type provided is not supported by this client
+     */
+    @Test
+    fun unsupportedGrantType() {
+        val response = makeRequest(clientId = clientId, clientSecret = clientSecret, params = mapOf(
+                "grant_type" to "client_credentials"
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.statusCode) },
+
+                Executable { response.assertBody("""{
+                    "error": "unsupported_grant_type",
+                    "error_description": "The grant type is not supported by this client",
+                    "grant_type": "client_credentials"
+                }""".trimMargin()) }
+        )
+    }
+
+    /**
      * Make a request to the Token endpoint
      */
     private fun makeRequest(params: Map<String, String> = emptyMap(),

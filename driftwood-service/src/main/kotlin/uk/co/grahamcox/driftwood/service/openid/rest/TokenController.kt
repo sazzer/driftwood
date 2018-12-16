@@ -3,10 +3,7 @@ package uk.co.grahamcox.driftwood.service.openid.rest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import uk.co.grahamcox.driftwood.service.clients.ClientData
-import uk.co.grahamcox.driftwood.service.clients.ClientId
-import uk.co.grahamcox.driftwood.service.clients.ClientNotFoundException
-import uk.co.grahamcox.driftwood.service.clients.ClientRetriever
+import uk.co.grahamcox.driftwood.service.clients.*
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.openid.scopes.Scope
 import uk.co.grahamcox.driftwood.service.openid.scopes.ScopeRegistry
@@ -71,6 +68,11 @@ class TokenController(
      */
     fun handleClientCredentials(client: Resource<ClientId, ClientData>,
                                 scopes: Set<Scope>) {
+        if (!client.data.grantTypes.contains(GrantTypes.CLIENT_CREDENTIALS)) {
+            throw UnsupportedGrantTypeException(GrantTypes.CLIENT_CREDENTIALS.id)
+        }
+
+
         TODO("Client Credentials Grant")
     }
 
