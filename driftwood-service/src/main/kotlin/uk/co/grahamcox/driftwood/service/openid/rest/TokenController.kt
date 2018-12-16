@@ -8,6 +8,11 @@ import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.openid.scopes.Scope
 import uk.co.grahamcox.driftwood.service.openid.scopes.ScopeRegistry
 import uk.co.grahamcox.driftwood.service.openid.scopes.UnknownScopesException
+import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenCreator
+import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenSerializer
+import uk.co.grahamcox.driftwood.service.users.UserRetriever
+import java.time.Clock
+import java.time.Duration
 
 /**
  * Controller for handling the calls to the OAuth2 Token endpoint
@@ -15,8 +20,11 @@ import uk.co.grahamcox.driftwood.service.openid.scopes.UnknownScopesException
 @RestController
 @RequestMapping("/api/oauth2/token")
 class TokenController(
+        private val clock: Clock,
         private val clientRetriever: ClientRetriever,
-        private val scopeRegistry: ScopeRegistry
+        private val scopeRegistry: ScopeRegistry,
+        private val accessTokenCreator: AccessTokenCreator,
+        private val accessTokenSerializer: AccessTokenSerializer
 ) {
     companion object {
         /** The logger to use */
@@ -32,7 +40,7 @@ class TokenController(
     @RequestMapping(method = [RequestMethod.POST])
     fun tokenRequest(@RequestParam(value = "grant_type", required = false) grantType: String?,
                      clientCredentials: ClientCredentials?,
-                     @RequestParam params: Map<String, String>) {
+                     @RequestParam params: Map<String, String>) : AccessTokenModel {
         LOG.info("Processing token request for grant type {}, clients credentials {} and params {}",
                 grantType, clientCredentials, params)
 
@@ -52,7 +60,7 @@ class TokenController(
                 ?.let { scopeRegistry.parseScopes(it) }
                 ?: emptySet()
 
-        when(grantType) {
+        return when(grantType) {
             "client_credentials" -> handleClientCredentials(client, scopes)
             "authorization_code" -> TODO("Authorization Code Grant")
             "refresh_token" -> TODO("Refresh Token Grant")
@@ -67,13 +75,20 @@ class TokenController(
      * @param scopes The scope
      */
     fun handleClientCredentials(client: Resource<ClientId, ClientData>,
-                                scopes: Set<Scope>) {
+                                scopes: Set<Scope>): AccessTokenModel {
         if (!client.data.grantTypes.contains(GrantTypes.CLIENT_CREDENTIALS)) {
             throw UnsupportedGrantTypeException(GrantTypes.CLIENT_CREDENTIALS.id)
         }
 
+        val token = accessTokenCreator.createToken(client, client.data.owner, scopes)
+        val serialized = accessTokenSerializer.serializeAccessToken(token)
+        val now = clock.instant()
+        val duration = Duration.between(now, token.expires).seconds
 
-        TODO("Client Credentials Grant")
+        return AccessTokenModel(
+                accessToken = serialized,
+                expiry = duration
+        )
     }
 
     /**
