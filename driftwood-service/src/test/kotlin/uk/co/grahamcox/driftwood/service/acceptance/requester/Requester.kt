@@ -97,6 +97,14 @@ class Requester(
     }
 
     /**
+     * Set the authorization header for Bearer auth
+     * @param token The token to use
+     */
+    fun setAccessToken(token: String) {
+        authorization = "Bearer $token"
+    }
+
+    /**
      * Helper to build the headers needed for this request
      * @return the HTTP Headers
      */

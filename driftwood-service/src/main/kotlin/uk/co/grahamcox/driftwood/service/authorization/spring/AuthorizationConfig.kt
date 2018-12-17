@@ -6,6 +6,7 @@ import org.springframework.context.support.beans
 import uk.co.grahamcox.driftwood.service.authorization.AccessTokenStore
 import uk.co.grahamcox.driftwood.service.authorization.rest.AccessTokenArgumentResolver
 import uk.co.grahamcox.driftwood.service.authorization.rest.AccessTokenInterceptor
+import uk.co.grahamcox.driftwood.service.authorization.rest.DebugController
 
 /**
  * Spring configuration for the Authorization systems
@@ -17,6 +18,7 @@ class AuthorizationConfig(context: GenericApplicationContext) {
             bean<AccessTokenStore>()
             bean<AccessTokenInterceptor>()
             bean<AccessTokenArgumentResolver>()
+            bean<DebugController>()
         }.initialize(context)
     }
 }
