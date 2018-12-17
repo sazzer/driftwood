@@ -8,6 +8,7 @@ import uk.co.grahamcox.driftwood.service.VersionController
 import uk.co.grahamcox.driftwood.service.authorization.spring.AuthorizationConfig
 import uk.co.grahamcox.driftwood.service.clients.spring.ClientsConfig
 import uk.co.grahamcox.driftwood.service.openid.spring.OpenIDConfig
+import uk.co.grahamcox.driftwood.service.rest.problem.ProblemResponseBodyAdvice
 import uk.co.grahamcox.driftwood.service.users.spring.UsersConfig
 import java.time.Clock
 
@@ -28,6 +29,7 @@ class DriftwoodConfig(context: GenericApplicationContext) {
         beans {
             bean { Clock.systemUTC() }
             bean<VersionController>()
+            bean<ProblemResponseBodyAdvice>()
         }.initialize(context)
     }
 }

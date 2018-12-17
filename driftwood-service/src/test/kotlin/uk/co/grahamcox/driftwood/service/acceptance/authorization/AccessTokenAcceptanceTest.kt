@@ -96,4 +96,77 @@ class AccessTokenAcceptanceTest: AcceptanceTestBase() {
         }
         }
     }
+
+    /**
+     * Test getting the User ID or Access Token when a valid token is missing
+     */
+    @TestFactory
+    fun getAbsent(): List<DynamicTest> {
+        return listOf(
+                "/api/authorization/debug/userId/optional",
+                "/api/authorization/debug/accessToken/optional"
+        ).map { url -> DynamicTest.dynamicTest(url) {
+            val response = requester.get(url)
+
+            Assertions.assertAll(
+                    Executable { Assertions.assertEquals(HttpStatus.OK, response.statusCode) },
+
+                    Executable { Assertions.assertNull(response.getValue("body")) }
+            )
+        }
+        }
+    }
+
+    /**
+     * Test getting the required User ID or Access Token when a valid token is missing
+     */
+    @TestFactory
+    fun getAbsentRequired(): List<DynamicTest> {
+        return listOf(
+                "/api/authorization/debug/userId/required",
+                "/api/authorization/debug/accessToken/required"
+        ).map { url -> DynamicTest.dynamicTest(url) {
+            val response = requester.get(url)
+
+            Assertions.assertAll(
+                    Executable { Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode) },
+
+                    Executable { response.assertBody("""{
+                        "type": "tag:grahamcox.co.uk,2018:driftwood/problems/authorization/missing-access-token",
+                        "title": "No access token was present",
+                        "status": 401
+                    }""".trimMargin()) }
+            )
+        }
+        }
+    }
+
+
+    /**
+     * Test getting the required User ID or Access Token when a valid token is missing
+     */
+    @TestFactory
+    fun getInvalidToken(): List<DynamicTest> {
+        return listOf(
+                "/api/authorization/debug/userId/required",
+                "/api/authorization/debug/accessToken/required",
+                "/api/authorization/debug/userId/optional",
+                "/api/authorization/debug/accessToken/optional"
+        ).map { url -> DynamicTest.dynamicTest(url) {
+            requester.setAccessToken("invalid")
+
+            val response = requester.get(url)
+
+            Assertions.assertAll(
+                    Executable { Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode) },
+
+                    Executable { response.assertBody("""{
+                        "type": "tag:grahamcox.co.uk,2018:driftwood/problems/authorization/invalid-access-token",
+                        "title": "An access token was present but invalid",
+                        "status": 401
+                    }""".trimMargin()) }
+            )
+        }
+        }
+    }
 }
