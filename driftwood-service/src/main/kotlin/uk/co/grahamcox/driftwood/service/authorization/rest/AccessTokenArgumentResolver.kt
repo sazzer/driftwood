@@ -6,6 +6,8 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.method.support.ModelAndViewContainer
 import uk.co.grahamcox.driftwood.service.authorization.AccessTokenHolder
+import uk.co.grahamcox.driftwood.service.authorization.authorizor.Authorizer
+import uk.co.grahamcox.driftwood.service.authorization.authorizor.AuthorizerImpl
 import uk.co.grahamcox.driftwood.service.openid.token.AccessToken
 import uk.co.grahamcox.driftwood.service.users.UserId
 import kotlin.reflect.jvm.kotlinFunction
@@ -25,8 +27,9 @@ class AccessTokenArgumentResolver(
      * `false` otherwise
      */
     override fun supportsParameter(parameter: MethodParameter) =
-            parameter.parameterType == AccessToken::class.java ||
-                    parameter.parameterType == UserId::class.java
+            parameter.parameterType == AccessToken::class.java
+                    || parameter.parameterType == UserId::class.java
+                    || parameter.parameterType == Authorizer::class.java
 
     /**
      * Resolves a method parameter into an argument value from a given request.
@@ -51,13 +54,14 @@ class AccessTokenArgumentResolver(
         val nullable = parameter.method?.kotlinFunction!!.parameters[parameterIndex + 1].type.isMarkedNullable
 
         val accessToken = accessTokenHolder.accessToken
-        if (!nullable && accessToken == null) {
+        if (!nullable && (accessToken == null && parameter.parameterType != Authorizer::class.java)) {
             throw MissingAccessTokenException()
         }
 
         return when(parameter.parameterType) {
             AccessToken::class.java -> accessToken
             UserId::class.java -> accessToken?.user
+            Authorizer::class.java -> AuthorizerImpl(accessToken)
             else -> null
         }
     }

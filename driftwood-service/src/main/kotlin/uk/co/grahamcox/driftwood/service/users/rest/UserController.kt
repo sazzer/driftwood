@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
+import uk.co.grahamcox.driftwood.service.authorization.authorizor.AuthorizationSuccessResult
+import uk.co.grahamcox.driftwood.service.authorization.authorizor.Authorizer
 import uk.co.grahamcox.driftwood.service.users.UserId
 import uk.co.grahamcox.driftwood.service.users.UserRetriever
 import java.util.*
@@ -20,21 +22,35 @@ class UserController(private val userRetriever: UserRetriever) {
      * @return the user details
      */
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.GET])
-    fun getUserById(@PathVariable("id") id: UUID) : IdentifiedUserModel {
-        val user = userRetriever.getById(UserId(id))
+    fun getUserById(@PathVariable("id") id: UUID,
+                    authorizer: Authorizer) : IdentifiedUserModel {
+        val userId = UserId(id)
+
+        val authorization = authorizer {
+            sameUser(userId)
+        }
+
+        val user = userRetriever.getById(userId)
 
         return IdentifiedUserModel(
                 id = user.identity.id.id.toString(),
                 user = UserModel(
                         name = user.data.name,
-                        email = user.data.email,
-                        logins = user.data.logins.map { login ->
-                            UserLoginModel(
-                                    provider = login.provider,
-                                    providerId = login.providerId,
-                                    displayName = login.displayName
-                            )
-                        }.sortedWith(compareBy(UserLoginModel::provider, UserLoginModel::displayName))
+                        email = when (authorization) {
+                            is AuthorizationSuccessResult -> user.data.email
+                            else -> null
+                        },
+                        logins = when (authorization) {
+                            is AuthorizationSuccessResult ->
+                                user.data.logins.map { login ->
+                                    UserLoginModel(
+                                            provider = login.provider,
+                                            providerId = login.providerId,
+                                            displayName = login.displayName
+                                    )
+                                }.sortedWith(compareBy(UserLoginModel::provider, UserLoginModel::displayName))
+                            else -> null
+                        }
                 )
         )
     }

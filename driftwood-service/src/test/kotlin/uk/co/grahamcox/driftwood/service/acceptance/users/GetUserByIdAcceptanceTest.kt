@@ -59,4 +59,40 @@ class GetUserByIdAcceptanceTest : UserAcceptanceTestBase() {
                 }""".trimMargin()) }
         )
     }
+
+    /**
+     * Test getting a user when we are not logged in
+     */
+    @Test
+    fun getUserUnauthenticated() {
+        val userResponse = requester.get("/api/users/$userId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.OK, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                    "id": "$userId",
+                    "name": "Graham"
+                }""".trimMargin()) }
+        )
+    }
+
+    /**
+     * Test getting a different user to the one that we are logged in as
+     */
+    @Test
+    fun getAnotherUser() {
+        val otherUserId = UUID.randomUUID().toString()
+        seedUser("userId" to otherUserId)
+        useTokenForUser(otherUserId)
+
+        val userResponse = requester.get("/api/users/$userId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.OK, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                    "id": "$userId",
+                    "name": "Graham"
+                }""".trimMargin()) }
+        )
+    }
 }
