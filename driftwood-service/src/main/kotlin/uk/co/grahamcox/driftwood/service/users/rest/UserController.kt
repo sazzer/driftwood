@@ -1,13 +1,14 @@
 package uk.co.grahamcox.driftwood.service.users.rest
 
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.driftwood.service.authorization.authorizor.AuthorizationSuccessResult
 import uk.co.grahamcox.driftwood.service.authorization.authorizor.Authorizer
+import uk.co.grahamcox.driftwood.service.rest.problem.Problem
 import uk.co.grahamcox.driftwood.service.users.UserId
+import uk.co.grahamcox.driftwood.service.users.UserNotFoundException
 import uk.co.grahamcox.driftwood.service.users.UserRetriever
+import java.net.URI
 import java.util.*
 
 /**
@@ -19,6 +20,7 @@ class UserController(private val userRetriever: UserRetriever) {
     /**
      * Get a User by the unique ID
      * @param id The ID of the user
+     * @param authorizer The authorizer to use
      * @return the user details
      */
     @RequestMapping(value = ["/{id}"], method = [RequestMethod.GET])
@@ -54,4 +56,14 @@ class UserController(private val userRetriever: UserRetriever) {
                 )
         )
     }
+
+    /**
+     * Handle when the requested user was not found
+     */
+    @ExceptionHandler(UserNotFoundException::class)
+    fun unknownUser() = Problem(
+            type = URI("tag:2018,grahamcox.co.uk:users/problems/not-found"),
+            title = "Requested user was not found",
+            statusCode = HttpStatus.NOT_FOUND
+    )
 }

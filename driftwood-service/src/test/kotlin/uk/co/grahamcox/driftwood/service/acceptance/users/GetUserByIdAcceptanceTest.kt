@@ -95,4 +95,23 @@ class GetUserByIdAcceptanceTest : UserAcceptanceTestBase() {
                 }""".trimMargin()) }
         )
     }
+
+    /**
+     * Test getting a user that doesn't exist
+     */
+    @Test
+    fun getUnknownUser() {
+        val otherUserId = UUID.randomUUID().toString()
+
+        val userResponse = requester.get("/api/users/$otherUserId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.NOT_FOUND, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                    "type": "tag:2018,grahamcox.co.uk:users/problems/not-found",
+                    "title": "Requested user was not found",
+                    "status": 404
+                }""".trimMargin()) }
+        )
+    }
 }
