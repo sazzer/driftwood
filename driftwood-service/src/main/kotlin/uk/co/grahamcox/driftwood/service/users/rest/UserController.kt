@@ -16,7 +16,7 @@ import java.util.*
  */
 @RestController
 @RequestMapping("/api/users")
-class UserController(private val userRetriever: UserRetriever) {
+class UserController(private val userService: UserService) {
     /**
      * Get a User by the unique ID
      * @param id The ID of the user
@@ -30,7 +30,7 @@ class UserController(private val userRetriever: UserRetriever) {
 
         val authorization = authorizer(authorizeRequest(userId)) is AuthorizationSuccessResult
 
-        val user = userRetriever.getById(userId)
+        val user = userService.getById(userId)
 
         return buildUserResponse(user, authorization)
     }
@@ -48,7 +48,7 @@ class UserController(private val userRetriever: UserRetriever) {
 
         authorizer(authorizeRequest(userId))
 
-        val user = userRetriever.getById(userId)
+        val user = userService.getById(userId)
         val updatedUser = user.copy(
                 data = UserData(
                         name = input.name,
@@ -62,8 +62,9 @@ class UserController(private val userRetriever: UserRetriever) {
                         }.toSet()
                 )
         )
+        val savedUser = userService.save(updatedUser)
 
-        return buildUserResponse(updatedUser, true)
+        return buildUserResponse(savedUser, true)
     }
 
     /**

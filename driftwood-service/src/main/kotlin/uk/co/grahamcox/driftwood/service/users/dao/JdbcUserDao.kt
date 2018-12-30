@@ -8,6 +8,7 @@ import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.*
 import java.sql.ResultSet
+import java.time.Clock
 import java.util.*
 
 /**
@@ -16,8 +17,9 @@ import java.util.*
  */
 class JdbcUserDao(
         private val jdbcTemplate: NamedParameterJdbcTemplate,
-        private val objectMapper: ObjectMapper
-) : UserRetriever {
+        private val objectMapper: ObjectMapper,
+        private val clock: Clock
+) : UserService {
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(JdbcUserDao::class.java)
@@ -40,6 +42,49 @@ class JdbcUserDao(
 
         LOG.debug("Found user with ID {}: {}", id, user)
         return user
+    }
+
+    /**
+     * Save changes to an existing user
+     * @param user The new user details
+     * @return the updated user details
+     */
+    override fun save(user: Resource<UserId, UserData>): Resource<UserId, UserData> {
+        LOG.debug("Saving User with ID: {}", user.identity.id)
+
+        val updated = try {
+            jdbcTemplate.queryForObject("""
+                UPDATE
+                    users
+                SET
+                    version = :newVersion::uuid,
+                    updated = :newUpdated,
+                    name = :newName,
+                    email = :newEmail,
+                    authentication = :newAuthentication::jsonb
+                WHERE
+                    user_id = :userid::uuid
+                    AND version = :version::uuid
+                RETURNING
+                    *
+                """,
+                    mapOf(
+                            "userid" to user.identity.id.id,
+                            "version" to user.identity.version,
+                            "newVersion" to UUID.randomUUID(),
+                            "newUpdated" to Date.from(clock.instant()),
+                            "newName" to user.data.name,
+                            "newEmail" to user.data.email,
+                            "newAuthentication" to objectMapper.writeValueAsString(user.data.logins)
+                    ),
+                    ::parseUserRow)!!
+        } catch (e: EmptyResultDataAccessException) {
+            LOG.warn("No user found with ID: {}", user.identity.id)
+            throw UserNotFoundException(user.identity.id)
+        }
+
+        LOG.debug("Updated user with ID {}: {}", updated.identity.id, updated)
+        return updated
     }
 
     /**

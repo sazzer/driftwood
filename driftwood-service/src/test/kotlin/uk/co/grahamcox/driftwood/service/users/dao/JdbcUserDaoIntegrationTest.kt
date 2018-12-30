@@ -4,11 +4,16 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import uk.co.grahamcox.driftwood.service.dao.DaoTestBase
 import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
+import uk.co.grahamcox.driftwood.service.model.Identity
+import uk.co.grahamcox.driftwood.service.model.Resource
+import uk.co.grahamcox.driftwood.service.users.UserData
 import uk.co.grahamcox.driftwood.service.users.UserId
 import uk.co.grahamcox.driftwood.service.users.UserLoginData
 import uk.co.grahamcox.driftwood.service.users.UserNotFoundException
+import java.time.Duration
 import java.time.Instant
 import java.util.*
 
@@ -29,6 +34,11 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
     @Autowired
     private lateinit var testSubject: JdbcUserDao
 
+    /** The "current time" */
+    @Autowired
+    @Qualifier("currentTime")
+    private lateinit var currentTime: Instant
+
     /**
      * Gest getting a user by ID when the user doesn't exist
      */
@@ -47,13 +57,12 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
     @Test
     fun getSimpleUserById() {
         val version = UUID.randomUUID()
-        val now = Instant.parse("2018-12-06T16:31:00Z")
 
         userSeeder(
                 "userId" to USER_ID.id.toString(),
                 "version" to version.toString(),
-                "created" to now.toString(),
-                "updated" to now.toString(),
+                "created" to currentTime.toString(),
+                "updated" to currentTime.toString(),
                 "name" to "Graham"
         )
 
@@ -62,8 +71,8 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(USER_ID, user.identity.id) },
                 Executable { Assertions.assertEquals(version, user.identity.version) },
-                Executable { Assertions.assertEquals(now, user.identity.created) },
-                Executable { Assertions.assertEquals(now, user.identity.updated) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.created) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.updated) },
 
                 Executable { Assertions.assertEquals("Graham", user.data.name) },
                 Executable { Assertions.assertNull(user.data.email) },
@@ -77,13 +86,12 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
     @Test
     fun getFullUserById() {
         val version = UUID.randomUUID()
-        val now = Instant.parse("2018-12-06T16:31:00Z")
 
         userSeeder(
                 "userId" to USER_ID.id.toString(),
                 "version" to version.toString(),
-                "created" to now.toString(),
-                "updated" to now.toString(),
+                "created" to currentTime.toString(),
+                "updated" to currentTime.toString(),
                 "name" to "Graham",
                 "email" to "graham@example.com",
                 "logins" to "twitter,@graham,@graham;google,123456,graham@example.com"
@@ -94,8 +102,8 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         Assertions.assertAll(
                 Executable { Assertions.assertEquals(USER_ID, user.identity.id) },
                 Executable { Assertions.assertEquals(version, user.identity.version) },
-                Executable { Assertions.assertEquals(now, user.identity.created) },
-                Executable { Assertions.assertEquals(now, user.identity.updated) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.created) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.updated) },
 
                 Executable { Assertions.assertEquals("Graham", user.data.name) },
                 Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
@@ -104,5 +112,59 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
                         UserLoginData(provider = "google", providerId = "123456", displayName = "graham@example.com")
                 ), user.data.logins) }
         )
+    }
+
+    /**
+     * Test updating a user successfully
+     */
+    @Test
+    fun updateUser() {
+        val version = UUID.randomUUID()
+        val createdAt = currentTime.minus(Duration.ofDays(5))
+
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to createdAt.toString(),
+                "updated" to createdAt.toString(),
+                "name" to "Graham"
+        )
+
+        val user = testSubject.save(Resource(
+                identity = Identity(
+                        id = USER_ID,
+                        version = version,
+                        created = createdAt,
+                        updated = createdAt
+                ),
+                data = UserData(
+                        name = "Test User",
+                        email = "test@example.com",
+                        logins = setOf(
+                                UserLoginData(
+                                        provider = "google",
+                                        providerId = "654321",
+                                        displayName = "test@example.com"
+                                )
+                        )
+                )
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(USER_ID, user.identity.id) },
+                Executable { Assertions.assertNotEquals(version, user.identity.version) },
+                Executable { Assertions.assertEquals(createdAt, user.identity.created) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.updated) },
+
+                Executable { Assertions.assertEquals("Test User", user.data.name) },
+                Executable { Assertions.assertEquals("test@example.com", user.data.email) },
+                Executable { Assertions.assertEquals(setOf(
+                        UserLoginData(provider = "google", providerId = "654321", displayName = "test@example.com")
+                ), user.data.logins) }
+        )
+
+        val loaded = testSubject.getById(USER_ID)
+
+        Assertions.assertEquals(user, loaded)
     }
 }

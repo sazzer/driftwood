@@ -27,7 +27,9 @@ import java.time.Clock
 class DriftwoodConfig(context: GenericApplicationContext) {
     init {
         beans {
-            bean { Clock.systemUTC() }
+            profile("!test") {
+                bean { Clock.systemUTC() }
+            }
             bean<VersionController>()
             bean<ProblemResponseBodyAdvice>()
         }.initialize(context)

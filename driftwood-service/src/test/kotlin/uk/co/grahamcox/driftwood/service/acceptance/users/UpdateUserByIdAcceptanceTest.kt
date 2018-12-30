@@ -67,4 +67,43 @@ class UpdateUserByIdAcceptanceTest : UserAcceptanceTestBase() {
                 }""".trimMargin()) }
         )
     }
+
+    /**
+     * Test updating the user that we are logged in as. This version re-retrieves the user after it was updated.
+     */
+    @Test
+    fun updateRetrieveMyUser() {
+        useTokenForUser(userId)
+
+        requester.put("/api/users/$userId",
+                mapOf(
+                        "name" to "Test User",
+                        "email" to "test@example.com",
+                        "logins" to listOf(
+                                mapOf(
+                                        "provider" to "google",
+                                        "providerId" to "654321",
+                                        "displayName" to "test@example.com"
+                                )
+                        )
+                ))
+
+        val userResponse = requester.get("/api/users/$userId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.OK, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                    "id": "$userId",
+                    "name": "Test User",
+                    "email": "test@example.com",
+                    "logins": [
+                        {
+                            "provider": "google",
+                            "providerId": "654321",
+                            "displayName": "test@example.com"
+                        }
+                    ]
+                }""".trimMargin()) }
+        )
+    }
 }
