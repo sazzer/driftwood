@@ -167,4 +167,38 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
 
         Assertions.assertEquals(user, loaded)
     }
+
+
+    /**
+     * Test updating a user that doesn't exist
+     */
+    @Test
+    fun updateUnknownUser() {
+        val version = UUID.randomUUID()
+        val createdAt = currentTime.minus(Duration.ofDays(5))
+
+        val e = Assertions.assertThrows(UserNotFoundException::class.java) {
+            testSubject.save(Resource(
+                    identity = Identity(
+                            id = USER_ID,
+                            version = version,
+                            created = createdAt,
+                            updated = createdAt
+                    ),
+                    data = UserData(
+                            name = "Test User",
+                            email = "test@example.com",
+                            logins = setOf(
+                                    UserLoginData(
+                                            provider = "google",
+                                            providerId = "654321",
+                                            displayName = "test@example.com"
+                                    )
+                            )
+                    )
+            ))
+        }
+
+        Assertions.assertEquals(USER_ID, e.id)
+    }
 }
