@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.transaction.annotation.Transactional
+import uk.co.grahamcox.driftwood.service.dao.OptimisticLockException
+import uk.co.grahamcox.driftwood.service.database.getUUID
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.*
@@ -15,6 +18,7 @@ import java.util.*
  * DAO for accessing User data
  * @property jdbcTemplate the JDBC Template for accessing the database
  */
+@Transactional
 class JdbcUserDao(
         private val jdbcTemplate: NamedParameterJdbcTemplate,
         private val objectMapper: ObjectMapper,
@@ -29,6 +33,7 @@ class JdbcUserDao(
      * @param id The ID of the user
      * @return The user
      */
+    @Transactional(readOnly = true)
     override fun getById(id: UserId): Resource<UserId, UserData> {
         LOG.debug("Loading User with ID: {}", id)
         val user = try {
@@ -49,6 +54,7 @@ class JdbcUserDao(
      * @param user The new user details
      * @return the updated user details
      */
+    @Transactional(readOnly = false)
     override fun save(user: Resource<UserId, UserData>): Resource<UserId, UserData> {
         LOG.debug("Saving User with ID: {}", user.identity.id)
 
@@ -79,8 +85,18 @@ class JdbcUserDao(
                     ),
                     ::parseUserRow)!!
         } catch (e: EmptyResultDataAccessException) {
-            LOG.warn("No user found with ID: {}", user.identity.id)
-            throw UserNotFoundException(user.identity.id)
+            try {
+                val currentVersion = jdbcTemplate.queryForObject("SELECT version FROM users WHERE user_id = :userid::uuid", mapOf(
+                        "userid" to user.identity.id.id
+                )) { rs, _ -> rs.getUUID("version") }!!
+
+                LOG.warn("User found with ID {}, but database version {} didn't match provided version {}",
+                        user.identity.id, currentVersion, user.identity.version)
+                throw OptimisticLockException(user.identity.id, currentVersion)
+            } catch (e: EmptyResultDataAccessException) {
+                LOG.warn("No user found with ID: {}", user.identity.id)
+                throw UserNotFoundException(user.identity.id)
+            }
         }
 
         LOG.debug("Updated user with ID {}: {}", updated.identity.id, updated)
@@ -95,8 +111,8 @@ class JdbcUserDao(
      */
     private fun parseUserRow(rs: ResultSet, index: Int): Resource<UserId, UserData> {
         val identity = Identity(
-                id = UserId(UUID.fromString(rs.getString("user_id"))),
-                version = UUID.fromString(rs.getString("version")),
+                id = UserId(rs.getUUID("user_id")),
+                version = rs.getUUID("version"),
                 created = rs.getTimestamp("created").toInstant(),
                 updated = rs.getTimestamp("updated").toInstant()
         )

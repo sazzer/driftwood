@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.co.grahamcox.driftwood.service.dao.DaoTestBase
 import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
+import uk.co.grahamcox.driftwood.service.dao.OptimisticLockException
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.UserData
@@ -168,7 +169,6 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         Assertions.assertEquals(user, loaded)
     }
 
-
     /**
      * Test updating a user that doesn't exist
      */
@@ -200,5 +200,47 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         }
 
         Assertions.assertEquals(USER_ID, e.id)
+    }
+
+    /**
+     * Test updating a user that has a different version
+     */
+    @Test
+    fun updateUserWrongVersion() {
+        val version = UUID.randomUUID()
+        val createdAt = currentTime.minus(Duration.ofDays(5))
+
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to createdAt.toString(),
+                "updated" to createdAt.toString(),
+                "name" to "Graham"
+        )
+
+        val e = Assertions.assertThrows(OptimisticLockException::class.java) {
+            testSubject.save(Resource(
+                    identity = Identity(
+                            id = USER_ID,
+                            version = UUID.randomUUID(),
+                            created = createdAt,
+                            updated = createdAt
+                    ),
+                    data = UserData(
+                            name = "Test User",
+                            email = "test@example.com",
+                            logins = setOf(
+                                    UserLoginData(
+                                            provider = "google",
+                                            providerId = "654321",
+                                            displayName = "test@example.com"
+                                    )
+                            )
+                    )
+            ))
+        }
+
+        Assertions.assertEquals(USER_ID, e.id)
+        Assertions.assertEquals(version, e.currentVersion)
     }
 }
