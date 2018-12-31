@@ -28,6 +28,17 @@ jobs:
       - store_test_results:
           path: ~/repo/driftwood-service/target/surefire-reports
 
+      - run:
+          name: "Build Site"
+          working_directory: ~/repo/driftwood-service
+          command: |
+              mvn site:site
+
+      - store_artifacts:
+          name: "Save Site"
+          path: ~/repo/driftwood-service/target/site
+          destination: driftwood-service-site
+
       - save_cache:
           paths:
             - ~/.m2
