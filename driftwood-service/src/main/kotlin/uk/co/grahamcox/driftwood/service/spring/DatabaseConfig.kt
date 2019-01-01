@@ -44,7 +44,7 @@ class PostgresWrapper {
  * Spring configuration for the database
  */
 @Configuration
-@ConditionalOnProperty(value = "driftwood.database.embedded", havingValue = "true")
+@ConditionalOnProperty(value = ["driftwood.database.embedded"], havingValue = "true")
 class DatabaseConfig {
     /**
      * The Embedded Postgres server
