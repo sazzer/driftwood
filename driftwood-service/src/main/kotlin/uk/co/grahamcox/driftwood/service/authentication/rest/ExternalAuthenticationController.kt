@@ -1,5 +1,6 @@
 package uk.co.grahamcox.driftwood.service.authentication.rest
 
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
@@ -17,4 +18,12 @@ class ExternalAuthenticationController(private val authenticatorRegistry: Authen
      */
     @RequestMapping(method = [RequestMethod.GET])
     fun listServices() = authenticatorRegistry.names
+
+    /**
+     * Start authentication with the given service
+     * @param service The service to use
+     * @return the details to start authentication
+     */
+    @RequestMapping(value = ["/{service}/start"], method = [RequestMethod.GET])
+    fun startAuthentication(@PathVariable("service") service: String) = authenticatorRegistry[service].startAuthentication()
 }
