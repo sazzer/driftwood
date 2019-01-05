@@ -10,7 +10,6 @@ import uk.co.grahamcox.driftwood.service.openid.scopes.ScopeRegistry
 import uk.co.grahamcox.driftwood.service.openid.scopes.UnknownScopesException
 import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenCreator
 import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenSerializer
-import uk.co.grahamcox.driftwood.service.users.UserRetriever
 import java.time.Clock
 import java.time.Duration
 

@@ -22,7 +22,7 @@ import uk.co.grahamcox.driftwood.service.spring.TestConfig
         TestConfig::class,
         AcceptanceConfig::class
 )
-class AcceptanceTestBase {
+open class AcceptanceTestBase {
     /** The means to make API calls */
     @Autowired
     protected lateinit var requester: Requester

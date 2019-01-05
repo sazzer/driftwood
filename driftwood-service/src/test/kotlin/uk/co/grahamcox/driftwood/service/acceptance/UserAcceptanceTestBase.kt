@@ -7,7 +7,7 @@ import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
 /**
  * Base class for Acceptance Test classes that also work with Users or Authentication
  */
-class UserAcceptanceTestBase : AcceptanceTestBase() {
+open class UserAcceptanceTestBase : AcceptanceTestBase() {
     /** The means to seed user records */
     @Autowired
     private lateinit var userSeeder: DatabaseSeeder

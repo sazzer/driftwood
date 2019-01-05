@@ -82,28 +82,33 @@ class JwtAccessTokenSerializerImpl(
         }
 
         if (decoded.issuer != ISSUER) {
+            LOG.warn("Wrong issuer for the token")
             throw InvalidAccessTokenException("Wrong issuer for the token")
         }
 
         val tokenId = try {
             UUID.fromString(decoded.uniqueId)
         } catch (e: IllegalArgumentException) {
+            LOG.warn("Unique ID is in the wrong format", e)
             throw InvalidAccessTokenException("Unique ID is in the wrong format")
         }
 
         val subject = try {
             UUID.fromString(decoded.subject)
         } catch (e: IllegalArgumentException) {
+            LOG.warn("Subject is in the wrong format", e)
             throw InvalidAccessTokenException("Subject is in the wrong format")
         }
 
         val audience = try {
             UUID.fromString(decoded.audience.toString())
         } catch (e: IllegalArgumentException) {
+            LOG.warn("Audience is in the wrong format", e)
             throw InvalidAccessTokenException("Audience is in the wrong format")
         }
 
         if (decoded.getObject("scopes") !is List<*>) {
+            LOG.warn("Scopes is in the wrong format")
             throw InvalidAccessTokenException("Scopes is in the wrong format")
         }
 

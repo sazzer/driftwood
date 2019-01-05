@@ -13,7 +13,6 @@ import uk.co.grahamcox.driftwood.service.openid.scopes.ScopeRegistry
 import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenCreator
 import uk.co.grahamcox.driftwood.service.openid.token.JwtAccessTokenSerializerImpl
 import java.time.Duration
-import java.time.Period
 
 /**
  * Spring configuration for the OAuth2 and OpenID Connect systems
