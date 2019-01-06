@@ -7,6 +7,7 @@ import org.springframework.context.support.beans
 import org.springframework.core.env.get
 import uk.co.grahamcox.driftwood.service.authentication.*
 import uk.co.grahamcox.driftwood.service.authentication.google.GoogleStartAuthenticationBuilder
+import uk.co.grahamcox.driftwood.service.authentication.google.GoogleUserLoader
 import uk.co.grahamcox.driftwood.service.authentication.rest.ExternalAuthenticationController
 import java.net.URI
 
@@ -51,7 +52,8 @@ class AuthenticationConfig(context: GenericApplicationContext) {
                             clientId = googleClientId,
                             redirectUriBuilder = RedirectUriBuilder(name),
                             nonceBuilder = UUIDNonceGenerator()
-                    )
+                    ),
+                    externalUserLoader = GoogleUserLoader()
             )
         } else {
             null

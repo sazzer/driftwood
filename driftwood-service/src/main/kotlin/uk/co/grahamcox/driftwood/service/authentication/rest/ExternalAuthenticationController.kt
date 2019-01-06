@@ -2,11 +2,9 @@ package uk.co.grahamcox.driftwood.service.authentication.rest
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.driftwood.service.authentication.AuthenticatorRegistry
+import uk.co.grahamcox.driftwood.service.authentication.ExternalUser
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
@@ -38,5 +36,23 @@ class ExternalAuthenticationController(private val authenticatorRegistry: Authen
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(result.redirect)
                 .build<Void>()
+    }
+
+    /**
+     * Complete authentication with the given service
+     * @param service The service to use
+     * @param expectedService The service that we expected the callback from
+     * @param expectedState The state that we expect in the callback
+     * @param params The parameters from the callback
+     * @return the details to start authentication
+     */
+    @RequestMapping(value = ["/{service}/callback"], method = [RequestMethod.GET])
+    fun completeAuthentication(@PathVariable("service") service: String,
+                               @CookieValue("externalAuthenticationService") expectedService: String?,
+                               @CookieValue("externalAuthenticationState") expectedState: String?,
+                               @RequestParam params: Map<String, String>): ExternalUser {
+        val result = authenticatorRegistry[service].loadExternalUser(params, expectedState)
+
+        return result
     }
 }

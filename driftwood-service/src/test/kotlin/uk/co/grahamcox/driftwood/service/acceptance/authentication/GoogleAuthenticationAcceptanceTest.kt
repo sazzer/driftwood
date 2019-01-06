@@ -15,7 +15,7 @@ class GoogleAuthenticationAcceptanceTest : AcceptanceTestBase() {
     /** The server port to use */
     @LocalServerPort
     private lateinit var serverPort: Integer
-    
+
     /**
      * Test starting authentication with Google
      */
