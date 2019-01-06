@@ -74,7 +74,7 @@ class Requester(
      * @param method The HTTP Method to use for the request
      * @param body The body to send, if any
      */
-    fun makeRequest(uri: String, method: HttpMethod, body: Any?, expectedResponseType: Class<*> = Map::class.java): Response {
+    fun makeRequest(uri: String, method: HttpMethod, body: Any? = null, expectedResponseType: Class<*> = Map::class.java): Response {
         lastResponseEntity = restTemplate.exchange(
                 uri,
                 method,
