@@ -40,7 +40,7 @@ class AuthenticationConfig(context: GenericApplicationContext) {
      */
     private fun BeanDefinitionDsl.buildGoogleAuthenticator(name: String): Authenticator? {
         val googleAuthUrl = env["driftwood.authentication.google.authUrl"]!!
-        val googleTokenUrl = env["driftwood.authentication.google.tokenUrl"]!!
+        //val googleTokenUrl = env["driftwood.authentication.google.tokenUrl"]!!
         val googleClientId = env["driftwood.authentication.google.clientId"]!!
         val googleClientSecret = env["driftwood.authentication.google.clientSecret"]!!
 

@@ -33,8 +33,9 @@ class JdbcClientDao(
         LOG.debug("Loading Client with ID: {}", id)
         val client = try {
             jdbcTemplate.queryForObject("SELECT * FROM clients WHERE client_id = :clientid::uuid",
-                    mapOf("clientid" to id.id),
-                    ::parseClientRow)!!
+                    mapOf("clientid" to id.id)) {
+                rs, _ -> parseClientRow(rs)
+            }!!
         } catch (e: EmptyResultDataAccessException) {
             LOG.warn("No client found with ID: {}", id)
             throw ClientNotFoundException(id)
@@ -57,8 +58,9 @@ class JdbcClientDao(
                     mapOf(
                             "clientid" to id.id,
                             "clientSecret" to secret.id
-                    ),
-                    ::parseClientRow)!!
+                    )) {
+                rs, _ -> parseClientRow(rs)
+            }!!
         } catch (e: EmptyResultDataAccessException) {
             LOG.warn("No client found with ID: {}", id)
             throw ClientNotFoundException(id)
@@ -71,10 +73,9 @@ class JdbcClientDao(
     /**
      * Parse the current ResultSet row into a Client resource
      * @param rs The resultset to parse from
-     * @param index The index of the current row
      * @return The client
      */
-    private fun parseClientRow(rs: ResultSet, index: Int): Resource<ClientId, ClientData> {
+    private fun parseClientRow(rs: ResultSet): Resource<ClientId, ClientData> {
         val identity = Identity(
                 id = ClientId(UUID.fromString(rs.getString("client_id"))),
                 version = UUID.fromString(rs.getString("version")),

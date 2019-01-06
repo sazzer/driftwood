@@ -58,6 +58,7 @@ class JwtAccessTokenSerializerImpl(
      * @param token the serialized token
      * @return the token
      */
+    @Suppress("ComplexMethod")
     override fun deserializeAccessToken(token: String): AccessToken {
         val decoded = try {
             JWT.getDecoder().decode(token, verifier)

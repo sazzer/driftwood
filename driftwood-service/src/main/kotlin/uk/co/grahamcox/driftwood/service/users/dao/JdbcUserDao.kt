@@ -38,8 +38,9 @@ class JdbcUserDao(
         LOG.debug("Loading User with ID: {}", id)
         val user = try {
             jdbcTemplate.queryForObject("SELECT * FROM users WHERE user_id = :userid::uuid",
-                    mapOf("userid" to id.id),
-                    ::parseUserRow)!!
+                    mapOf("userid" to id.id)) {
+                rs, _ -> parseUserRow(rs)
+            }!!
         } catch (e: EmptyResultDataAccessException) {
             LOG.warn("No user found with ID: {}", id)
             throw UserNotFoundException(id)
@@ -82,8 +83,7 @@ class JdbcUserDao(
                             "newName" to user.data.name,
                             "newEmail" to user.data.email,
                             "newAuthentication" to objectMapper.writeValueAsString(user.data.logins)
-                    ),
-                    ::parseUserRow)!!
+                    )) { rs, _ -> parseUserRow(rs) }!!
         } catch (e: EmptyResultDataAccessException) {
             try {
                 val currentVersion = jdbcTemplate.queryForObject("SELECT version FROM users WHERE user_id = :userid::uuid", mapOf(
@@ -106,10 +106,9 @@ class JdbcUserDao(
     /**
      * Parse the current ResultSet row into a User resource
      * @param rs The resultset to parse from
-     * @param index The index of the current row
      * @return The user
      */
-    private fun parseUserRow(rs: ResultSet, index: Int): Resource<UserId, UserData> {
+    private fun parseUserRow(rs: ResultSet): Resource<UserId, UserData> {
         val identity = Identity(
                 id = UserId(rs.getUUID("user_id")),
                 version = rs.getUUID("version"),

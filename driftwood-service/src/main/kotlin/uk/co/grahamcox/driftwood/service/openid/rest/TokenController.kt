@@ -36,6 +36,7 @@ class TokenController(
      * @param clientCredentials The clients credentials to use
      * @param params The other request parameters
      */
+    @Suppress("ComplexMethod")
     @RequestMapping(method = [RequestMethod.POST])
     fun tokenRequest(@RequestParam(value = "grant_type", required = false) grantType: String?,
                      clientCredentials: ClientCredentials?,

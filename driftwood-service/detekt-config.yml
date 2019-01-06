@@ -173,12 +173,8 @@ exceptions:
   TooGenericExceptionCaught:
     active: true
     exceptionNames:
-     - ArrayIndexOutOfBoundsException
      - Error
      - Exception
-     - IllegalMonitorStateException
-     - NullPointerException
-     - IndexOutOfBoundsException
      - RuntimeException
      - Throwable
     allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
@@ -317,7 +313,7 @@ naming:
     active: false
     ignoreOverriddenFunction: true
   ObjectPropertyNaming:
-    active: true
+    active: false
     constantPattern: '[A-Za-z][_A-Za-z0-9]*'
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[A-Za-z][A-Za-z0-9]*'
@@ -463,7 +459,7 @@ style:
     active: false
   ThrowsCount:
     active: true
-    max: 2
+    max: 5
   TrailingWhitespace:
     active: false
   UnnecessaryAbstractClass:
