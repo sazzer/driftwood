@@ -51,6 +51,30 @@ class JdbcUserDao(
     }
 
     /**
+     * Get the User with the given ID in the given External Provider
+     * @param provider The Provider that the ID belongs to
+     * @param id The ID of the user
+     * @return The user, or null if one isn't found
+     */
+    override fun getByProviderId(provider: String, id: String): Resource<UserId, UserData>? {
+        LOG.debug("Loading User with ID {} at provider {}", id, provider)
+        val user = try {
+            val providerParam = listOf(mapOf("provider" to provider, "providerId" to id))
+
+            jdbcTemplate.queryForObject("SELECT * FROM users WHERE authentication @> :provider::jsonb",
+                    mapOf("provider" to objectMapper.writeValueAsString(providerParam))) {
+                rs, _ -> parseUserRow(rs)
+            }
+        } catch (e: EmptyResultDataAccessException) {
+            LOG.debug("No user found with ID {} at provider {}", id, provider)
+            null
+        }
+
+        LOG.debug("Found user with ID {} at provider {}: {}", id, provider, user)
+        return user
+    }
+
+    /**
      * Save changes to an existing user
      * @param user The new user details
      * @return the updated user details

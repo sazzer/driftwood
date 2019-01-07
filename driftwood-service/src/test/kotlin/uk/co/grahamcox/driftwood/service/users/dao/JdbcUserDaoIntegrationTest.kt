@@ -243,4 +243,74 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
         Assertions.assertEquals(USER_ID, e.id)
         Assertions.assertEquals(version, e.currentVersion)
     }
+
+    /**
+     * Test getting a user by External ID when the user doesn't exist
+     */
+    @Test
+    fun getUnknownUserByExternalId() {
+        val user = testSubject.getByProviderId("google", "123456")
+
+        Assertions.assertNull(user)
+    }
+
+    /**
+     * Test getting a user by ID when the user does exist and has fully populated data
+     */
+    @Test
+    fun getFullUserByExternalId() {
+        val version = UUID.randomUUID()
+
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to currentTime.toString(),
+                "updated" to currentTime.toString(),
+                "name" to "Graham",
+                "email" to "graham@example.com",
+                "logins" to "twitter,@graham,@graham;google,123456,graham@example.com"
+        )
+
+        val user = testSubject.getByProviderId("google", "123456")
+
+        Assertions.assertNotNull(user)
+        user!!
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(USER_ID, user.identity.id) },
+                Executable { Assertions.assertEquals(version, user.identity.version) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.created) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.updated) },
+
+                Executable { Assertions.assertEquals("Graham", user.data.name) },
+                Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
+                Executable { Assertions.assertEquals(setOf(
+                        UserLoginData(provider = "twitter", providerId = "@graham", displayName = "@graham"),
+                        UserLoginData(provider = "google", providerId = "123456", displayName = "graham@example.com")
+                ), user.data.logins) }
+        )
+    }
+
+    /**
+     * Test getting a user by External ID when the Provider and Provider ID aren't in sync
+     * This uses the ID from one provider and the name of another for the same user
+     */
+    @Test
+    fun getUnknownUserByExternalIdCrossed() {
+        val version = UUID.randomUUID()
+
+        userSeeder(
+                "userId" to USER_ID.id.toString(),
+                "version" to version.toString(),
+                "created" to currentTime.toString(),
+                "updated" to currentTime.toString(),
+                "name" to "Graham",
+                "email" to "graham@example.com",
+                "logins" to "twitter,@graham,@graham;google,123456,graham@example.com"
+        )
+
+        val user = testSubject.getByProviderId("twitter", "123456")
+
+        Assertions.assertNull(user)
+    }
 }
