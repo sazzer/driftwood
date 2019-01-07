@@ -6,6 +6,7 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import org.springframework.core.env.get
 import uk.co.grahamcox.driftwood.service.authentication.*
+import uk.co.grahamcox.driftwood.service.authentication.google.GoogleAccessTokenLoader
 import uk.co.grahamcox.driftwood.service.authentication.google.GoogleStartAuthenticationBuilder
 import uk.co.grahamcox.driftwood.service.authentication.google.GoogleUserLoader
 import uk.co.grahamcox.driftwood.service.authentication.rest.ExternalAuthenticationController
@@ -41,19 +42,29 @@ class AuthenticationConfig(context: GenericApplicationContext) {
      */
     private fun BeanDefinitionDsl.buildGoogleAuthenticator(name: String): Authenticator? {
         val googleAuthUrl = env["driftwood.authentication.google.authUrl"]!!
-        //val googleTokenUrl = env["driftwood.authentication.google.tokenUrl"]!!
+        val googleTokenUrl = env["driftwood.authentication.google.tokenUrl"]!!
         val googleClientId = env["driftwood.authentication.google.clientId"]!!
         val googleClientSecret = env["driftwood.authentication.google.clientSecret"]!!
 
         return if (googleClientId.isNotBlank() && googleClientSecret.isNotBlank()) {
+            val redirectBuilder = RedirectUriBuilder(name)
+
             StrategyAuthenticator(
                     startAuthenticationBuilder = GoogleStartAuthenticationBuilder(
                             authUrl = URI(googleAuthUrl),
                             clientId = googleClientId,
-                            redirectUriBuilder = RedirectUriBuilder(name),
+                            redirectUriBuilder = redirectBuilder,
                             nonceBuilder = UUIDNonceGenerator()
                     ),
-                    externalUserLoader = GoogleUserLoader()
+                    externalUserLoader = GoogleUserLoader(
+                            accessTokenLoader = GoogleAccessTokenLoader(
+                                    tokenUrl = URI(googleTokenUrl),
+                                    clientId = googleClientId,
+                                    clientSecret = googleClientSecret,
+                                    redirectUriBuilder = redirectBuilder,
+                                    restTemplate = ref()
+                            )
+                    )
             )
         } else {
             null

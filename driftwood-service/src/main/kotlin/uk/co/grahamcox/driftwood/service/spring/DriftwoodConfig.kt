@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.web.client.RestTemplate
 import uk.co.grahamcox.driftwood.service.VersionController
 import uk.co.grahamcox.driftwood.service.authentication.spring.AuthenticationConfig
 import uk.co.grahamcox.driftwood.service.authorization.spring.AuthorizationConfig
@@ -31,6 +33,11 @@ class DriftwoodConfig(context: GenericApplicationContext) {
         beans {
             profile("!test") {
                 bean { Clock.systemUTC() }
+            }
+            bean {
+                val restTemplate = RestTemplate()
+                restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()
+                restTemplate
             }
             bean<VersionController>()
             bean<ProblemResponseBodyAdvice>()
