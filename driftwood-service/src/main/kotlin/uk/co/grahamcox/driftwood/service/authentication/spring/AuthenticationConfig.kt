@@ -56,14 +56,18 @@ class AuthenticationConfig(context: GenericApplicationContext) {
                             redirectUriBuilder = redirectBuilder,
                             nonceBuilder = UUIDNonceGenerator()
                     ),
-                    externalUserLoader = GoogleUserLoader(
-                            accessTokenLoader = GoogleAccessTokenLoader(
-                                    tokenUrl = URI(googleTokenUrl),
-                                    clientId = googleClientId,
-                                    clientSecret = googleClientSecret,
-                                    redirectUriBuilder = redirectBuilder,
-                                    restTemplate = ref()
-                            )
+                    authenticatedUserLoader = DefaultAuthenticatedUserLoader(
+                            provider = name,
+                            externalUserLoader = GoogleUserLoader(
+                                    accessTokenLoader = GoogleAccessTokenLoader(
+                                            tokenUrl = URI(googleTokenUrl),
+                                            clientId = googleClientId,
+                                            clientSecret = googleClientSecret,
+                                            redirectUriBuilder = redirectBuilder,
+                                            restTemplate = ref()
+                                    )
+                            ),
+                            userService = ref()
                     )
             )
         } else {

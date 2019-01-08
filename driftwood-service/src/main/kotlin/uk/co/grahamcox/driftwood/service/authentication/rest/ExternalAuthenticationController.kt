@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.driftwood.service.authentication.AuthenticatorRegistry
-import uk.co.grahamcox.driftwood.service.authentication.ExternalUser
+import uk.co.grahamcox.driftwood.service.model.Resource
+import uk.co.grahamcox.driftwood.service.users.UserData
+import uk.co.grahamcox.driftwood.service.users.UserId
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
@@ -50,8 +52,8 @@ class ExternalAuthenticationController(private val authenticatorRegistry: Authen
     fun completeAuthentication(@PathVariable("service") service: String,
                                @CookieValue("externalAuthenticationService") expectedService: String?,
                                @CookieValue("externalAuthenticationState") expectedState: String?,
-                               @RequestParam params: Map<String, String>): ExternalUser {
-        val result = authenticatorRegistry[service].loadExternalUser(params, expectedState)
+                               @RequestParam params: Map<String, String>): Resource<UserId, UserData> {
+        val result = authenticatorRegistry[service].authenticateUser(params, expectedState)
 
         return result
     }

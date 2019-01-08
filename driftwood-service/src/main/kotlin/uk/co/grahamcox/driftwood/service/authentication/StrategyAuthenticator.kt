@@ -5,7 +5,7 @@ package uk.co.grahamcox.driftwood.service.authentication
  */
 class StrategyAuthenticator(
         private val startAuthenticationBuilder: StartAuthenticationBuilder,
-        private val externalUserLoader: ExternalUserLoader
+        private val authenticatedUserLoader: AuthenticatedUserLoader
 ) : Authenticator {
     /**
      * Build the details to start authenticating with an external provider
@@ -14,11 +14,11 @@ class StrategyAuthenticator(
     override fun startAuthentication() = startAuthenticationBuilder.startAuthentication()
 
     /**
-     * Load the external user details
+     * Authenticate a user
      * @param params The parameters passed back in from the authentication result
      * @param expectedState The expected state for the callback
-     * @return the external user details
+     * @return the authenticated user details
      */
-    override fun loadExternalUser(params: Map<String, String>, expectedState: String?) =
-            externalUserLoader.loadExternalUser(params, expectedState)
+    override fun authenticateUser(params: Map<String, String>, expectedState: String?) =
+            authenticatedUserLoader.authenticateUser(params, expectedState)
 }

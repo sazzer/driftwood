@@ -14,6 +14,10 @@ import uk.co.grahamcox.driftwood.service.openid.spring.OpenIDConfig
 import uk.co.grahamcox.driftwood.service.rest.problem.ProblemResponseBodyAdvice
 import uk.co.grahamcox.driftwood.service.users.spring.UsersConfig
 import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
+import java.time.temporal.ChronoField
+import java.util.*
 
 /**
  * The main Spring configuration
@@ -31,9 +35,18 @@ import java.time.Clock
 class DriftwoodConfig(context: GenericApplicationContext) {
     init {
         beans {
-            profile("!test") {
-                bean { Clock.systemUTC() }
+            val now = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0)
+            bean("currentTime") { now }
+            bean {
+                val activeProfiles = context.environment.activeProfiles.toList()
+                if (activeProfiles.contains("test")) {
+                    val currentTime = context.getBean("currentTime", Instant::class.java)
+                    Clock.fixed(currentTime, ZoneId.of("UTC"))
+                } else {
+                    Clock.systemUTC()
+                }
             }
+
             bean {
                 val restTemplate = RestTemplate()
                 restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()

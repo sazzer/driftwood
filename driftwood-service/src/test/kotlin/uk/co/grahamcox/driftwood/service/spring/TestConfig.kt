@@ -6,10 +6,6 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
 import uk.co.grahamcox.driftwood.service.clients.ClientsTestConfig
 import uk.co.grahamcox.driftwood.service.users.UsersTestConfig
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneId
-import java.time.temporal.ChronoField
 
 /**
  * Spring config for integration tests
@@ -22,11 +18,6 @@ import java.time.temporal.ChronoField
 class TestConfig(context: GenericApplicationContext) {
     init {
         beans {
-            val now = Instant.now().with(ChronoField.MILLI_OF_SECOND, 0)
-            bean("currentTime") { now }
-
-            bean { Clock.fixed(now, ZoneId.of("UTC")) }
-
             bean {
                 DatabaseCleaner(
                         ref(),
