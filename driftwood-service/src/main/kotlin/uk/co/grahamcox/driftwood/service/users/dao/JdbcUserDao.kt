@@ -128,6 +128,32 @@ class JdbcUserDao(
     }
 
     /**
+     * Save a new user
+     * @param user The new user details
+     * @return the new user details
+     */
+    override fun save(user: UserData): Resource<UserId, UserData> {
+        LOG.debug("Creating user: {}", user)
+
+        val savedUser = jdbcTemplate.queryForObject("""
+            INSERT INTO users(user_id, version, created, updated, name, email, authentication)
+            VALUES (:userId::uuid, :version::uuid, :now, :now, :name, :email, :authentication::jsonb)
+            RETURNING *
+        """, mapOf(
+                "userId" to UUID.randomUUID(),
+                "version" to UUID.randomUUID(),
+                "now" to Date.from(clock.instant()),
+                "name" to user.name,
+                "email" to user.email,
+                "authentication" to objectMapper.writeValueAsString(user.logins)
+        )) { rs, _ -> parseUserRow(rs) }!!
+
+        LOG.debug("Created user: {}", savedUser)
+
+        return savedUser
+    }
+
+    /**
      * Parse the current ResultSet row into a User resource
      * @param rs The resultset to parse from
      * @return The user

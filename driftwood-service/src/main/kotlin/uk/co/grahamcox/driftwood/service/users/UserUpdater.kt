@@ -12,4 +12,11 @@ interface UserUpdater {
      * @return the updated user details
      */
     fun save(user: Resource<UserId, UserData>) : Resource<UserId, UserData>
+
+    /**
+     * Save a new user
+     * @param user The new user details
+     * @return the new user details
+     */
+    fun save(user: UserData) : Resource<UserId, UserData>
 }

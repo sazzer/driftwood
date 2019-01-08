@@ -313,4 +313,35 @@ internal class JdbcUserDaoIntegrationTest : DaoTestBase() {
 
         Assertions.assertNull(user)
     }
+
+    /**
+     * Test creating a new user
+     */
+    @Test
+    fun createUser() {
+        val user = testSubject.save(UserData(
+                name = "Graham",
+                email = "graham@example.com",
+                logins = setOf(
+                        UserLoginData(provider = "twitter", providerId = "@graham", displayName = "@graham"),
+                        UserLoginData(provider = "google", providerId = "123456", displayName = "graham@example.com")
+                )
+        ))
+
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(currentTime, user.identity.created) },
+                Executable { Assertions.assertEquals(currentTime, user.identity.updated) },
+
+                Executable { Assertions.assertEquals("Graham", user.data.name) },
+                Executable { Assertions.assertEquals("graham@example.com", user.data.email) },
+                Executable { Assertions.assertEquals(setOf(
+                        UserLoginData(provider = "twitter", providerId = "@graham", displayName = "@graham"),
+                        UserLoginData(provider = "google", providerId = "123456", displayName = "graham@example.com")
+                ), user.data.logins) }
+        )
+
+        val reloaded = testSubject.getById(user.identity.id)
+
+        Assertions.assertEquals(user, reloaded)
+    }
 }
