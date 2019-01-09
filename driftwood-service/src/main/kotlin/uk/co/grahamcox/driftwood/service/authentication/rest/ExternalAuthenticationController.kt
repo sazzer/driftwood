@@ -3,6 +3,7 @@ package uk.co.grahamcox.driftwood.service.authentication.rest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.ModelAndView
 import uk.co.grahamcox.driftwood.service.authentication.AuthenticatorRegistry
 import uk.co.grahamcox.driftwood.service.clients.ClientId
 import uk.co.grahamcox.driftwood.service.clients.ClientRetriever
@@ -52,23 +53,23 @@ class ExternalAuthenticationController(
      * @param expectedService The service that we expected the callback from
      * @param expectedState The state that we expect in the callback
      * @param params The parameters from the callback
-     * @return the details to start authentication
+     * @return The model and view for the authentication callback
      */
     @RequestMapping(value = ["/{service}/callback"], method = [RequestMethod.GET])
     fun completeAuthentication(@PathVariable("service") service: String,
                                @CookieValue("externalAuthenticationService") expectedService: String?,
                                @CookieValue("externalAuthenticationState") expectedState: String?,
-                               @RequestParam params: Map<String, String>): Map<String, Any> {
-        val result = authenticatorRegistry[service].authenticateUser(params, expectedState)
+                               @RequestParam params: Map<String, String>): ModelAndView {
+        val user = authenticatorRegistry[service].authenticateUser(params, expectedState)
 
         val openidClient = clientRetriever.getById(defaultClientId)
-        val accessToken = accessTokenCreator.createToken(openidClient, result.identity.id, emptySet())
+        val accessToken = accessTokenCreator.createToken(openidClient, user.identity.id, emptySet())
         val serialized = accessTokenSerializer.serializeAccessToken(accessToken)
 
-        return mapOf(
-                "user" to result,
+        return ModelAndView("authentication/success", mapOf(
+                "user" to user,
                 "accessToken" to accessToken,
                 "serialized" to serialized
-        )
+        ))
     }
 }
