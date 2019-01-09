@@ -10,7 +10,9 @@ import uk.co.grahamcox.driftwood.service.authentication.google.GoogleAccessToken
 import uk.co.grahamcox.driftwood.service.authentication.google.GoogleStartAuthenticationBuilder
 import uk.co.grahamcox.driftwood.service.authentication.google.GoogleUserLoader
 import uk.co.grahamcox.driftwood.service.authentication.rest.ExternalAuthenticationController
+import uk.co.grahamcox.driftwood.service.clients.ClientId
 import java.net.URI
+import java.util.*
 
 /**
  * Spring configuration for Authentication
@@ -31,7 +33,15 @@ class AuthenticationConfig(context: GenericApplicationContext) {
                                 .toMap()
                 )
             }
-            bean<ExternalAuthenticationController>()
+            bean {
+                ExternalAuthenticationController(
+                        ref(),
+                        ClientId(UUID.fromString(env["driftwood.authentication.defaultClient"])),
+                        ref(),
+                        ref(),
+                        ref()
+                )
+            }
         }.initialize(context)
     }
 

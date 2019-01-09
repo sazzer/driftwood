@@ -4,9 +4,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import uk.co.grahamcox.driftwood.service.authentication.AuthenticatorRegistry
-import uk.co.grahamcox.driftwood.service.model.Resource
-import uk.co.grahamcox.driftwood.service.users.UserData
-import uk.co.grahamcox.driftwood.service.users.UserId
+import uk.co.grahamcox.driftwood.service.clients.ClientId
+import uk.co.grahamcox.driftwood.service.clients.ClientRetriever
+import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenCreator
+import uk.co.grahamcox.driftwood.service.openid.token.AccessTokenSerializer
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletResponse
 
@@ -15,7 +16,12 @@ import javax.servlet.http.HttpServletResponse
  */
 @RestController
 @RequestMapping("/api/authentication/external")
-class ExternalAuthenticationController(private val authenticatorRegistry: AuthenticatorRegistry) {
+class ExternalAuthenticationController(
+        private val authenticatorRegistry: AuthenticatorRegistry,
+        private val defaultClientId: ClientId,
+        private val clientRetriever: ClientRetriever,
+        private val accessTokenCreator: AccessTokenCreator,
+        private val accessTokenSerializer: AccessTokenSerializer) {
     /**
      * List the services that can be used
      * @return the list of service names
@@ -52,9 +58,17 @@ class ExternalAuthenticationController(private val authenticatorRegistry: Authen
     fun completeAuthentication(@PathVariable("service") service: String,
                                @CookieValue("externalAuthenticationService") expectedService: String?,
                                @CookieValue("externalAuthenticationState") expectedState: String?,
-                               @RequestParam params: Map<String, String>): Resource<UserId, UserData> {
+                               @RequestParam params: Map<String, String>): Map<String, Any> {
         val result = authenticatorRegistry[service].authenticateUser(params, expectedState)
 
-        return result
+        val openidClient = clientRetriever.getById(defaultClientId)
+        val accessToken = accessTokenCreator.createToken(openidClient, result.identity.id, emptySet())
+        val serialized = accessTokenSerializer.serializeAccessToken(accessToken)
+
+        return mapOf(
+                "user" to result,
+                "accessToken" to accessToken,
+                "serialized" to serialized
+        )
     }
 }
