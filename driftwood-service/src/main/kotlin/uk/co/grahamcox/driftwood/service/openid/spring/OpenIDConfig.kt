@@ -38,8 +38,8 @@ class OpenIDConfig(context: GenericApplicationContext) {
             bean {
                 JwtAccessTokenSerializerImpl(
                         scopeRegistry = ref(),
-                        signer = HMACSigner.newSHA512Signer(env["driftwood.accessToken.duration"]),
-                        verifier = HMACVerifier.newVerifier(env["driftwood.accessToken.duration"])
+                        signer = HMACSigner.newSHA512Signer(env["driftwood.accessToken.key"]),
+                        verifier = HMACVerifier.newVerifier(env["driftwood.accessToken.key"])
                 )
             }
             bean<TokenController>()

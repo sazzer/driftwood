@@ -1,0 +1,8 @@
+server.port=$PORT
+
+driftwood.database.embedded=false
+spring.datasource.url=$DRIFTWOOD_PG_URL
+
+driftwood.authentication.google.clientId=$DRIFTWOOD_GOOGLE_CLIENTID
+driftwood.authentication.google.clientSecret=$DRIFTWOOD_GOOGLE_CLIENTSECRET
+
