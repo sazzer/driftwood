@@ -23,7 +23,7 @@ jobs:
           name: "Build and test project"
           working_directory: ~/repo/driftwood-service
           command: |
-              mvn clean install -B
+              mvn clean install -B -Pdocker
 
       - store_test_results:
           path: ~/repo/driftwood-service/target/surefire-reports
