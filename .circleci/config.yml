@@ -39,13 +39,44 @@ jobs:
           path: ~/repo/driftwood-service/target/site
           destination: driftwood-service-site
 
+      - run:
+          name: "Push Docker Container to Heroku"
+          command: |
+              docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+              docker tag uk.co.grahamcox.driftwood.service/driftwood-service:latest registry.heroku.com/driftwood-cd/web
+              docker push registry.heroku.com/driftwood-cd/web
+
       - save_cache:
           paths:
             - ~/.m2
           key: maven-dependencies-{{ checksum "driftwood-service/pom.xml" }}
 
+  deploy_service:
+      docker:
+        - image: circleci/openjdk:11-jdk
+
+      working_directory: ~/repo
+
+      environment:
+
+      steps:
+        - setup_remote_docker
+
+        - run:
+            name: "Setup Heroku"
+            command: |
+                wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+
+        - run:
+            name: "Deploy Service"
+            command: |
+                heroku container:release --app=driftwood-cd web
+
 workflows:
   version: 2
   full_build:
     jobs:
-      - build_service
+        - build_service
+        - deploy_service:
+            requires:
+                - build_service
