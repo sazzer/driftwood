@@ -1,5 +1,7 @@
 server.port=$PORT
 
+spring.boot.admin.client.url=$SPRING_BOOT_ADMIN_UI
+
 driftwood.database.embedded=false
 spring.datasource.url=$DRIFTWOOD_PG_URL
 
