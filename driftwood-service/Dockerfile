@@ -1,6 +1,6 @@
-FROM openjdk:11-jdk-slim-sid
+FROM adoptopenjdk/openjdk11:jdk-11.0.1.13-alpine-slim
 
-RUN apt update && apt install -y curl gettext-base
+RUN apk add curl gettext
 
 ENV PORT=8080
 
