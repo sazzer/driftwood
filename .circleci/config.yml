@@ -68,11 +68,18 @@ jobs:
         - setup_remote_docker
 
         - run:
-            name: "Build and test project"
+            name: "Download dependencies"
             working_directory: ~/repo/driftwood-ui
             command: |
                 yarn install
+
+        - run:
+            name: "Build and test project"
+            working_directory: ~/repo/driftwood-ui
+            command: |
+                yarn lint
                 yarn test
+                yarn build
 
         - save_cache:
             paths: 
