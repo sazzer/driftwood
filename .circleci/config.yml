@@ -79,7 +79,6 @@ jobs:
             command: |
                 yarn lint
                 yarn test
-                yarn build
 
         - save_cache:
             paths: 
@@ -106,6 +105,37 @@ jobs:
             name: "Deploy Service"
             command: |
                 heroku container:release --app=driftwood-cd web
+  deploy_ui:
+      docker:
+        - image: circleci/node:11.4.0
+
+      working_directory: ~/repo
+
+      steps:
+          - restore_cache:
+              keys:
+                - package-{{ checksum "driftwood-ui/package.json" }}
+                - package-
+
+          - setup_remote_docker
+
+          - run:
+              name: "Install Netlify"
+              command: |
+                  npm install -f netlify-cli
+
+          - run:
+              name: "Build Site"
+              working_directory: ~/repo/driftwood-ui
+              command: |
+                yarn install
+                yarn build
+
+          - run:
+              name: "Deploy Site"
+              working_directory: ~/repo/driftwood-ui
+              command: |
+                  netlify deploy --dir=build --prod
 
 workflows:
   version: 2
@@ -114,6 +144,10 @@ workflows:
         - build_service
         - build_ui
         - deploy_service:
+            requires:
+                - build_service
+                - build_ui
+        - deploy_ui:
             requires:
                 - build_service
                 - build_ui
