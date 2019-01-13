@@ -137,6 +137,7 @@ jobs:
               name: "Deploy Site"
               working_directory: ~/repo/driftwood-ui
               command: |
+                  ls -l node_modules/.bin
                   yarn netlify deploy --dir=build --prod
 
 workflows:
