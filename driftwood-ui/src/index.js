@@ -2,7 +2,8 @@ import 'semantic-ui-css/semantic.min.css'
 import i18n from './i18n';
 import {I18nextProvider, translate} from 'react-i18next';
 import {Provider} from 'react-redux';
-import {store} from './redux';
+import {ConnectedRouter as Router} from 'connected-react-router';
+import {history, store} from './redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -19,7 +20,9 @@ const TranslatedAppContents = translate(['driftwood'], {wait: true})(App);
 const AppWrapper = () => (
     <I18nextProvider i18n={ i18n }>
         <Provider store={store}>
-            <TranslatedAppContents />
+            <Router history={history}>
+                <TranslatedAppContents />
+            </Router>
         </Provider>
     </I18nextProvider>
 );
