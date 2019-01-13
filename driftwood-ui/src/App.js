@@ -1,14 +1,12 @@
-import React, {Component} from 'react';
-import {Interpolate} from 'react-i18next';
+import React from 'react';
+import {withI18n} from 'react-i18next';
 
-class App extends Component {
-  render() {
-    return (
+function App({t}) {
+  return (
       <div className="App">
-        <Interpolate i18nKey="page.title" />
+        {t('page.title')}
       </div>
-    );
-  }
+  );
 }
 
-export default App;
+export default withI18n()(App);
