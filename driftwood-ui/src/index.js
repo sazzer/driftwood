@@ -6,7 +6,7 @@ import {ConnectedRouter as Router} from 'connected-react-router';
 import {history, store} from './redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './ui/App';
 
 /**
  * The contents of the app, wrapped in the translations layer

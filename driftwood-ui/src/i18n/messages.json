@@ -1,5 +1,13 @@
 {
   "page": {
     "title": "Driftwood"
+  },
+  "authentication": {
+    "menu": {
+      "title": "Log In",
+      "facebook" : "Facebook",
+      "google": "Google",
+      "twitter": "Twitter"
+    }
   }
 }
