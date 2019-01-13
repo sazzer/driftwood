@@ -122,11 +122,6 @@ jobs:
           - setup_remote_docker
 
           - run:
-              name: "Install Netlify"
-              command: |
-                  yarn add netlify-cli
-
-          - run:
               name: "Build Site"
               working_directory: ~/repo/driftwood-ui
               command: |
@@ -137,7 +132,7 @@ jobs:
               name: "Deploy Site"
               working_directory: ~/repo/driftwood-ui
               command: |
-                  ls -l node_modules/.bin
+                  yarn add netlify-cli
                   yarn netlify deploy --dir=build --prod
 
 workflows:
