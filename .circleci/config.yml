@@ -124,7 +124,7 @@ jobs:
           - run:
               name: "Install Netlify"
               command: |
-                  npm install -g netlify-cli
+                  yarn add netlify-cli
 
           - run:
               name: "Build Site"
@@ -137,7 +137,7 @@ jobs:
               name: "Deploy Site"
               working_directory: ~/repo/driftwood-ui
               command: |
-                  netlify deploy --dir=build --prod
+                  yarn netlify deploy --dir=build --prod
 
 workflows:
   version: 2
