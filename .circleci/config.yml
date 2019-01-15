@@ -1,161 +1,145 @@
 version: 2
-jobs:
-  build_service:
-    docker:
-      - image: circleci/openjdk:11-jdk
-
+jobs: 
+  build_service: 
+    docker: 
+      - image: "circleci/openjdk:11-jdk"
+    environment: 
+      MAVEN_OPTS: "-Xmx3200m"
     working_directory: ~/repo
-
-    environment:
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
+    steps: 
       - checkout
 
-      - restore_cache:
-          keys:
-          - maven-dependencies-{{ checksum "driftwood-service/pom.xml" }}
-          - maven-dependencies-
+      - restore_cache: 
+          keys: 
+            - "maven-dependencies-{{ checksum \"driftwood-service/pom.xml\" }}"
+            - maven-dependencies-
 
       - setup_remote_docker
 
-      - run:
+      - run: 
           name: "Build and test project"
           working_directory: ~/repo/driftwood-service
-          command: |
-              mvn clean install -B -Pdocker
+          command: "mvn clean install -B -Pdocker\n"
 
-      - store_test_results:
+      - store_test_results: 
           path: ~/repo/driftwood-service/target/surefire-reports
 
-      - run:
+      - run: 
           name: "Build Site"
           working_directory: ~/repo/driftwood-service
-          command: |
-              mvn site:site
+          command: "mvn site:site\n"
 
-      - store_artifacts:
+      - store_artifacts: 
           name: "Save Site"
           path: ~/repo/driftwood-service/target/site
           destination: driftwood-service-site
 
-      - run:
+      - run: 
           name: "Export Docker image"
           command: |
               mkdir -p /tmp/docker_images
               docker save -o /tmp/docker_images/driftwood-service.tar uk.co.grahamcox.driftwood.service/driftwood-service:latest
 
-      - persist_to_workspace:
+      - persist_to_workspace: 
           root: /tmp/docker_images
           paths: 
             - driftwood-service.tar
 
-      - save_cache:
-          paths:
+      - save_cache: 
+          key: "maven-dependencies-{{ checksum \"driftwood-service/pom.xml\" }}"
+          paths: 
             - ~/.m2
-          key: maven-dependencies-{{ checksum "driftwood-service/pom.xml" }}
 
-  build_ui:
-    docker:
-        - image: circleci/node:11.4.0
-
+  build_ui: 
+    docker: 
+      - image: "circleci/node:11.4.0"
     working_directory: ~/repo
+    steps: 
+      - checkout
 
-    steps:
-        - checkout
+      - restore_cache: 
+          keys: 
+            - "package-{{ checksum \"driftwood-ui/package.json\" }}"
+            - package-
 
-        - restore_cache:
-            keys:
-                - package-{{ checksum "driftwood-ui/package.json" }}
-                - package-
+      - setup_remote_docker
 
-        - setup_remote_docker
+      - run: 
+          name: "Download dependencies"
+          working_directory: ~/repo/driftwood-ui
+          command: "yarn install\n"
 
-        - run:
-            name: "Download dependencies"
-            working_directory: ~/repo/driftwood-ui
-            command: |
-                yarn install
+      - run: 
+          name: "Build and test project"
+          working_directory: ~/repo/driftwood-ui
+          command: |
+              yarn lint
+              yarn test
+              yarn build
 
-        - run:
-            name: "Build and test project"
-            working_directory: ~/repo/driftwood-ui
-            command: |
-                yarn lint
-                yarn test
-                yarn build
+      - persist_to_workspace: 
+          root: ~/repo/driftwood-ui
+          paths: 
+            - build
 
-        - persist_to_workspace:
-            root: ~/repo/driftwood-ui
-            paths: 
-              - build
+      - save_cache: 
+          key: "package-{{ checksum \"driftwood-ui/package.json\" }}"
+          paths: 
+            - ~/repo/driftwood-ui/node_modules
 
-        - save_cache:
-            paths: 
-              - ~/repo/driftwood-ui/node_modules
-            key: package-{{ checksum "driftwood-ui/package.json" }}
+  deploy_service: 
+    docker: 
+      - image: "circleci/openjdk:11-jdk"
+    working_directory: ~/repo
+    steps: 
+      - setup_remote_docker
 
-  deploy_service:
-      docker:
-        - image: circleci/openjdk:11-jdk
+      - run: 
+          name: "Setup Heroku"
+          command: "wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh\n"
 
-      working_directory: ~/repo
+      - attach_workspace: 
+          at: /tmp/workspace
 
-      environment:
+      - run: 
+          name: "Load Docker Image"
+          command: "docker load -i /tmp/workspace/driftwood-service.tar\n"
 
-      steps:
-        - setup_remote_docker
+      - run: 
+          name: "Deploy Service"
+          command: |
+              docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+              docker tag uk.co.grahamcox.driftwood.service/driftwood-service:latest registry.heroku.com/driftwood-cd/web
+              docker push registry.heroku.com/driftwood-cd/web
+              heroku container:release --app=driftwood-cd web
 
-        - run:
-            name: "Setup Heroku"
-            command: |
-                wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  deploy_ui: 
+    docker: 
+      - image: "circleci/node:11.4.0"
+    working_directory: ~/repo
+    steps: 
+      - checkout
 
-        - attach_workspace:
-            at: /tmp/workspace
+      - attach_workspace: 
+          at: /tmp/workspace
 
-        - run:
-            name: "Load Docker Image"
-            command: |
-                docker load -i /tmp/workspace/driftwood-service.tar
+      - run: 
+          name: "Deploy Site"
+          command: |
+              sudo npm install -g netlify-cli
+              netlify deploy --dir=/tmp/workspace/build --prod
 
-        - run:
-            name: "Deploy Service"
-            command: |
-                docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
-                docker tag uk.co.grahamcox.driftwood.service/driftwood-service:latest registry.heroku.com/driftwood-cd/web
-                docker push registry.heroku.com/driftwood-cd/web
-                heroku container:release --app=driftwood-cd web
-
-  deploy_ui:
-      docker:
-        - image: circleci/node:11.4.0
-
-      working_directory: ~/repo
-
-      steps:
-          - checkout
-          
-          - attach_workspace:
-              at: /tmp/workspace
-
-          - run:
-              name: "Deploy Site"
-              command: |
-                  sudo npm install -g netlify-cli
-                  netlify deploy --dir=/tmp/workspace/build --prod
-
-workflows:
+workflows: 
   version: 2
-  full_build:
-    jobs:
-        - build_service
-        - build_ui
-        - deploy_service:
-            requires:
-                - build_service
-                - build_ui
-        - deploy_ui:
-            requires:
-                - build_service
-                - build_ui
+  full_build: 
+    jobs: 
+      - build_service
+      - build_ui
+      - deploy_service: 
+          requires: 
+            - build_service
+            - build_ui
+      - deploy_ui: 
+          requires: 
+            - build_service
+            - build_ui
