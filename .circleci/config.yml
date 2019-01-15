@@ -40,11 +40,15 @@ jobs:
           destination: driftwood-service-site
 
       - run:
-          name: "Push Docker Container to Heroku"
+          name: "Export Docker image"
           command: |
-              docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
-              docker tag uk.co.grahamcox.driftwood.service/driftwood-service:latest registry.heroku.com/driftwood-cd/web
-              docker push registry.heroku.com/driftwood-cd/web
+              mkdir -p /tmp/docker_images
+              docker save -o /tmp/docker_images/driftwood-service.tar uk.co.grahamcox.driftwood.service/driftwood-service:latest
+
+      - persist_to_workspace:
+          root: /tmp/docker_images
+          paths: 
+            - driftwood-service.tar
 
       - save_cache:
           paths:
@@ -79,6 +83,12 @@ jobs:
             command: |
                 yarn lint
                 yarn test
+                yarn build
+
+        - persist_to_workspace:
+            root: ~/repo/driftwood-ui
+            paths: 
+              - build
 
         - save_cache:
             paths: 
@@ -101,10 +111,22 @@ jobs:
             command: |
                 wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
 
+        - attach_workspace:
+            at: /tmp/workspace
+
+        - run:
+            name: "Load Docker Image"
+            command: |
+                docker load -i /tmp/workspace/driftwood-service.tar
+
         - run:
             name: "Deploy Service"
             command: |
+                docker login --username=$HEROKU_EMAIL --password=$HEROKU_API_KEY registry.heroku.com
+                docker tag uk.co.grahamcox.driftwood.service/driftwood-service:latest registry.heroku.com/driftwood-cd/web
+                docker push registry.heroku.com/driftwood-cd/web
                 heroku container:release --app=driftwood-cd web
+
   deploy_ui:
       docker:
         - image: circleci/node:11.4.0
@@ -114,26 +136,14 @@ jobs:
       steps:
           - checkout
           
-          - restore_cache:
-              keys:
-                - package-{{ checksum "driftwood-ui/package.json" }}
-                - package-
-
-          - setup_remote_docker
-
-          - run:
-              name: "Build Site"
-              working_directory: ~/repo/driftwood-ui
-              command: |
-                yarn install
-                yarn build
+          - attach_workspace:
+              at: /tmp/workspace
 
           - run:
               name: "Deploy Site"
-              working_directory: ~/repo/driftwood-ui
               command: |
-                  yarn add netlify-cli
-                  yarn netlify deploy --dir=build --prod
+                  sudo npm install -g netlify-cli
+                  netlify deploy --dir=/tmp/workspace/build --prod
 
 workflows:
   version: 2
