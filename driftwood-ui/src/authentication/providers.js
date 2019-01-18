@@ -5,6 +5,7 @@ import {delay} from 'redux-saga';
 import {put} from 'redux-saga/effects';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
+import {createAction} from "../redux/actionCreators";
 
 ////////// The actual state
 
@@ -32,20 +33,11 @@ export function selectProviders(state: ProvidersState) {
 /** Action for loading some providers */
 const LOAD_PROVIDERS_ACTION = 'AUTH/LOAD_PROVIDERS';
 
-/** The shape of the Load Providers action */
-type LoadProvidersAction = {
-    type: string
-}
-
 /**
  * Action Creator for loading the providers from the server
  * @return {{type: string}}
  */
-export function loadProviders(): LoadProvidersAction {
-    return {
-        type: LOAD_PROVIDERS_ACTION
-    };
-}
+export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
 
 /**
  * Saga to load the providers from the backend
