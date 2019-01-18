@@ -5,7 +5,10 @@ import {delay} from 'redux-saga';
 import {put} from 'redux-saga/effects';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
-import {createAction} from "../redux/actionCreators";
+import {createAction, buildActionName} from "../redux/actionCreators";
+
+/** The namespace for the actions */
+const NAMESPACE = 'AUTH';
 
 ////////// The actual state
 
@@ -31,7 +34,7 @@ export function selectProviders(state: ProvidersState) {
 ////////// Action for requesting that the providers are loaded
 
 /** Action for loading some providers */
-const LOAD_PROVIDERS_ACTION = 'AUTH/LOAD_PROVIDERS';
+const LOAD_PROVIDERS_ACTION = buildActionName('LOAD_PROVIDERS', NAMESPACE);
 
 /**
  * Action Creator for loading the providers from the server
@@ -53,7 +56,7 @@ export function* loadProvidersSaga(): Generator<*, *, *> {
 ////////// Action for storing the providers into the store
 
 /** Action for storing some providers */
-const STORE_PROVIDERS_ACTION = 'AUTH/STORE_PROVIDERS';
+const STORE_PROVIDERS_ACTION = buildActionName('STORE_PROVIDERS', NAMESPACE);
 
 /** the shape of the Store Providers action */
 type StoreProvidersAction = {
