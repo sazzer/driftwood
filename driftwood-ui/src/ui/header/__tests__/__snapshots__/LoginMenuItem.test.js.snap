@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders correctly 1`] = `
+<div
+  class="item"
+  role="option"
+>
+  <i
+    aria-hidden="true"
+    class="google icon"
+  />
+  <span
+    class="text"
+  >
+    Google
+  </span>
+</div>
+`;
