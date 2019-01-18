@@ -2,6 +2,7 @@
 import {createReducer} from 'redux-create-reducer';
 import produce from 'immer';
 import {buildSelector} from "../redux/selector";
+import {buildSaga} from "../redux/buildSaga";
 
 const LOAD_PROVIDERS_ACTION = 'AUTH/LOAD_PROVIDERS';
 
@@ -45,10 +46,22 @@ export function loadProvidersReducer(state: PROVIDERS_STATE) {
     });
 }
 
+/**
+ * Saga to load the providers from the backend
+ */
+export function loadProvidersSaga() {
+    console.log('Loading Providers');
+}
+
 /** The reducers for working with providers */
 export const reducers = createReducer(initialState, {
     [LOAD_PROVIDERS_ACTION]: loadProvidersReducer,
 });
+
+/** The sagas for working with providers */
+export const sagas = [
+    buildSaga(LOAD_PROVIDERS_ACTION, loadProvidersSaga),
+];
 
 /** The actual providers module */
 export default {
