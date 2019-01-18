@@ -22,17 +22,17 @@ describe('selectProviders()', () => {
     });
 });
 
-describe('loadProvidersReducer()', () => {
+describe('storeProvidersReducer()', () => {
     it('Returns the correct new state', () => {
        const oldState = {providers: ['a']};
-       const newState = testSubject.loadProvidersReducer(oldState);
+       const newState = testSubject.storeProvidersReducer(oldState, {type: '', payload: ['facebook']});
 
        expect(newState).toEqual({providers: ['facebook']});
     });
 
     it('Doesn\'t mutate the old state', () => {
         const oldState = {providers: ['a']};
-        const newState = testSubject.loadProvidersReducer(oldState);
+        testSubject.storeProvidersReducer(oldState, {type: '', payload: ['facebook']});
 
         expect(oldState).toEqual({providers: ['a']});
     });

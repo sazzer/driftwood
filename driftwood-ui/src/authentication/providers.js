@@ -1,61 +1,91 @@
 // @flow
 import {createReducer} from 'redux-create-reducer';
 import produce from 'immer';
+import {delay} from 'redux-saga';
+import {put} from 'redux-saga/effects';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
 
-const LOAD_PROVIDERS_ACTION = 'AUTH/LOAD_PROVIDERS';
+////////// The actual state
 
 /** The shape of the Providers state */
-type PROVIDERS_STATE = {
+type ProvidersState = {
     providers: Array<string>,
 };
 
 /** The initial state */
-const initialState: PROVIDERS_STATE = {
+const initialState: ProvidersState = {
     providers: []
 };
-
-/**
- * Action Creator for loading the providers from the server
- * @return {{type: string}}
- */
-export function loadProviders() {
-    return {
-        type: LOAD_PROVIDERS_ACTION
-    };
-}
 
 /**
  * Select the providers that are available
  * @param state the state to get the providers from
  * @return The providers
  */
-export function selectProviders(state: PROVIDERS_STATE) {
+export function selectProviders(state: ProvidersState) {
     return state.providers;
 }
 
+////////// Action for requesting that the providers are loaded
+
+/** Action for loading some providers */
+const LOAD_PROVIDERS_ACTION = 'AUTH/LOAD_PROVIDERS';
+
+/** The shape of the Load Providers action */
+type LoadProvidersAction = {
+    type: string
+}
+
 /**
- * Reducer for when we get the Load Providers action
- * @param state the initial state
- * @return the new state
+ * Action Creator for loading the providers from the server
+ * @return {{type: string}}
  */
-export function loadProvidersReducer(state: PROVIDERS_STATE) {
-    return produce(state, (draft: PROVIDERS_STATE) => {
-        draft.providers = ['facebook'];
-    });
+export function loadProviders(): LoadProvidersAction {
+    return {
+        type: LOAD_PROVIDERS_ACTION
+    };
 }
 
 /**
  * Saga to load the providers from the backend
  */
-export function loadProvidersSaga() {
-    console.log('Loading Providers');
+export function* loadProvidersSaga(): Generator<*, *, *> {
+    yield delay(2000);
+    yield put({
+        type: STORE_PROVIDERS_ACTION,
+        payload: ['twitter'],
+    });
 }
+
+////////// Action for storing the providers into the store
+
+/** Action for storing some providers */
+const STORE_PROVIDERS_ACTION = 'AUTH/STORE_PROVIDERS';
+
+/** the shape of the Store Providers action */
+type StoreProvidersAction = {
+    type: string,
+    payload: Array<string>
+}
+
+/**
+ * Reducer for when we get the Store Providers action
+ * @param state the initial state
+ * @param action The action
+ * @return the new state
+ */
+export function storeProvidersReducer(state: ProvidersState, action: StoreProvidersAction) {
+    return produce(state, (draft: ProvidersState) => {
+        draft.providers = action.payload;
+    });
+}
+
+////////// The actual module definition
 
 /** The reducers for working with providers */
 export const reducers = createReducer(initialState, {
-    [LOAD_PROVIDERS_ACTION]: loadProvidersReducer,
+    [STORE_PROVIDERS_ACTION]: storeProvidersReducer,
 });
 
 /** The sagas for working with providers */
