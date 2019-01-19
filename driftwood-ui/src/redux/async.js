@@ -1,5 +1,7 @@
 // @flow
 
+import {put, apply} from 'redux-saga/effects';
+
 /** Create an action type to indicate that the async action has started */
 export const startedAction = (action: string) => action + '_STARTED';
 
@@ -11,3 +13,46 @@ export const succeededAction = (action: string) => action + '_SUCCEEDED';
 
 /** Create an action type to indicate that the async action has failed */
 export const failedAction = (action: string) => action + '_FAILED';
+
+/**
+ * Execute an asynchronous action and trigger the expected events as we go
+ * @param type the type of action
+ * @param callback the callback to run the actual action
+ * @param payload the payload to the callback
+ * @return A generator that represents the action
+ */
+export function* asyncAction(type: string, callback: function, ...payload: Array<any>) : Generator<*, *, *> {
+    yield put({
+        type: startedAction(type),
+        payload: {
+            input: payload,
+        },
+    });
+
+    try {
+        const result = yield apply(null, callback, payload)
+
+        yield put({
+            type: succeededAction(type),
+            payload: {
+                input: payload,
+                result,
+            },
+        });
+    } catch (error) {
+        yield put({
+            type: failedAction(type),
+            payload: {
+                input: payload,
+                error,
+            },
+        });
+    }
+
+    yield put({
+        type: finishedAction(type),
+        payload: {
+            input: payload,
+        },
+    });
+}
