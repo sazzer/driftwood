@@ -9,12 +9,6 @@ describe('buildActionName', () => {
     it('Builds a namespaced action name', () => {
         expect(testSubject.buildActionName('TEST', 'NS')).toEqual('NS/TEST');
     });
-    it('Builds an action with a suffix', () => {
-        expect(testSubject.buildActionName('TEST', undefined, 'SUCCESS')).toEqual('TEST/SUCCESS');
-    });
-    it('Builds an action with namespace and suffix', () => {
-        expect(testSubject.buildActionName('TEST', 'NS', 'SUCCESS')).toEqual('NS/TEST/SUCCESS');
-    });
 });
 
 describe('createAction', () => {
