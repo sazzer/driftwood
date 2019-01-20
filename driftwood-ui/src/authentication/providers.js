@@ -64,8 +64,10 @@ export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
  * Saga to load the providers from the backend
  */
 export function* loadProvidersSaga(): Generator<*, *, *> {
-    yield asyncAction(STORE_PROVIDERS_ACTION, async (a, b) => {
-        return [b, a]
+    yield asyncAction(STORE_PROVIDERS_ACTION, (a, b) => {
+        return new Promise((resolve) => {
+            setTimeout(() => resolve([b, a]), 2000);
+        });
     }, 'google', 'twitter');
 }
 

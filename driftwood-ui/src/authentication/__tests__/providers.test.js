@@ -22,17 +22,17 @@ describe('selectProviders()', () => {
     });
 });
 
-describe('storeProvidersReducer()', () => {
+describe('storeProvidersSuccessReducer()', () => {
     it('Returns the correct new state', () => {
        const oldState = {providers: ['a']};
-       const newState = testSubject.storeProvidersReducer(oldState, {type: '', payload: {result: ['facebook']}});
+       const newState = testSubject.storeProvidersSuccessReducer(oldState, {type: '', payload: {result: ['facebook']}});
 
-       expect(newState).toEqual({providers: ['facebook']});
+       expect(newState).toEqual({providers: ['facebook'], state: 'loaded'});
     });
 
     it('Doesn\'t mutate the old state', () => {
         const oldState = {providers: ['a']};
-        testSubject.storeProvidersReducer(oldState, {type: '', payload: {result: ['facebook']}});
+        testSubject.storeProvidersSuccessReducer(oldState, {type: '', payload: {result: ['facebook']}});
 
         expect(oldState).toEqual({providers: ['a']});
     });

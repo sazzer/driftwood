@@ -5,25 +5,50 @@ import {NamespacesConsumer} from 'react-i18next';
 import {Dropdown} from 'semantic-ui-react';
 import LoginMenuItem from './LoginMenuItem';
 
+/** The possible statuses of the Login Menu */
+export const LoginMenuStatus = {
+    loading: Symbol('loading'),
+    loaded: Symbol('loaded'),
+    failed: Symbol('failed'),
+};
+
 /**
  * The props for the Login Menu component
  */
 export type LoginMenuProps = {
-    providers: Array<string>
+    providers: Array<string>,
+    status?: Symbol,
 }
 
 /**
  * The component representing the login menu
  * @constructor
  */
-export function LoginMenu({t, providers}: LoginMenuProps) {
-    const menuItems = providers.map(provider => <LoginMenuItem key={provider} provider={provider} />);
+export function LoginMenu({providers, status}: LoginMenuProps) {
+    let menuItems;
+
+    if (status === LoginMenuStatus.failed) {
+        menuItems = (
+            <NamespacesConsumer>
+                {
+                    (t) => <Dropdown.Item icon='ban' text={t(`authentication.menu.loadingError`)} />
+                }
+            </NamespacesConsumer>
+        );
+    } else {
+        menuItems = providers.map(provider => <LoginMenuItem key={provider} provider={provider} />);
+    }
 
     return (
         <NamespacesConsumer>
             {
                 (t) => (
-                    <Dropdown item simple text={t('authentication.menu.title')} openOnFocus={false}>
+                    <Dropdown item
+                              simple
+                              text={t('authentication.menu.title')}
+                              openOnFocus={false}
+                              loading={status === LoginMenuStatus.loading}
+                              error={status === LoginMenuStatus.failed} >
                         <Dropdown.Menu>
                             { menuItems }
                         </Dropdown.Menu>
@@ -33,6 +58,5 @@ export function LoginMenu({t, providers}: LoginMenuProps) {
         </NamespacesConsumer>
     );
 }
-
 
 export default LoginMenu;

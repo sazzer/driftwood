@@ -5,6 +5,7 @@
   "authentication": {
     "menu": {
       "title": "Log In",
+      "loadingError": "Failed to load Log In options",
       "facebook" : "Facebook",
       "google": "Google",
       "twitter": "Twitter"
