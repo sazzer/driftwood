@@ -4,16 +4,29 @@ import produce from 'immer';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
 import {buildActionName, createAction} from "../redux/actionCreators";
-import {asyncAction, succeededAction} from "../redux/async";
+import {asyncAction, failedAction, startedAction, succeededAction} from "../redux/async";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH';
+
+/** The path to the module */
+const MODULE_PATH = ['auth', 'providers'];
+
+/** Provider State to indicate that the providers are loading */
+export const PROVIDERS_STATE_LOADING = 'loading';
+
+/** Provider State to indicate that the providers are loaded successfully */
+export const PROVIDERS_STATE_LOADED = 'loaded';
+
+/** Provider State to indicate that the providers failed to load */
+export const PROVIDERS_STATE_FAILED = 'failed';
 
 ////////// The actual state
 
 /** The shape of the Providers state */
 type ProvidersState = {
     providers: Array<string>,
+    state?: string,
 };
 
 /** The initial state */
@@ -26,8 +39,17 @@ const initialState: ProvidersState = {
  * @param state the state to get the providers from
  * @return The providers
  */
-export function selectProviders(state: ProvidersState) {
+export function selectProviders(state: ProvidersState): Array<string> {
     return state.providers;
+}
+
+/**
+ * Select the load state of the providers
+ * @param state the state to get the providers from
+ * @return The load state
+ */
+export function selectProviderLoadState(state: ProvidersState): ?string {
+    return state.state;
 }
 
 ////////// Action for requesting that the providers are loaded
@@ -35,10 +57,7 @@ export function selectProviders(state: ProvidersState) {
 /** Action for loading some providers */
 const LOAD_PROVIDERS_ACTION = buildActionName('LOAD_PROVIDERS', NAMESPACE);
 
-/**
- * Action Creator for loading the providers from the server
- * @return {{type: string}}
- */
+/** Action Creator for loading the providers from the server */
 export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
 
 /**
@@ -63,14 +82,36 @@ type StoreProvidersSuccessAction = {
     }}
 
 /**
- * Reducer for when we get the Store Providers action
+ * Reducer for when we start the Store Providers action
+ * @param state the initial state
+ * @return the new state
+ */
+export function storeProvidersStartedReducer(state: ProvidersState) {
+    return produce(state, (draft: ProvidersState) => {
+        draft.state = PROVIDERS_STATE_LOADING;
+    });
+}
+/**
+ * Reducer for when we succeed with the Store Providers action
  * @param state the initial state
  * @param action The action
  * @return the new state
  */
-export function storeProvidersReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
+export function storeProvidersSuccessReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
     return produce(state, (draft: ProvidersState) => {
         draft.providers = action.payload.result;
+        draft.state = PROVIDERS_STATE_LOADED;
+    });
+}
+/**
+ * Reducer for when we fail the Store Providers action
+ * @param state the initial state
+ * @param action The action
+ * @return the new state
+ */
+export function storeProvidersFailedReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
+    return produce(state, (draft: ProvidersState) => {
+        draft.state = PROVIDERS_STATE_FAILED;
     });
 }
 
@@ -78,7 +119,9 @@ export function storeProvidersReducer(state: ProvidersState, action: StoreProvid
 
 /** The reducers for working with providers */
 export const reducers = createReducer(initialState, {
-    [succeededAction(STORE_PROVIDERS_ACTION)]: storeProvidersReducer,
+    [startedAction(STORE_PROVIDERS_ACTION)]: storeProvidersStartedReducer,
+    [succeededAction(STORE_PROVIDERS_ACTION)]: storeProvidersSuccessReducer,
+    [failedAction(STORE_PROVIDERS_ACTION)]: storeProvidersFailedReducer,
 });
 
 /** The sagas for working with providers */
@@ -90,5 +133,6 @@ export const sagas = [
 export default {
     loadProviders,
 
-    selectProviders: buildSelector(['auth', 'providers'], selectProviders),
+    selectProviders: buildSelector(MODULE_PATH, selectProviders),
+    selectProviderLoadState: buildSelector(MODULE_PATH, selectProviderLoadState),
 };
