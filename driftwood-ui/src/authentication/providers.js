@@ -1,11 +1,10 @@
 // @flow
 import {createReducer} from 'redux-create-reducer';
 import produce from 'immer';
-import {delay} from 'redux-saga';
-import {put} from 'redux-saga/effects';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
-import {createAction, buildActionName} from "../redux/actionCreators";
+import {buildActionName, createAction} from "../redux/actionCreators";
+import {asyncAction, succeededAction} from "../redux/async";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH';
@@ -46,11 +45,9 @@ export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
  * Saga to load the providers from the backend
  */
 export function* loadProvidersSaga(): Generator<*, *, *> {
-    yield delay(2000);
-    yield put({
-        type: STORE_PROVIDERS_ACTION,
-        payload: ['twitter'],
-    });
+    yield asyncAction(STORE_PROVIDERS_ACTION, async (a, b) => {
+        return [b, a]
+    }, 'google', 'twitter');
 }
 
 ////////// Action for storing the providers into the store
@@ -58,11 +55,12 @@ export function* loadProvidersSaga(): Generator<*, *, *> {
 /** Action for storing some providers */
 const STORE_PROVIDERS_ACTION = buildActionName('STORE_PROVIDERS', NAMESPACE);
 
-/** the shape of the Store Providers action */
-type StoreProvidersAction = {
+/** the shape of the Store Providers Success action */
+type StoreProvidersSuccessAction = {
     type: string,
-    payload: Array<string>
-}
+    payload: {
+        result: Array<string>
+    }}
 
 /**
  * Reducer for when we get the Store Providers action
@@ -70,9 +68,9 @@ type StoreProvidersAction = {
  * @param action The action
  * @return the new state
  */
-export function storeProvidersReducer(state: ProvidersState, action: StoreProvidersAction) {
+export function storeProvidersReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
     return produce(state, (draft: ProvidersState) => {
-        draft.providers = action.payload;
+        draft.providers = action.payload.result;
     });
 }
 
@@ -80,7 +78,7 @@ export function storeProvidersReducer(state: ProvidersState, action: StoreProvid
 
 /** The reducers for working with providers */
 export const reducers = createReducer(initialState, {
-    [STORE_PROVIDERS_ACTION]: storeProvidersReducer,
+    [succeededAction(STORE_PROVIDERS_ACTION)]: storeProvidersReducer,
 });
 
 /** The sagas for working with providers */
