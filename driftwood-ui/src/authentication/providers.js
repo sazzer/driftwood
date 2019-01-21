@@ -5,6 +5,7 @@ import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {asyncAction, failedAction, startedAction, succeededAction} from "../redux/async";
+import {request} from "../api";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH';
@@ -64,11 +65,7 @@ export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
  * Saga to load the providers from the backend
  */
 export function* loadProvidersSaga(): Generator<*, *, *> {
-    yield asyncAction(STORE_PROVIDERS_ACTION, (a, b) => {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve([b, a]), 2000);
-        });
-    }, 'google', 'twitter');
+    yield asyncAction(STORE_PROVIDERS_ACTION, () => request('/api/authentication/external'));
 }
 
 ////////// Action for storing the providers into the store

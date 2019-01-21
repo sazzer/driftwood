@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "connected-react-router": "^6.2.0",
+    "fetch-defaults": "^1.0.0",
     "history": "^4.7.2",
     "i18next": "^13.1.2",
     "i18next-browser-languagedetector": "^2.2.4",

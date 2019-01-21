@@ -123,6 +123,10 @@ jobs:
       - attach_workspace: 
           at: /tmp/workspace
 
+      - run:
+          name: "Update Site for Deploy"
+          command: |
+              echo "window.DRIFTWOOD_CONFIG = {API_URI: 'https://driftwood-cd.herokuapp.com/'};" > /tmp/workspace/build/config.js
       - run: 
           name: "Deploy Site"
           command: |
