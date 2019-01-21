@@ -4,3 +4,6 @@ import 'jest-enzyme';
 
 configure({ adapter: new Adapter() });
 
+window.DRIFTWOOD_CONFIG = {
+
+};
