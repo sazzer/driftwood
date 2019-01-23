@@ -19,7 +19,7 @@ jobs:
       - run: 
           name: "Build and test project"
           working_directory: ~/repo/driftwood-service
-          command: "mvn clean install -B -Pdocker\n"
+          command: "mvn clean install -B -Pdocker"
 
       - store_test_results: 
           path: ~/repo/driftwood-service/target/surefire-reports
@@ -27,7 +27,7 @@ jobs:
       - run: 
           name: "Build Site"
           working_directory: ~/repo/driftwood-service
-          command: "mvn site:site\n"
+          command: "mvn site:site -DskipTests"
 
       - store_artifacts: 
           name: "Save Site"
@@ -67,7 +67,7 @@ jobs:
       - run: 
           name: "Download dependencies"
           working_directory: ~/repo/driftwood-ui
-          command: "yarn install\n"
+          command: "yarn install"
 
       - run: 
           name: "Build and test project"
@@ -109,14 +109,14 @@ jobs:
 
       - run: 
           name: "Setup Heroku"
-          command: "wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh\n"
+          command: "wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh"
 
       - attach_workspace: 
           at: /tmp/workspace
 
       - run: 
           name: "Load Docker Image"
-          command: "docker load -i /tmp/workspace/driftwood-service.tar\n"
+          command: "docker load -i /tmp/workspace/driftwood-service.tar"
 
       - run: 
           name: "Deploy Service"
