@@ -82,6 +82,19 @@ jobs:
           paths: 
             - build
 
+      - run: 
+          name: "Build and Export Docker image"
+          working_directory: ~/repo/driftwood-ui
+          command: |
+              docker build -t uk.co.grahamcox.driftwood/driftwood-ui:latest .
+              mkdir -p /tmp/docker_images
+              docker save -o /tmp/docker_images/driftwood-ui.tar uk.co.grahamcox.driftwood/driftwood-ui:latest
+
+      - persist_to_workspace: 
+          root: /tmp/docker_images
+          paths: 
+            - driftwood-ui.tar
+
       - save_cache: 
           key: "package-{{ checksum \"driftwood-ui/package.json\" }}"
           paths: 

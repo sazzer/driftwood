@@ -1,2 +1,4 @@
 window.DRIFTWOOD_CONFIG = {
+    API_URI: "$API_URI",
 };
+
