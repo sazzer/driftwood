@@ -27,7 +27,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "flow && yarn eslint src"
+    "lint": "flow && yarn eslint src",
+    "docker": "yarn build && docker build -t uk.co.grahamcox.driftwood/driftwood-ui:latest ."
   },
   "eslintConfig": {
     "extends": "react-app"
