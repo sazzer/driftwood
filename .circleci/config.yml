@@ -100,6 +100,52 @@ jobs:
           paths: 
             - ~/repo/driftwood-ui/node_modules
 
+  build_e2e: 
+    docker: 
+      - image: "circleci/node:11.4.0"
+    working_directory: ~/repo
+    steps: 
+      - checkout
+
+      - setup_remote_docker
+
+      - run: 
+          name: "Build and Export Docker image"
+          working_directory: ~/repo/driftwood-e2e
+          command: |
+              docker build -t uk.co.grahamcox.driftwood/driftwood-e2e:latest .
+              mkdir -p /tmp/docker_images
+              docker save -o /tmp/docker_images/driftwood-e2e.tar uk.co.grahamcox.driftwood/driftwood-e2e:latest
+
+      - persist_to_workspace: 
+          root: /tmp/docker_images
+          paths: 
+            - driftwood-e2e.tar
+
+  run_e2e_tests:
+    docker: 
+      - image: "circleci/node:11.4.0"
+    working_directory: ~/repo
+    steps: 
+      - checkout
+
+      - setup_remote_docker
+
+      - attach_workspace: 
+          at: /tmp/workspace
+
+      - run: 
+          name: "Load Docker Images"
+          command: |
+              docker load -i /tmp/workspace/driftwood-service.tar
+              docker load -i /tmp/workspace/driftwood-ui.tar
+              docker load -i /tmp/workspace/driftwood-e2e.tar
+
+      - run:
+          name: "Run tests"
+          working_directory: ~/repo
+          command: docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from driftwood-e2e
+
   deploy_service: 
     docker: 
       - image: "circleci/openjdk:11-jdk"
@@ -152,11 +198,15 @@ workflows:
     jobs: 
       - build_service
       - build_ui
+      - build_e2e
+      - run_e2e_tests:
+          requires: 
+            - build_service
+            - build_ui
+            - build_e2e
       - deploy_service: 
           requires: 
-            - build_service
-            - build_ui
+            - run_e2e_tests
       - deploy_ui: 
           requires: 
-            - build_service
-            - build_ui
+            - run_e2e_tests
