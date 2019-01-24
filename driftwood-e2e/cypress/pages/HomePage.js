@@ -3,7 +3,7 @@
 /**
  * Page Model representing the application homepage
  */
-import HeaderBar from "./HeaderBar";
+import HeaderBar from "./header/HeaderBar";
 
 export default class HomePage {
     visit() {
