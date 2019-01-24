@@ -6,6 +6,6 @@ export default class HeaderBar {
     }
 
     get title() {
-        return this._headerElement.get('div.left.header.item').invoke('text');
+        return this._headerElement.get('div[data-test="title"]').invoke('text');
     }
 }

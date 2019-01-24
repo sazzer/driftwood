@@ -12,7 +12,7 @@ export default class HomePage {
     }
 
     get header() {
-        const headerElement = cy.get('div.top.attached.menu');
+        const headerElement = cy.get('div[data-test="header"]');
         return new HeaderBar(headerElement);
     }
 }

@@ -14,8 +14,8 @@ export function HeaderBar() {
         <NamespacesConsumer>
             {
                 (t) => (
-                    <Menu attached='top' inverted>
-                        <Menu.Item header position='left'>{t('page.title')}</Menu.Item>
+                    <Menu attached='top' inverted data-test='header'>
+                        <Menu.Item header position='left' data-test='title'>{t('page.title')}</Menu.Item>
                         <Menu.Menu position='right'>
                             <LoginMenu />
                         </Menu.Menu>
