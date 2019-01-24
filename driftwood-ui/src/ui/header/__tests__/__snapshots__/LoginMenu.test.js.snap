@@ -5,6 +5,7 @@ exports[`Renders correctly with no providers 1`] = `
   aria-busy="false"
   aria-expanded="false"
   class="ui item simple dropdown"
+  data-test="loginMenu"
   role="listbox"
   tabindex="0"
 >
@@ -30,6 +31,7 @@ exports[`Renders correctly with some providers 1`] = `
   aria-busy="false"
   aria-expanded="false"
   class="ui item simple dropdown"
+  data-test="loginMenu"
   role="listbox"
   tabindex="0"
 >
@@ -49,6 +51,7 @@ exports[`Renders correctly with some providers 1`] = `
   >
     <div
       class="item"
+      data-provider="google"
       role="option"
     >
       <i
@@ -63,6 +66,7 @@ exports[`Renders correctly with some providers 1`] = `
     </div>
     <div
       class="item"
+      data-provider="twitter"
       role="option"
     >
       <i

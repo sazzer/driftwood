@@ -3,6 +3,7 @@
 exports[`Renders correctly 1`] = `
 <div
   class="item"
+  data-provider="google"
   role="option"
 >
   <i
