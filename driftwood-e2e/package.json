@@ -4,5 +4,8 @@
   "private": true,
   "devDependencies": {
     "cypress": "^3.1.4"
+  },
+  "scripts": {
+    "docker": "docker build -t uk.co.grahamcox.driftwood/driftwood-e2e:latest ."
   }
 }
