@@ -6,11 +6,6 @@ services:
             POSTGRES_DB: driftwood
             POSTGRES_USER: driftwood
             POSTGRES_PASSWORD: driftwood
-    driftwood-phppgadmin:
-        image: dpage/pgadmin4
-        environment:
-            PGADMIN_DEFAULT_EMAIL: graham@grahamcox.co.uk
-            PGADMIN_DEFAULT_PASSWORD: driftwood
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
