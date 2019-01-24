@@ -19,7 +19,7 @@ export function LoginMenuItem({provider}: LoginMenuItemProps) {
     return (
         <NamespacesConsumer>
             {
-                (t) => <Dropdown.Item icon={provider} text={t(`authentication.menu.${provider}`)} />
+                (t) => <Dropdown.Item icon={provider} data-provider={provider} text={t(`authentication.menu.${provider}`)} />
             }
         </NamespacesConsumer>
 

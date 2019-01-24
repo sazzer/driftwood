@@ -47,6 +47,7 @@ export function LoginMenu({providers, status}: LoginMenuProps) {
                               simple
                               text={t('authentication.menu.title')}
                               openOnFocus={false}
+                              data-test='loginMenu'
                               loading={status === LoginMenuStatus.loading}
                               error={status === LoginMenuStatus.failed} >
                         <Dropdown.Menu>
