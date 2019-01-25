@@ -1,11 +1,18 @@
 // @flow
 import {createReducer} from 'redux-create-reducer';
 import produce from 'immer';
+import uriTemplate from 'uri-template';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {asyncAction, failedAction, startedAction, succeededAction} from "../redux/async";
 import {request} from "../api";
+
+/** The Base URI for the API */
+const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
+
+/** The template for starting authentication */
+const START_AUTH_URI_TEMPLATE = API_URI + '/api/authentication/external/{provider}';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/PROVIDERS';
@@ -24,9 +31,15 @@ export const PROVIDERS_STATE_FAILED = 'failed';
 
 ////////// The actual state
 
+/** Type representing a Provider */
+type Provider = {
+    id: string,
+    uri: string
+};
+
 /** The shape of the state */
 type State = {
-    providers: Array<string>,
+    providers: Array<Provider>,
     state?: string,
 };
 
@@ -41,7 +54,7 @@ export const initialState: State = {
  * @return The providers
  */
 export function selectProviders(state: State): Array<string> {
-    return state.providers;
+    return state.providers.map(provider => provider.id);
 }
 
 /**
@@ -65,7 +78,17 @@ export const loadProviders = createAction(LOAD_PROVIDERS_ACTION);
  * Saga to load the providers from the backend
  */
 export function* loadProvidersSaga(): Generator<*, *, *> {
-    yield asyncAction(STORE_PROVIDERS_ACTION, () => request('/api/authentication/external'));
+    yield asyncAction(STORE_PROVIDERS_ACTION, () =>
+        request('/api/authentication/external')
+            .then(result => {
+                return result.body.map(provider => {
+                    return {
+                        id: provider,
+                        uri: uriTemplate.parse(START_AUTH_URI_TEMPLATE)
+                            .expand({provider}),
+                    }
+                });
+            }));
 }
 
 ////////// Action for storing the providers into the store
@@ -77,7 +100,7 @@ const STORE_PROVIDERS_ACTION = buildActionName('STORE_PROVIDERS', NAMESPACE);
 type StoreProvidersSuccessAction = {
     type: string,
     payload: {
-        result: Array<string>
+        result: Array<Provider>
     }
 }
 

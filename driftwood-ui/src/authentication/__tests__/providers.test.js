@@ -7,7 +7,15 @@ describe('Selectors', () => {
         it('Returns the providers from the store', () => {
             const providers = testSubject.selectProviders({
                 ...testSubject.initialState,
-                providers: ['a', 'b']
+                providers: [
+                    {
+                        id: 'a',
+                        uri: 'a',
+                    }, {
+                        id: 'b',
+                        uri: 'b',
+                    },
+                ]
             });
 
             expect(providers).toEqual(['a', 'b']);
@@ -39,60 +47,91 @@ describe('Load Providers', () => {
 });
 
 describe('Store Providers', () => {
+    const oldState = {
+        ...testSubject.initialState,
+        providers: [
+            {
+                id: 'a',
+                uri: 'a',
+            }, {
+                id: 'b',
+                uri: 'b',
+            },
+        ]
+    };
+
     describe('storeProvidersStartedReducer()', () => {
         it('Returns the correct new state', () => {
-            const oldState = {
-                ...testSubject.initialState,
-                providers: ['a']
-            };
             const newState = testSubject.storeProvidersStartedReducer(oldState);
 
-            expect(newState).toEqual({providers: ['a'], state: 'loading'});
+            expect(newState).toEqual({providers: [
+                    {
+                        id: 'a',
+                        uri: 'a',
+                    },
+                    {
+                        id: 'b',
+                        uri: 'b',
+                    },
+                ], state: 'loading'});
         });
 
         it('Doesn\'t mutate the old state', () => {
-            const oldState = {providers: ['a']};
+            const originalState = {...oldState};
             testSubject.storeProvidersStartedReducer(oldState);
 
-            expect(oldState).toEqual({providers: ['a']});
+            expect(oldState).toEqual(originalState);
         });
     });
 
     describe('storeProvidersSuccessReducer()', () => {
+        const action = {type: '', payload: {result: [
+                    {
+                        id: 'facebook',
+                        uri: 'facebookUri',
+                    },
+                ]}};
         it('Returns the correct new state', () => {
-            const oldState = {
-                ...testSubject.initialState,
-                providers: ['a']
-            };
-            const newState = testSubject.storeProvidersSuccessReducer(oldState, {type: '', payload: {result: ['facebook']}});
+            const newState = testSubject.storeProvidersSuccessReducer(oldState, action);
 
-            expect(newState).toEqual({providers: ['facebook'], state: 'loaded'});
+            expect(newState).toEqual({providers: [
+                    {
+                        id: 'facebook',
+                        uri: 'facebookUri',
+                    }
+                ], state: 'loaded'});
         });
 
         it('Doesn\'t mutate the old state', () => {
-            const oldState = {providers: ['a']};
-            testSubject.storeProvidersSuccessReducer(oldState, {type: '', payload: {result: ['facebook']}});
+            const originalState = {...oldState};
+            testSubject.storeProvidersSuccessReducer(oldState, action);
 
-            expect(oldState).toEqual({providers: ['a']});
+            expect(oldState).toEqual(originalState);
         });
     });
 
     describe('storeProvidersFailedReducer()', () => {
         it('Returns the correct new state', () => {
-            const oldState = {
-                ...testSubject.initialState,
-                providers: ['a']
-            };
             const newState = testSubject.storeProvidersFailedReducer(oldState);
 
-            expect(newState).toEqual({providers: ['a'], state: 'failed'});
+            expect(newState).toEqual({providers: [
+                    {
+                        id: 'a',
+                        uri: 'a',
+                    },
+                    {
+                        id: 'b',
+                        uri: 'b',
+                    },
+                ], state: 'failed'});
         });
 
         it('Doesn\'t mutate the old state', () => {
-            const oldState = {providers: ['a']};
+            const originalState = {...oldState};
             testSubject.storeProvidersFailedReducer(oldState);
 
-            expect(oldState).toEqual({providers: ['a']});
+            expect(oldState).toEqual(originalState);
+
         });
     });
 });

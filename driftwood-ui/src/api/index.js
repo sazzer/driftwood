@@ -17,6 +17,11 @@ export type Request = {
     method?: string,
 };
 
+/** Type representing the response of a request */
+export type Response = {
+    body: any,
+}
+
 /** Default values for a request, if not otherwise specified */
 const DEFAULT_REQUEST = {
     method: 'get',
@@ -28,7 +33,7 @@ const DEFAULT_REQUEST = {
  * @param params the request parameters
  * @return the response
  */
-export function request(url: string, params: Request = DEFAULT_REQUEST) : Promise<any> {
+export function request(url: string, params: Request = DEFAULT_REQUEST) : Promise<Response> {
     const fetchParams = {
         method: params.method || DEFAULT_REQUEST.method,
     };
@@ -38,5 +43,13 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
             console.log('Error making HTTP request: ', e);
             throw e;
         })
-        .then(response => response.json())
+        .then(response => response.json().then(body => {
+            return {
+                body,
+            }
+        }))
+        .catch(e => {
+            console.log(e);
+            throw e;
+        })
 }
