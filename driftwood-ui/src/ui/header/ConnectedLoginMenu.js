@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
+import authenticate from '../../authentication/authenticate';
 import providers from '../../authentication/providers';
 import LoginMenu, {LoginMenuStatus} from './LoginMenu';
 
@@ -30,7 +31,9 @@ class ConnectedLoginMenu extends React.Component<ConnectedLoginMenuProps> {
      * @return {*} the login menu
      */
     render() {
-        return <LoginMenu providers={this.props.providers} status={this.props.status} />
+        return <LoginMenu providers={this.props.providers}
+                          status={this.props.status}
+                          authenticate={this.props.authenticate} />
     }
 }
 
@@ -53,6 +56,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         loadProviders: () => dispatch(providers.loadProviders()),
+
+        authenticate: (provider) => dispatch(authenticate.startAuthentication(provider)),
     };
 }
 

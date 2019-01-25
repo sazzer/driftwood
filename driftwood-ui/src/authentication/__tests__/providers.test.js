@@ -7,7 +7,7 @@ describe('loadProviders()', () => {
         const action = testSubject.loadProviders();
 
         expect(action).toEqual({
-            type: 'AUTH/LOAD_PROVIDERS'
+            type: 'AUTH/PROVIDERS/LOAD_PROVIDERS'
         });
     });
 });

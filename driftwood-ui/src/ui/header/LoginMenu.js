@@ -18,13 +18,15 @@ export const LoginMenuStatus = {
 export type LoginMenuProps = {
     providers: Array<string>,
     status?: Symbol,
+
+    authenticate: (string) => void,
 }
 
 /**
  * The component representing the login menu
  * @constructor
  */
-export function LoginMenu({providers, status}: LoginMenuProps) {
+export function LoginMenu({providers, status, authenticate}: LoginMenuProps) {
     let menuItems;
 
     if (status === LoginMenuStatus.failed) {
@@ -36,7 +38,9 @@ export function LoginMenu({providers, status}: LoginMenuProps) {
             </NamespacesConsumer>
         );
     } else {
-        menuItems = providers.map(provider => <LoginMenuItem key={provider} provider={provider} />);
+        menuItems = providers.map(provider => <LoginMenuItem key={provider}
+                                                             provider={provider}
+                                                             onClick={() => authenticate(provider) }/>);
     }
 
     return (

@@ -78,7 +78,8 @@ type StoreProvidersSuccessAction = {
     type: string,
     payload: {
         result: Array<string>
-    }}
+    }
+}
 
 /**
  * Reducer for when we start the Store Providers action
