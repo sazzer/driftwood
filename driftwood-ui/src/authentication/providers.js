@@ -12,7 +12,7 @@ import {request} from "../api";
 const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
 
 /** The template for starting authentication */
-const START_AUTH_URI_TEMPLATE = API_URI + '/api/authentication/external/{provider}';
+const START_AUTH_URI_TEMPLATE = API_URI + '/api/authentication/external/{provider}/start';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/PROVIDERS';
@@ -55,6 +55,16 @@ export const initialState: State = {
  */
 export function selectProviders(state: State): Array<string> {
     return state.providers.map(provider => provider.id);
+}
+
+/**
+ * Select the provider that has the given ID
+ * @param state the state to get the provider from
+ * @param provider the ID of the provider
+ * @return the provider
+ */
+export function selectProviderById(state: State, provider: string): ?Provider {
+    return state.providers.find(p => p.id === provider);
 }
 
 /**
@@ -156,5 +166,6 @@ export default {
     loadProviders,
 
     selectProviders: buildSelector(MODULE_PATH, selectProviders),
+    selectProviderById: buildSelector(MODULE_PATH, selectProviderById),
     selectProviderLoadState: buildSelector(MODULE_PATH, selectProviderLoadState),
 };

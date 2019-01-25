@@ -22,6 +22,33 @@ describe('Selectors', () => {
         });
     });
 
+    describe('selectProviderById()', () => {
+        const store = {
+            ...testSubject.initialState,
+            providers: [
+                {
+                    id: 'a',
+                    uri: 'a',
+                }, {
+                    id: 'b',
+                    uri: 'b',
+                },
+            ]
+        };
+
+        it('Returns a known provider from the store', () => {
+            const provider = testSubject.selectProviderById(store, 'a');
+
+            expect(provider).toEqual({id: 'a', uri: 'a'});
+        });
+
+        it('Returns undefined for an unknown provider', () => {
+            const provider = testSubject.selectProviderById(store, 'unknown');
+
+            expect(provider).toBeUndefined();
+        });
+    });
+
     describe('selectProviderLoadState()', () => {
         it('Returns the load state from the store', () => {
             const loadState = testSubject.selectProviderLoadState({
