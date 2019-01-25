@@ -31,7 +31,7 @@ type State = {
 };
 
 /** The initial state */
-const initialState: State = {
+export const initialState: State = {
     providers: []
 };
 
@@ -106,10 +106,9 @@ export function storeProvidersSuccessReducer(state: State, action: StoreProvider
 /**
  * Reducer for when we fail the Store Providers action
  * @param state the initial state
- * @param action The action
  * @return the new state
  */
-export function storeProvidersFailedReducer(state: State, action: StoreProvidersSuccessAction) {
+export function storeProvidersFailedReducer(state: State) {
     return produce(state, (draft: State) => {
         draft.state = PROVIDERS_STATE_FAILED;
     });

@@ -11,6 +11,8 @@ import LoginMenu, {LoginMenuStatus} from './LoginMenu';
  */
 type ConnectedLoginMenuProps = {
     loadProviders: () => void,
+    authenticate: (string) => void,
+
     providers: Array<string>,
     status?: Symbol,
 }

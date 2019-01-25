@@ -17,7 +17,7 @@ i18n
         ns: ['driftwood'],
         defaultNS: 'driftwood',
 
-        debug: true,
+        debug: false,
 
         interpolation: {
             escapeValue: false
