@@ -8,7 +8,7 @@ import {asyncAction, failedAction, startedAction, succeededAction} from "../redu
 import {request} from "../api";
 
 /** The namespace for the actions */
-const NAMESPACE = 'AUTH';
+const NAMESPACE = 'AUTH/PROVIDERS';
 
 /** The path to the module */
 const MODULE_PATH = ['auth', 'providers'];
@@ -24,14 +24,14 @@ export const PROVIDERS_STATE_FAILED = 'failed';
 
 ////////// The actual state
 
-/** The shape of the Providers state */
-type ProvidersState = {
+/** The shape of the state */
+type State = {
     providers: Array<string>,
     state?: string,
 };
 
 /** The initial state */
-const initialState: ProvidersState = {
+const initialState: State = {
     providers: []
 };
 
@@ -40,7 +40,7 @@ const initialState: ProvidersState = {
  * @param state the state to get the providers from
  * @return The providers
  */
-export function selectProviders(state: ProvidersState): Array<string> {
+export function selectProviders(state: State): Array<string> {
     return state.providers;
 }
 
@@ -49,7 +49,7 @@ export function selectProviders(state: ProvidersState): Array<string> {
  * @param state the state to get the providers from
  * @return The load state
  */
-export function selectProviderLoadState(state: ProvidersState): ?string {
+export function selectProviderLoadState(state: State): ?string {
     return state.state;
 }
 
@@ -85,8 +85,8 @@ type StoreProvidersSuccessAction = {
  * @param state the initial state
  * @return the new state
  */
-export function storeProvidersStartedReducer(state: ProvidersState) {
-    return produce(state, (draft: ProvidersState) => {
+export function storeProvidersStartedReducer(state: State) {
+    return produce(state, (draft: State) => {
         draft.state = PROVIDERS_STATE_LOADING;
     });
 }
@@ -96,8 +96,8 @@ export function storeProvidersStartedReducer(state: ProvidersState) {
  * @param action The action
  * @return the new state
  */
-export function storeProvidersSuccessReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
-    return produce(state, (draft: ProvidersState) => {
+export function storeProvidersSuccessReducer(state: State, action: StoreProvidersSuccessAction) {
+    return produce(state, (draft: State) => {
         draft.providers = action.payload.result;
         draft.state = PROVIDERS_STATE_LOADED;
     });
@@ -108,8 +108,8 @@ export function storeProvidersSuccessReducer(state: ProvidersState, action: Stor
  * @param action The action
  * @return the new state
  */
-export function storeProvidersFailedReducer(state: ProvidersState, action: StoreProvidersSuccessAction) {
-    return produce(state, (draft: ProvidersState) => {
+export function storeProvidersFailedReducer(state: State, action: StoreProvidersSuccessAction) {
+    return produce(state, (draft: State) => {
         draft.state = PROVIDERS_STATE_FAILED;
     });
 }
