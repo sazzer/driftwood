@@ -7,7 +7,7 @@
  * @return the selector
  */
 export function buildSelector(path: Array<string>, selector: function): function {
-    return (state) => {
+    return (state, ...args) => {
         const statePart = path.reduce((accum, current) => {
             if (typeof accum === 'object') {
                 return accum[current];
@@ -16,6 +16,6 @@ export function buildSelector(path: Array<string>, selector: function): function
             }
         }, state);
 
-        return statePart && selector(statePart);
+        return statePart && selector.apply(undefined, [statePart, ...args]);
     }
 }

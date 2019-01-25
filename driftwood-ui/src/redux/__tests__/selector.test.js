@@ -45,3 +45,18 @@ it('Returns undefined if the nested scope doesn\'t exist', () => {
 
     expect(result).toBeUndefined();
 });
+
+
+it('Passes arguments to the selector', () => {
+    const state = {
+        a: {
+            b: 1
+        }
+    };
+
+    const selector = buildSelector(['a'], (state, arg1) => state.b + arg1);
+
+    const result = selector(state, 'test');
+
+    expect(result).toEqual('1test');
+});

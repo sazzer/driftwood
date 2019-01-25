@@ -1,8 +1,10 @@
 // @flow
 
+import {select} from 'redux-saga/effects';
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
+import providers from './providers';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/AUTHENTICATE';
@@ -34,6 +36,8 @@ type StartAuthenticationAction = {
  */
 export function* startAuthenticationSaga(action: StartAuthenticationAction): Generator<*, *, *> {
     console.log(action);
+    const provider = yield select(providers.selectProviderById, action.payload);
+    console.log(provider);
 }
 
 ////////// The actual module definition
