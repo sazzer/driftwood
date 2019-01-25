@@ -1,6 +1,6 @@
 // @flow
 
-import {select} from 'redux-saga/effects';
+import {select, call} from 'redux-saga/effects';
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
@@ -32,12 +32,24 @@ type StartAuthenticationAction = {
 }
 
 /**
+ * Open the Authentication Window and return a promise for the result
+ * @param uri the URI to open
+ * @return The result
+ */
+function openAuthenticationWindow(uri: string) {
+    return new Promise((resolve, reject) => {
+        window.open(uri,
+            'driftwoodLoginWindow',
+            'centerscreen,menubar=no,toolbar=no,location,personalbar=no,status,dependent,resizable,scrollbars');
+    });
+}
+/**
  * Saga to starting authentication
  */
 export function* startAuthenticationSaga(action: StartAuthenticationAction): Generator<*, *, *> {
-    console.log(action);
     const provider = yield select(providers.selectProviderById, action.payload);
-    console.log(provider);
+
+    yield call(openAuthenticationWindow, provider.uri);
 }
 
 ////////// The actual module definition
