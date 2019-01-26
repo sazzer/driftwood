@@ -1,10 +1,12 @@
 // @flow
 
-import {sagas as providerSagas} from './providers';
-import {sagas as authenticateSagas} from './authenticate';
+import {sagas as providers} from './providers';
+import {sagas as authenticate} from './authenticate';
+import {sagas as accessToken} from './accessToken';
 
 /** The sagas to work with */
 export default [
-    ...providerSagas,
-    ...authenticateSagas,
+    ...providers,
+    ...authenticate,
+    ...accessToken,
 ]

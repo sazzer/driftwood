@@ -1,10 +1,11 @@
 // @flow
 
-import {select, call} from 'redux-saga/effects';
+import {select, call, put} from 'redux-saga/effects';
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
 import providers from './providers';
+import accessToken from './accessToken';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/AUTHENTICATE';
@@ -65,7 +66,11 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
     const provider = yield select(providers.selectProviderById, action.payload);
 
     const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, provider.uri);
-    console.log(response);
+
+    yield put(accessToken.storeAccessToken({
+        accessToken: response.accessToken,
+        expires: response.expires,
+    }));
 }
 
 ////////// The actual module definition
