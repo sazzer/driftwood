@@ -31,6 +31,14 @@ type StartAuthenticationAction = {
     payload: string
 }
 
+/** The response from starting authentiction */
+type StartAuthenticationResponse = {
+    accessToken: string,
+    expires: string,
+    user: string,
+    name: string
+};
+
 /**
  * Open the Authentication Window and return a promise for the result
  * @param uri the URI to open
@@ -38,6 +46,13 @@ type StartAuthenticationAction = {
  */
 function openAuthenticationWindow(uri: string) {
     return new Promise((resolve, reject) => {
+        const eventListener = window.addEventListener('message', (event) => {
+            if (event && event.data && event.data.type === 'driftwoodAccessToken') {
+                window.removeEventListener('message', eventListener);
+                resolve(event.data);
+            }
+        });
+
         window.open(uri,
             'driftwoodLoginWindow',
             'centerscreen,menubar=no,toolbar=no,location,personalbar=no,status,dependent,resizable,scrollbars');
@@ -49,7 +64,8 @@ function openAuthenticationWindow(uri: string) {
 export function* startAuthenticationSaga(action: StartAuthenticationAction): Generator<*, *, *> {
     const provider = yield select(providers.selectProviderById, action.payload);
 
-    yield call(openAuthenticationWindow, provider.uri);
+    const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, provider.uri);
+    console.log(response);
 }
 
 ////////// The actual module definition

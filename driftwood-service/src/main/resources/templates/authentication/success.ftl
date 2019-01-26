@@ -19,5 +19,16 @@
         <dt>Access Token Expiry</dt>
         <dd>${accessToken.expires}</dd>
     </dl>
+
+    <script>
+        window.opener.postMessage({
+            type: 'driftwoodAccessToken',
+            accessToken: '${serialized}',
+            expires: '${accessToken.expires}',
+            user: '${user.identity.id.id}',
+            name: '${user.data.name}',
+        }, '*');
+        window.close();
+    </script>
 </body>
 </html>
