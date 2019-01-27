@@ -6,6 +6,7 @@ import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
 import providers from './providers';
 import accessToken from './accessToken';
+import userProfiles from "../users/userProfiles";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/AUTHENTICATE';
@@ -66,6 +67,11 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
     const provider = yield select(providers.selectProviderById, action.payload);
 
     const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, provider.uri);
+
+    yield put(userProfiles.storeUserProfile({
+        id: response.user,
+        name: response.name,
+    }));
 
     yield put(accessToken.storeAccessToken({
         accessToken: response.accessToken,

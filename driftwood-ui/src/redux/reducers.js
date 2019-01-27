@@ -1,8 +1,10 @@
 // @flow
 
-import authReducers from '../authentication/reducers';
+import auth from '../authentication/reducers';
+import users from '../users/reducers';
 
 /** The set of reducers to use */
 export default {
-    auth: authReducers,
+    auth,
+    users,
 };
