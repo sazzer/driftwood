@@ -3,9 +3,13 @@
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import produce from "immer";
+import {buildSelector} from "../redux/selector";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/ACCESS_TOKEN';
+
+/** The path to the module */
+const MODULE_PATH = ['auth', 'accessToken'];
 
 ////////// The actual state
 
@@ -23,6 +27,16 @@ type State = {
 
 /** The initial state */
 export const initialState: State = {};
+
+
+/**
+ * Select the access token, if it's available
+ * @param state the state to get the access token from
+ * @return The access token
+ */
+export function selectAccessToken(state: State): ?AccessToken {
+    return state.token;
+}
 
 ////////// Action for storing the access token
 
@@ -63,4 +77,6 @@ export const sagas = [
 /** The actual module */
 export default {
     storeAccessToken,
+
+    selectAccessToken: buildSelector(MODULE_PATH, selectAccessToken),
 };
