@@ -10,7 +10,7 @@ const NAMESPACE = 'AUTH/ACCESS_TOKEN';
 ////////// The actual state
 
 /** The shape of the access token */
-type AccessToken = {
+export type AccessToken = {
     accessToken: string,
     expires: string,
     userId: string,
@@ -22,9 +22,9 @@ type State = {
 };
 
 /** The initial state */
-const initialState: State = {};
+export const initialState: State = {};
 
-////////// Action for starting authentication by a provider
+////////// Action for storing the access token
 
 /** Action for storing the access token */
 const STORE_ACCESS_TOKEN_ACTION = buildActionName('STORE', NAMESPACE);
