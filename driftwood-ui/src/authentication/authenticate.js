@@ -70,6 +70,7 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
     yield put(accessToken.storeAccessToken({
         accessToken: response.accessToken,
         expires: response.expires,
+        userId: response.user,
     }));
 }
 

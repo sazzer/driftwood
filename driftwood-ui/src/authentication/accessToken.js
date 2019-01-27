@@ -13,6 +13,7 @@ const NAMESPACE = 'AUTH/ACCESS_TOKEN';
 type AccessToken = {
     accessToken: string,
     expires: string,
+    userId: string,
 };
 
 /** The shape of the state */
@@ -34,7 +35,7 @@ export const storeAccessToken = createAction(STORE_ACCESS_TOKEN_ACTION);
 /** the shape of the Store Access Token action */
 type StoreAccessTokenAction = {
     type: string,
-    payload: AccessToken
+    payload: AccessToken,
 }
 
 /**
