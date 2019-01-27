@@ -4,6 +4,7 @@ import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import produce from "immer";
 import {buildSelector} from "../redux/selector";
+import {Maybe} from "monet";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/ACCESS_TOKEN';
@@ -28,7 +29,6 @@ type State = {
 /** The initial state */
 export const initialState: State = {};
 
-
 /**
  * Select the access token, if it's available
  * @param state the state to get the access token from
@@ -36,6 +36,17 @@ export const initialState: State = {};
  */
 export function selectAccessToken(state: State): ?AccessToken {
     return state.token;
+}
+
+/**
+ * Select the current user, if it's available
+ * @param state the state to get the current user from
+ * @return The ID of the current user
+ */
+export function selectCurrentUser(state: State): ?AccessToken {
+    return Maybe.fromUndefined(selectAccessToken(state))
+        .map(at => at.userId)
+        .orUndefined();
 }
 
 ////////// Action for storing the access token

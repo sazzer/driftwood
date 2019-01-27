@@ -10,7 +10,7 @@ const accessToken: AccessToken = {
 };
 
 describe('Selectors', () => {
-    describe('selectProviders()', () => {
+    describe('selectAccessToken()', () => {
         it('Returns undefined if there is no token the store', () => {
             const token = testSubject.selectAccessToken({
                 ...testSubject.initialState,
@@ -19,13 +19,32 @@ describe('Selectors', () => {
             expect(token).toBeUndefined();
         });
 
-        it('Returns the providers from the store', () => {
+        it('Returns the access token from the store', () => {
             const token = testSubject.selectAccessToken({
                 ...testSubject.initialState,
                 token: accessToken
             });
 
             expect(token).toEqual(accessToken);
+        });
+    });
+
+    describe('selectCurrentUser()', () => {
+        it('Returns undefined if there is no token the store', () => {
+            const user = testSubject.selectCurrentUser({
+                ...testSubject.initialState,
+            });
+
+            expect(user).toBeUndefined();
+        });
+
+        it('Returns the current user from the store', () => {
+            const user = testSubject.selectCurrentUser({
+                ...testSubject.initialState,
+                token: accessToken
+            });
+
+            expect(user).toEqual('userId');
         });
     });
 
