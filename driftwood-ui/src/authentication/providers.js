@@ -1,18 +1,11 @@
 // @flow
 import {createReducer} from 'redux-create-reducer';
 import produce from 'immer';
-import uriTemplate from 'uri-template';
 import {buildSelector} from "../redux/selector";
 import {buildSaga} from "../redux/buildSaga";
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {asyncAction, failedAction, startedAction, succeededAction} from "../redux/async";
 import {request} from "../api";
-
-/** The Base URI for the API */
-const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
-
-/** The template for starting authentication */
-const START_AUTH_URI_TEMPLATE = API_URI + '/api/authentication/external/{provider}/start';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/PROVIDERS';
@@ -32,10 +25,7 @@ export const PROVIDERS_STATE_FAILED = 'failed';
 ////////// The actual state
 
 /** Type representing a Provider */
-type Provider = {
-    id: string,
-    uri: string
-};
+type Provider = string;
 
 /** The shape of the state */
 type State = {
@@ -54,17 +44,7 @@ export const initialState: State = {
  * @return The providers
  */
 export function selectProviders(state: State): Array<string> {
-    return state.providers.map(provider => provider.id);
-}
-
-/**
- * Select the provider that has the given ID
- * @param state the state to get the provider from
- * @param provider the ID of the provider
- * @return the provider
- */
-export function selectProviderById(state: State, provider: string): ?Provider {
-    return state.providers.find(p => p.id === provider);
+    return state.providers;
 }
 
 /**
@@ -91,13 +71,7 @@ export function* loadProvidersSaga(): Generator<*, *, *> {
     yield asyncAction(STORE_PROVIDERS_ACTION, () =>
         request('/api/authentication/external')
             .then(result => {
-                return result.body.map(provider => {
-                    return {
-                        id: provider,
-                        uri: uriTemplate.parse(START_AUTH_URI_TEMPLATE)
-                            .expand({provider}),
-                    }
-                });
+                return result.body;
             }));
 }
 
@@ -166,6 +140,5 @@ export default {
     loadProviders,
 
     selectProviders: buildSelector(MODULE_PATH, selectProviders),
-    selectProviderById: buildSelector(MODULE_PATH, selectProviderById),
     selectProviderLoadState: buildSelector(MODULE_PATH, selectProviderLoadState),
 };

@@ -1,12 +1,18 @@
 // @flow
 
-import {select, call, put} from 'redux-saga/effects';
+import {call, put} from 'redux-saga/effects';
+import uriTemplate from 'uri-template';
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
-import providers from './providers';
 import accessToken from './accessToken';
 import userProfiles from "../users/userProfiles";
+
+/** The Base URI for the API */
+const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
+
+/** The template for starting authentication */
+const START_AUTH_URI_TEMPLATE = API_URI + '/api/authentication/external/{provider}/start';
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/AUTHENTICATE';
@@ -64,9 +70,10 @@ function openAuthenticationWindow(uri: string) {
  * Saga to starting authentication
  */
 export function* startAuthenticationSaga(action: StartAuthenticationAction): Generator<*, *, *> {
-    const provider = yield select(providers.selectProviderById, action.payload);
+    const providerUrl = uriTemplate.parse(START_AUTH_URI_TEMPLATE)
+        .expand({provider: action.payload});
 
-    const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, provider.uri);
+    const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, providerUrl);
 
     yield put(userProfiles.storeUserProfile({
         id: response.user,
