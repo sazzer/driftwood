@@ -3,7 +3,7 @@
 import React from 'react';
 import {NamespacesConsumer} from 'react-i18next';
 import {Menu} from 'semantic-ui-react';
-import LoginMenu from './ConnectedLoginMenu';
+import LoginMenu from './LoginMenu';
 
 /**
  * The component representing the header of the page

@@ -2,8 +2,8 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
-import authenticate from '../../authentication/authenticate';
-import providers from '../../authentication/providers';
+import authenticate from '../../../authentication/authenticate';
+import providers from '../../../authentication/providers';
 import LoginMenu, {LoginMenuStatus} from './LoginMenu';
 
 /**

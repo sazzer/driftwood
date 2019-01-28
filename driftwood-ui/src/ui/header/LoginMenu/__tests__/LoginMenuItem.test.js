@@ -3,7 +3,7 @@
 import React from 'react';
 import {render, mount} from 'enzyme';
 import LoginMenuItem from '../LoginMenuItem';
-import i18n from "../../../i18n";
+import i18n from "../../../../i18n";
 import {I18nextProvider} from "react-i18next";
 
 /** Set up the component to test */
