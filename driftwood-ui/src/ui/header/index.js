@@ -3,7 +3,7 @@
 import React from 'react';
 import {NamespacesConsumer} from 'react-i18next';
 import {Menu} from 'semantic-ui-react';
-import LoginMenu from './LoginMenu';
+import UserMenu from './UserMenu';
 
 /**
  * The component representing the header of the page
@@ -17,7 +17,7 @@ export function HeaderBar() {
                     <Menu attached='top' inverted data-test='header'>
                         <Menu.Item header position='left' data-test='title'>{t('page.title')}</Menu.Item>
                         <Menu.Menu position='right'>
-                            <LoginMenu />
+                            <UserMenu />
                         </Menu.Menu>
                     </Menu>
 

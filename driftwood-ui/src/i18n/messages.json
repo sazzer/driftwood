@@ -10,5 +10,11 @@
       "google": "Google",
       "twitter": "Twitter"
     }
+  },
+  "profile": {
+    "menu": {
+      "editProfile": "Edit Profile",
+      "logout": "Log Out"
+    }
   }
 }

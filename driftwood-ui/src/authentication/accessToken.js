@@ -90,4 +90,5 @@ export default {
     storeAccessToken,
 
     selectAccessToken: buildSelector(MODULE_PATH, selectAccessToken),
+    selectCurrentUser: buildSelector(MODULE_PATH, selectCurrentUser),
 };
