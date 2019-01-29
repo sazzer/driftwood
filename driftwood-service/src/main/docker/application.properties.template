@@ -5,6 +5,8 @@ spring.boot.admin.client.url=$SPRING_BOOT_ADMIN_UI
 driftwood.database.embedded=false
 spring.datasource.url=$DRIFTWOOD_PG_URL
 
+driftwood.authentication.google.authUrl=$DRIFTWOOD_GOOGLE_AUTHURL
+driftwood.authentication.google.tokenUrl=$DRIFTWOOD_GOOGLE_TOKENURL
 driftwood.authentication.google.clientId=$DRIFTWOOD_GOOGLE_CLIENTID
 driftwood.authentication.google.clientSecret=$DRIFTWOOD_GOOGLE_CLIENTSECRET
 

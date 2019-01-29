@@ -13,10 +13,16 @@ services:
             PGADMIN_DEFAULT_PASSWORD: driftwood
         ports:
             - "127.0.0.1:8090:80"
+    fakeauth:
+        image: sazzer/fakeauth
+        ports:
+            - "127.0.0.1:3000:3000"
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
             DRIFTWOOD_PG_URL: jdbc:postgresql://driftwood-postgres/driftwood?user=driftwood&password=driftwood
+            DRIFTWOOD_GOOGLE_AUTHURL: http://localhost:3000/google/o/oauth2/v2/auth
+            DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token
             DRIFTWOOD_GOOGLE_CLIENTID: 484625354845-d8v3pkn5corneerhbh4c03dg42nvj360.apps.googleusercontent.com
             DRIFTWOOD_GOOGLE_CLIENTSECRET: smPtH3V7rAFUPQ3qZ48Txa8a
         ports:
