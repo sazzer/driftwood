@@ -24,7 +24,7 @@ class ConnectedUserMenu extends React.Component<ConnectedUserMenuProps> {
      */
     render() {
         return Maybe.fromUndefined(this.props.currentUser)
-            .map(() => <ProfileMenu />)
+            .map((userId) => <ProfileMenu userId={userId} />)
             .orLazy(() => <LoginMenu />);
     }
 }

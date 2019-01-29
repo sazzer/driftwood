@@ -3,20 +3,24 @@
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import produce from "immer";
+import {buildSelector} from "../redux/selector";
 
 /** The namespace for the actions */
 const NAMESPACE = 'USERS/USER_PROFILES';
 
+/** The path to the module */
+const MODULE_PATH = ['users', 'userProfiles'];
+
 ////////// The actual state
 
-type UserProvider = {
+export type UserProvider = {
     provider: string,
     providerId: string,
     displayName: string,
 };
 
 /** The shape of the user profile */
-type UserProfile = {
+export type UserProfile = {
     id: string,
     name: string,
     email: ?string,
@@ -32,6 +36,15 @@ type State = {
 const initialState: State = {
     users: [],
 };
+
+/**
+ * Select the user profile that has the given ID
+ * @param state the state to get the data from
+ * @return The user profile
+ */
+export function selectUserWithId(state: State, id: string): ?UserProfile {
+    return state.users.find(user => user.id === id);
+}
 
 ////////// Action for starting authentication by a provider
 
@@ -72,4 +85,7 @@ export const sagas = [
 /** The actual module */
 export default {
     storeUserProfile,
+
+    selectUserWithId: buildSelector(MODULE_PATH, selectUserWithId),
+
 };
