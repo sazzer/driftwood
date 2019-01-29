@@ -10,3 +10,4 @@ driftwood.authentication.google.tokenUrl=$DRIFTWOOD_GOOGLE_TOKENURL
 driftwood.authentication.google.clientId=$DRIFTWOOD_GOOGLE_CLIENTID
 driftwood.authentication.google.clientSecret=$DRIFTWOOD_GOOGLE_CLIENTSECRET
 
+logging.level.uk.co.grahamcox=$DRIFTWOOD_LOGGING_LEVEL

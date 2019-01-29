@@ -20,6 +20,7 @@ services:
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
+            DRIFTWOOD_LOGGING_LEVEL: DEBUG
             DRIFTWOOD_PG_URL: jdbc:postgresql://driftwood-postgres/driftwood?user=driftwood&password=driftwood
             DRIFTWOOD_GOOGLE_AUTHURL: http://localhost:3000/google/o/oauth2/v2/auth
             DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token

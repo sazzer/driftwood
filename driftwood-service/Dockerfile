@@ -4,6 +4,8 @@ RUN apk add curl gettext
 
 ENV PORT=8080
 
+ENV DRIFTWOOD_LOGGING_LEVEL=INFO
+
 ENV DRIFTWOOD_PG_URL=
 
 ENV DRIFTWOOD_GOOGLE_AUTHURL=https://accounts.google.com/o/oauth2/v2/auth
