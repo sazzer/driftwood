@@ -1,6 +1,6 @@
 import HomePage from "../../pages/HomePage";
 
-describe('The Authentication Menu', function() {
+describe('Authentication using Google', function() {
     let homepage;
 
     beforeEach(function() {
@@ -8,19 +8,21 @@ describe('The Authentication Menu', function() {
             .visit();
     });
 
-    it('Appears when loading the home page', function() {
-        const header = homepage.header;
-        const loginMenu = header.loginMenu;
-
-        loginMenu.assertIsClosed();
-    });
-
-    it('Can be opened', function() {
+    it('is a valid option', function() {
         const header = homepage.header;
         const loginMenu = header.loginMenu;
 
         loginMenu.open();
 
-        loginMenu.assertIsOpen();
+        loginMenu.assertProviderPresent('google');
+    });
+
+    it('Successfully logs in', function() {
+        const header = homepage.header;
+        const loginMenu = header.loginMenu;
+
+        loginMenu.authenticateUsing('google');
+
+        header.profileMenu.assertUsersName('Test User');
     });
 });

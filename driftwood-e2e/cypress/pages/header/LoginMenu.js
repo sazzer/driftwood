@@ -21,4 +21,9 @@ export default class LoginMenu {
     open() {
         this._element.click();
     }
+
+    authenticateUsing(provider) {
+        this.open();
+        this._element.get(`div.menu div[data-provider="${provider}"]`).click();
+    }
 }
