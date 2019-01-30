@@ -1,13 +1,15 @@
+const BasePage = require('./BasePage');
+
 /**
  * Page Model for the HomePage
  */
-class HomePage {
+class HomePage extends BasePage {
     /**
      * Construct the home page
      * @param browser the browser
      */
     constructor(browser) {
-        this._browser = browser;
+        super(browser);
     }
 
     /**

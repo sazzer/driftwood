@@ -10,6 +10,7 @@
     "cucumber": "^5.1.0",
     "cucumber-pretty": "^1.5.0",
     "dotenv": "^6.2.0",
-    "selenium-webdriver": "^4.0.0-alpha.1"
+    "selenium-webdriver": "^4.0.0-alpha.1",
+    "unexpected": "^11.0.1"
   }
 }

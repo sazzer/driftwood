@@ -1,3 +1,4 @@
+const {By} = require('selenium-webdriver');
 const getConfig = require('../config');
 
 /** The base URL to use */
@@ -31,6 +32,10 @@ class Browser {
      */
     getPageModel(pageModel) {
         return new pageModel(this);
+    }
+
+    async getPageRoot() {
+        return await this._driver.findElement(By.id('root'));
     }
 }
 
