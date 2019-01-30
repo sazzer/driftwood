@@ -16,7 +16,7 @@ class HomePage extends BasePage {
      * Open the home page
      */
     async visit() {
-        this._browser.visit('/');
+        await this._browser.visit('/');
     }
 }
 

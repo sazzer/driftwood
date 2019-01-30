@@ -2,7 +2,7 @@ const {When, Then} = require('cucumber');
 const expect = require('unexpected');
 const HomePage = require('./HomePage');
 
-When('I load the home page', async function() {
+When('I load the home page', {timeout: 60 * 1000}, async function() {
     const homePage = this._browser.getPageModel(HomePage);
     await homePage.visit();
 });

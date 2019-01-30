@@ -1,4 +1,4 @@
-const {By} = require('selenium-webdriver');
+const {By, until} = require('selenium-webdriver');
 const getConfig = require('../config');
 
 /** The base URL to use */
@@ -24,6 +24,9 @@ class Browser {
         const realUrl = urlBase + url;
         console.log(`Loading URL: ${realUrl}`);
         await this._driver.get(realUrl);
+
+        await this._driver.wait(until.elementLocated(By.id('root')), 10000);
+        await this._driver.wait(until.elementLocated(By.css('[data-test="header"]')), 10000);
     }
 
     /**
