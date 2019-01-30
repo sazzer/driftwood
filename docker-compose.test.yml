@@ -23,5 +23,5 @@ services:
     driftwood-e2e:
         image: uk.co.grahamcox.driftwood/driftwood-e2e:latest
         environment:
-            - CYPRESS_baseUrl=http://driftwood-ui
+            - DRIFTWOOD_BASE_URL=http://driftwood-ui
 

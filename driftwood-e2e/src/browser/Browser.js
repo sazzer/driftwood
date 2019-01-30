@@ -1,3 +1,8 @@
+const getConfig = require('../config');
+
+/** The base URL to use */
+const urlBase = getConfig('DRIFTWOOD_BASE_URL');
+
 /**
  * Wrapper around the web browser
  */
@@ -15,7 +20,9 @@ class Browser {
      * @param url the URL
      */
     async visit(url) {
-        await this._driver.get(url);
+        const realUrl = urlBase + url;
+        console.log(`Loading URL: ${realUrl}`);
+        await this._driver.get(realUrl);
     }
 
     /**

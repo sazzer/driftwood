@@ -14,6 +14,8 @@ class HomePage {
      * Open the home page
      */
     async visit() {
-        this._browser.visit('http://www.google.com');
+        this._browser.visit('/');
     }
 }
+
+module.exports = HomePage;
