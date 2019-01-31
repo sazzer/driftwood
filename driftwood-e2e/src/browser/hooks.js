@@ -22,7 +22,9 @@ Before(function() {
 });
 
 After(async function(testCase) {
-    fs.mkdirSync('screenshots', {recursive: true});
+    if (!fs.existsSync('screenshots')) {
+        fs.mkdirSync('screenshots', {recursive: true});
+    }
 
     const featureFile = testCase.sourceLocation.uri;
     const scenario = testCase.pickle.name;
