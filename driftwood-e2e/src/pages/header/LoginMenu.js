@@ -43,6 +43,17 @@ class LoginMenu {
 
         return await Promise.all(providers);
     }
+
+    /**
+     * Log in with the given provider
+     * @param providerName the name of the provider
+     */
+    async login(providerName) {
+        await this.open();
+
+        const provider = await this._element.findElement(By.css(`[data-provider="${providerName}"]`));
+        await provider.click();
+    }
 }
 
 module.exports = LoginMenu;

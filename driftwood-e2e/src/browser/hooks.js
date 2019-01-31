@@ -49,3 +49,13 @@ AfterAll(async function() {
     await driver.quit();
     console.log('Quit web browser');
 });
+
+/**
+ * Wait for the given predicate to come true
+ * @param until the predicate
+ */
+async function wait(until) {
+    await driver.wait(until, 10000);
+}
+
+module.exports = wait;
