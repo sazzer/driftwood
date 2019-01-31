@@ -1,5 +1,5 @@
 const {By} = require('selenium-webdriver');
-const PageHeader = require('./PageHeader');
+const PageHeader = require('./header/PageHeader');
 
 class BasePage {
     /**
