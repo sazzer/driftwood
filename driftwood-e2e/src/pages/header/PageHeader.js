@@ -34,6 +34,14 @@ class PageHeader {
         await wait(until.elementLocated(locator));
 
         const loginMenuElement = await this._element.findElement(locator);
+
+        await wait(async () => {
+            const classes = await loginMenuElement.getAttribute('class');
+            return classes
+                .split(' ')
+                .indexOf('loading') === -1;
+        });
+
         return new LoginMenu(loginMenuElement);
     }
 

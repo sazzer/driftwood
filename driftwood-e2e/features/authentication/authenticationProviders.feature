@@ -4,8 +4,7 @@ Feature: Authentication Providers
     Then I am not logged in
     And the authentication options are:
       | google |
-
-  @wip
+    
   Scenario Outline: Authenticate with <Provider>
     When I load the home page
     And I authenticate with "<Provider>"
