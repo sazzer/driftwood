@@ -1,6 +1,6 @@
 version: '3'
 services:
-    driftwood-postgres:
+    postgres:
         image: postgres:10.6-alpine
         environment:
             POSTGRES_DB: driftwood
@@ -8,10 +8,12 @@ services:
             POSTGRES_PASSWORD: driftwood
     fakeauth:
         image: sazzer/fakeauth
+    chrome:
+        image: selenium/standalone-chrome:3.141.59-europium
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
-            DRIFTWOOD_PG_URL: jdbc:postgresql://driftwood-postgres/driftwood?user=driftwood&password=driftwood
+            DRIFTWOOD_PG_URL: jdbc:postgresql://postgres/driftwood?user=driftwood&password=driftwood
             DRIFTWOOD_GOOGLE_AUTHURL: http://fakeauth:3000/google/o/oauth2/v2/auth
             DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token
             DRIFTWOOD_GOOGLE_CLIENTID: 484625354845-d8v3pkn5corneerhbh4c03dg42nvj360.apps.googleusercontent.com
@@ -23,5 +25,7 @@ services:
     driftwood-e2e:
         image: uk.co.grahamcox.driftwood/driftwood-e2e:latest
         environment:
-            - CYPRESS_baseUrl=http://driftwood-ui
-
+            - DRIFTWOOD_BASE_URL=http://driftwood-ui
+            - SELENIUM_REMOTE_URL=http://chrome:4444/wd/hub
+        volumes:
+            - "./screenshots:/opt/driftwood/screenshots"

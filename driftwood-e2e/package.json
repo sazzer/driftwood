@@ -2,10 +2,15 @@
   "name": "driftwood-e2e",
   "version": "0.0.1",
   "private": true,
-  "devDependencies": {
-    "cypress": "^3.1.4"
-  },
   "scripts": {
+    "start": "cucumber-js --require src -f node_modules/cucumber-pretty features",
     "docker": "docker build -t uk.co.grahamcox.driftwood/driftwood-e2e:latest ."
+  },
+  "dependencies": {
+    "cucumber": "^5.1.0",
+    "cucumber-pretty": "^1.5.0",
+    "dotenv": "^6.2.0",
+    "selenium-webdriver": "^4.0.0-alpha.1",
+    "unexpected": "^11.0.1"
   }
 }
