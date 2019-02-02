@@ -16,13 +16,15 @@ const ProfileLinkStyles = {
  */
 export type ProfileMenuProps = {
     userId: string,
+
+    logout: () => void,
 }
 
 /**
  * The component representing the profile menu
  * @constructor
  */
-export default function ProfileMenu({userId}: ProfileMenuProps) {
+export default function ProfileMenu({userId, logout}: ProfileMenuProps) {
     return (
         <UsernameConsumer userId={userId}>
             {(username) =>
@@ -37,7 +39,7 @@ export default function ProfileMenu({userId}: ProfileMenuProps) {
                                 </Dropdown.Item>
 
                                 <Dropdown.Divider/>
-                                <Dropdown.Item data-test='logout' text={t('profile.menu.logout')} />
+                                <Dropdown.Item data-test='logout' text={t('profile.menu.logout')} onClick={logout} />
                             </Dropdown.Menu>
                         }
                     </NamespacesConsumer>

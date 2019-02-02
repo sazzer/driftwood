@@ -6,8 +6,8 @@ Feature: Authentication Providers
       | google |
     
   Scenario Outline: Authenticate with <Provider>
-    When I load the home page
-    And I authenticate with "<Provider>"
+    Given I load the home page
+    When I authenticate with "<Provider>"
     Then I am logged in as "<User Name>"
 
   Examples:

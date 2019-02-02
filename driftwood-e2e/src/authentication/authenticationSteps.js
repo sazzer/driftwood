@@ -8,6 +8,16 @@ When('I authenticate with {string}', async function (provider) {
     const loginMenu = await header.getLoginMenu();
 
     await loginMenu.login(provider);
+
+    profileMenu = await header.getProfileMenu();
+});
+
+When('I log out', async function () {
+    const homePage = this._browser.getPageModel(HomePage);
+    const header = await homePage.getHeader();
+    const profileMenu = await header.getProfileMenu();
+
+    await profileMenu.logout();
 });
 
 Then('I am not logged in', async function () {

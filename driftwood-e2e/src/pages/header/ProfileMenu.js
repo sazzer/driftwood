@@ -39,6 +39,16 @@ class ProfileMenu {
         const nameElement = await this._element.findElement(By.css('div.text[role="alert"]'));
         return await nameElement.getText();
     }
+
+    /**
+     * Log out of the application
+     */
+    async logout() {
+        this.open();
+        const logoutElement = await this._element.findElement(By.css('[data-test="logout"]'));
+
+        await logoutElement.click();
+    }
 }
 
 module.exports = ProfileMenu;

@@ -74,11 +74,31 @@ export function storeAccessTokenReducer(state: State, action: StoreAccessTokenAc
     });
 }
 
+////////// Action for logging out
+
+/** Action for logging out */
+const LOGOUT_ACTION = buildActionName('LOGOUT', NAMESPACE);
+
+/** Action Creator for logging out */
+export const logout = createAction(LOGOUT_ACTION);
+
+/**
+ * Reducer for logging out
+ * @param state the initial state
+ * @return the new state
+ */
+export function logoutReducer(state: State) {
+    return produce(state, (draft: State) => {
+        delete draft.token;
+    });
+}
+
 ////////// The actual module definition
 
 /** The reducers for this module */
 export const reducers = createReducer(initialState, {
     [STORE_ACCESS_TOKEN_ACTION]: storeAccessTokenReducer,
+    [LOGOUT_ACTION]: logoutReducer,
 });
 
 /** The sagas for this module */
@@ -88,6 +108,7 @@ export const sagas = [
 /** The actual module */
 export default {
     storeAccessToken,
+    logout,
 
     selectAccessToken: buildSelector(MODULE_PATH, selectAccessToken),
     selectCurrentUser: buildSelector(MODULE_PATH, selectCurrentUser),

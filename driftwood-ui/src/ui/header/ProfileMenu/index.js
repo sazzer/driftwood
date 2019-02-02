@@ -1,4 +1,4 @@
 // @flow
 
-import ProfileMenu from './ProfileMenu';
+import ProfileMenu from './ConnectedProfileMenu';
 export default ProfileMenu;

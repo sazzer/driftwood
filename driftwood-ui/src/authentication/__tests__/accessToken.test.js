@@ -75,6 +75,27 @@ describe('Store Access Token', () => {
             expect(oldState).toEqual(originalState);
         });
     });
+});
 
+describe('Logout', () => {
+    const oldState = {
+        ...testSubject.initialState,
+        token: accessToken,
+    };
+
+    describe('logoutReducer()', () => {
+        it('Returns the correct new state', () => {
+            const newState = testSubject.logoutReducer(oldState);
+
+            expect(newState).toEqual({});
+        });
+
+        it('Doesn\'t mutate the old state', () => {
+            const originalState = {...oldState};
+            testSubject.logoutReducer(oldState);
+
+            expect(oldState).toEqual(originalState);
+        });
+    });
 });
 
