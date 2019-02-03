@@ -4,8 +4,8 @@ Feature: Authentication Providers
     Then I am not logged in
     And the authentication options are:
       | google |
-    
-  Scenario Outline: Authenticate with <Provider>
+
+  Scenario Outline: Authenticate as a new user with <Provider>
     Given I load the home page
     When I authenticate with "<Provider>"
     Then I am logged in as "<User Name>"
@@ -13,3 +13,15 @@ Feature: Authentication Providers
   Examples:
     | Provider | User Name |
     | google   | Test User |
+
+  Scenario Outline: Authenticate as an existing user with <Provider>
+    Given a user exists with details:
+      | Name      | <User Name>                          |
+      | Providers | <Provider>:<Provider ID>:<User Name> |
+    And I load the home page
+    When I authenticate with "<Provider>"
+    Then I am logged in as "<User Name>"
+
+    Examples:
+      | Provider | Provider ID                | User Name |
+      | google   | testuserid-1234567890      | My User   |
