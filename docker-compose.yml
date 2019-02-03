@@ -6,6 +6,8 @@ services:
             POSTGRES_DB: driftwood
             POSTGRES_USER: driftwood
             POSTGRES_PASSWORD: driftwood
+        ports:
+            - "127.0.0.1:5432:5432"
     driftwood-phppgadmin:
         image: dpage/pgadmin4
         environment:

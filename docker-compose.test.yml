@@ -26,6 +26,7 @@ services:
         image: uk.co.grahamcox.driftwood/driftwood-e2e:latest
         environment:
             - DRIFTWOOD_BASE_URL=http://driftwood-ui
+            - DRIFTWOOD_PG_URL=postgresql://driftwood:driftwood@postgres:5432/driftwood
             - SELENIUM_REMOTE_URL=http://chrome:4444/wd/hub
         volumes:
             - "./screenshots:/opt/driftwood/screenshots"
