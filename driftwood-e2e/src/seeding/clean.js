@@ -1,3 +1,4 @@
+const debug = require('debug')('driftwood');
 const {Before} = require('cucumber');
 const {query, update} = require('./db');
 
@@ -12,7 +13,7 @@ const IGNORE_TABLES = ['flyway_schema_history', 'clients', 'users'];
  * The E2E tests do nothing with Clients, and there is one Client and one User that we can not delete.
  */
 Before(async function() {
-    console.log('Cleaning database');
+    debug('Cleaning database');
 
     const tables = await query(LIST_TABLES_QUERY);
     const tablesToClean = tables.map(table => table.table_name)
@@ -25,5 +26,5 @@ Before(async function() {
 
     // Now special handling for the users table
     const usersDeleted = await update('DELETE FROM users WHERE user_id NOT IN (SELECT owner_id FROM clients)');
-    console.log('Deleted %s users', usersDeleted);
+    debug('Deleted %s users', usersDeleted);
 });

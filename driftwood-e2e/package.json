@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "cucumber-js --require src -f node_modules/cucumber-pretty features",
+    "start": "cucumber-js --require src -f node_modules/cucumber-pretty features --tags 'not @wip' --tags 'not @ignore'",
+    "wip": "cucumber-js --require src -f node_modules/cucumber-pretty features --tags '@wip' --tags 'not @ignore'",
     "docker": "docker build -t uk.co.grahamcox.driftwood/driftwood-e2e:latest ."
   },
   "dependencies": {
     "cucumber": "^5.1.0",
     "cucumber-pretty": "^1.5.0",
+    "debug": "^4.1.1",
     "dotenv": "^6.2.0",
     "pg": "^7.8.0",
     "selenium-webdriver": "^4.0.0-alpha.1",

@@ -1,3 +1,4 @@
+const debug = require('debug')('driftwood');
 const fs = require('fs');
 const {After, AfterAll, BeforeAll, Before, Status} = require('cucumber');
 const {Builder} = require('selenium-webdriver');
@@ -14,7 +15,7 @@ BeforeAll(async () => {
         .forBrowser('chrome')
         .setLoggingPrefs(loggingPrefs)
         .build();
-    console.log('Created web browser');
+    debug('Created web browser');
 });
 
 Before(function() {
@@ -36,11 +37,11 @@ After(async function(testCase) {
 
     const fileBase = `screenshots/${fileFeatureBase}_${fileScenarioBase}`;
 
-    console.log('Writing screenshot to file: %s', fileBase + '.png');
+    debug('Writing screenshot to file: %s', fileBase + '.png');
     const image = await driver.takeScreenshot();
     fs.writeFileSync(`${fileBase}.png`, image, 'base64');
 
-    console.log('Writing browser log to file: %s', fileBase + '.log');
+    debug('Writing browser log to file: %s', fileBase + '.log');
     const logs = await driver.manage().logs().get(logging.Type.BROWSER);
     const browserLog = logs.map(entry => `[${entry.level.name}] ${entry.message}`)
         .join('\n');
@@ -49,7 +50,7 @@ After(async function(testCase) {
 
 AfterAll(async function() {
     await driver.quit();
-    console.log('Quit web browser');
+    debug('Quit web browser');
 });
 
 /**

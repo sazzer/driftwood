@@ -1,3 +1,4 @@
+const debug = require('debug')('driftwood');
 const {By, until} = require('selenium-webdriver');
 const getConfig = require('../config');
 
@@ -22,7 +23,7 @@ class Browser {
      */
     async visit(url) {
         const realUrl = urlBase + url;
-        console.log(`Loading URL: ${realUrl}`);
+        debug('Loading URL: %s', realUrl);
         await this._driver.get(realUrl);
 
         await this._driver.wait(until.elementLocated(By.id('root')), 10000);

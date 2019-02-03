@@ -1,3 +1,4 @@
+const debug = require('debug')('driftwood');
 const process = require('process');
 const { Pool, Client } = require('pg')
 const getConfig = require('../config');
@@ -5,7 +6,7 @@ const getConfig = require('../config');
 /** The base URL to use */
 const connectionString = getConfig('DRIFTWOOD_PG_URL');
 
-console.log('Connecting to database: %s', connectionString);
+debug('Connecting to database: %s', connectionString);
 
 /** The connection pool to use */
 const pool = new Pool({
@@ -24,7 +25,7 @@ pool.on('error', (err, client) => {
  * @param binds the binds to use, if any
  */
 async function query(sql, binds) {
-    console.log("Running query: %s", sql);
+    debug("Running query: %s", sql);
 
     const results = await pool.query(sql, binds);
     return results.rows;
@@ -36,7 +37,7 @@ async function query(sql, binds) {
  * @param binds the binds to use, if any
  */
 async function update(sql, binds) {
-    console.log("Running query: %s", sql);
+    debug("Running query: %s", sql);
 
     const results = await pool.query(sql, binds);
     return results.rowCount;
