@@ -1,4 +1,5 @@
-const {By} = require('selenium-webdriver');
+const {By, until} = require('selenium-webdriver');
+const wait = require('../../browser/wait');
 
 /**
  * Page Object representing the profile menu
@@ -46,6 +47,7 @@ class ProfileMenu {
     async logout() {
         this.open();
         const logoutElement = await this._element.findElement(By.css('[data-test="logout"]'));
+        await wait(until.elementIsVisible(logoutElement));
 
         await logoutElement.click();
     }
