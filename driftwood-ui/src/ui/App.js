@@ -2,6 +2,8 @@
 
 import React from 'react';
 import {Container} from 'semantic-ui-react';
+import {Route} from "react-router";
+import ProfilePage from './profile';
 import HeaderBar from './header';
 
 /**
@@ -14,6 +16,7 @@ function App() {
   return (
       <Container fluid>
           <HeaderBar />
+          <Route path='/profile' component={ProfilePage} />
       </Container>
   );
 }

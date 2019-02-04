@@ -1,6 +1,7 @@
 {
   "page": {
-    "title": "Driftwood"
+    "title": "Driftwood",
+    "notAuthenticated": "You must be logged in to access this page."
   },
   "authentication": {
     "menu": {
