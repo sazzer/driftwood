@@ -16,6 +16,34 @@
     "menu": {
       "editProfile": "Edit Profile",
       "logout": "Log Out"
+    },
+    "page": {
+      "breadcrumbs": {
+        "home": "Home",
+        "user": "User Profile: <1>{{username}}</1>"
+      },
+      "accountDetails": {
+        "header": "Account Details",
+        "screenName": {
+          "label": "Screen Name",
+          "placeholder": "Screen Name"
+        },
+        "email": {
+          "label": "Email Address",
+          "placeholder": "Email Address"
+        }
+      },
+      "loginProviders": {
+        "header": "Login Providers",
+        "facebook" : "Facebook",
+        "google": "Google",
+        "twitter": "Twitter"
+      },
+      "buttons": {
+        "save": "Save",
+        "or": "or",
+        "cancel":  "Cancel"
+      }
     }
   }
 }
