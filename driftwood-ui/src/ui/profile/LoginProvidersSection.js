@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import {Table} from 'semantic-ui-react';
 import {NamespacesConsumer} from "react-i18next";
