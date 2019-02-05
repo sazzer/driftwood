@@ -5,8 +5,7 @@ import uriTemplate from 'uri-template';
 import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import {buildSaga} from "../redux/buildSaga";
-import accessToken from './accessToken';
-import userProfiles from "../users/userProfiles";
+import rememberLogin from './rememberLogin';
 
 /** The Base URI for the API */
 const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
@@ -66,6 +65,7 @@ function openAuthenticationWindow(uri: string) {
             'centerscreen,menubar=no,toolbar=no,location,personalbar=no,status,dependent,resizable,scrollbars');
     });
 }
+
 /**
  * Saga to starting authentication
  */
@@ -75,16 +75,7 @@ export function* startAuthenticationSaga(action: StartAuthenticationAction): Gen
 
     const response: StartAuthenticationResponse = yield call(openAuthenticationWindow, providerUrl);
 
-    yield put(userProfiles.storeUserProfile({
-        id: response.user,
-        name: response.name,
-    }));
-
-    yield put(accessToken.storeAccessToken({
-        accessToken: response.accessToken,
-        expires: response.expires,
-        userId: response.user,
-    }));
+    yield put(rememberLogin.storeAuthentication(response));
 }
 
 ////////// The actual module definition

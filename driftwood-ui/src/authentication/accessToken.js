@@ -77,7 +77,7 @@ export function storeAccessTokenReducer(state: State, action: StoreAccessTokenAc
 ////////// Action for logging out
 
 /** Action for logging out */
-const LOGOUT_ACTION = buildActionName('LOGOUT', NAMESPACE);
+export const LOGOUT_ACTION = buildActionName('LOGOUT', NAMESPACE);
 
 /** Action Creator for logging out */
 export const logout = createAction(LOGOUT_ACTION);

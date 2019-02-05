@@ -19,7 +19,9 @@ BeforeAll(async () => {
 });
 
 Before(function() {
+    driver.executeScript('window.sessionStorage.clear();')
     this._browser = new Browser(driver);
+
 });
 
 After(async function(testCase) {
