@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Authenticated from '../authenticated';
-import ProfilePage from './ProfilePage';
+import ProfilePage from './FormikProfilePage';
 
 /**
  * Wrapper around the user profile to ensure it's only visible when the user is authenticated

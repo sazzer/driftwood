@@ -25,7 +25,7 @@ export default function AccountDetailsSection({values, handleChange, handleBlur}
         <NamespacesConsumer>
             {
                 (t) => (
-                    <Form>
+                    <>
                         <Form.Field required>
                             <label>{t('profile.page.accountDetails.screenName.label')}</label>
                             <input placeholder={t('profile.page.accountDetails.screenName.placeholder')}
@@ -42,7 +42,7 @@ export default function AccountDetailsSection({values, handleChange, handleBlur}
                                    onBlur={handleBlur}
                                    value={values.email}/>
                         </Form.Field>
-                    </Form>
+                    </>
                 )
             }
         </NamespacesConsumer>
