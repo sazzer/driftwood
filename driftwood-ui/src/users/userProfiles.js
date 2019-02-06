@@ -4,6 +4,10 @@ import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import produce from "immer";
 import {buildSelector} from "../redux/selector";
+import {asyncAction, succeededAction} from "../redux/async";
+import {request} from "../api";
+import {buildSaga} from "../redux/buildSaga";
+import {put} from "redux-saga/effects";
 
 /** The namespace for the actions */
 const NAMESPACE = 'USERS/USER_PROFILES';
@@ -29,12 +33,12 @@ export type UserProfile = {
 
 /** The shape of the state */
 type State = {
-    users: Array<UserProfile>,
+    users: { [string] : UserProfile },
 };
 
 /** The initial state */
 const initialState: State = {
-    users: [],
+    users: {},
 };
 
 /**
@@ -43,7 +47,7 @@ const initialState: State = {
  * @return The user profile
  */
 export function selectUserWithId(state: State, id: string): ?UserProfile {
-    return state.users.find(user => user.id === id);
+    return state.users[id];
 }
 
 ////////// Action for starting authentication by a provider
@@ -67,9 +71,52 @@ type StoreUserProfileAction = {
  */
 export function storeUserProfileReducer(state: State, action: StoreUserProfileAction) {
     return produce(state, (draft: State) => {
-        draft.users.push(action.payload);
+        draft.users[action.payload.id] = action.payload;
     });
 }
+
+////////// Action for loading a user by ID
+
+/** Action for loading a user by ID */
+const LOAD_USER_BY_ID_ACTION = buildActionName('LOAD_USER_BY_ID', NAMESPACE);
+
+/** Action Creator for loading a user by ID */
+export const loadUserById = createAction(LOAD_USER_BY_ID_ACTION);
+
+/** the shape of the Load User By Id action */
+type LoadUserByIdAction = {
+    type: string,
+    payload: string
+};
+
+/** the shape of the Load User By Id Success action */
+type LoadUserByIdSuccessAction = {
+    type: string,
+    payload: {
+        result: UserProfile
+    }
+}
+
+/**
+ * Saga to load the providers from the backend
+ */
+export function* loadUserByIdSaga(action: LoadUserByIdAction): Generator<*, *, *> {
+    yield asyncAction(LOAD_USER_BY_ID_ACTION, () =>
+        request('/api/users/' + action.payload)
+            .then(result => {
+                return result.body;
+            }));
+}
+
+/**
+ * Reducer for storing a user profile
+ * @param state the initial state
+ * @return the new state
+ */
+export function* loadUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Generator<*, *, *> {
+    yield put(storeUserProfile(action.payload.result));
+}
+
 
 ////////// The actual module definition
 
@@ -80,11 +127,14 @@ export const reducers = createReducer(initialState, {
 
 /** The sagas for this module */
 export const sagas = [
+    buildSaga(LOAD_USER_BY_ID_ACTION, loadUserByIdSaga),
+    buildSaga(succeededAction(LOAD_USER_BY_ID_ACTION), loadUserByIdSuccessSaga),
 ];
 
 /** The actual module */
 export default {
     storeUserProfile,
+    loadUserById,
 
     selectUserWithId: buildSelector(MODULE_PATH, selectUserWithId),
 

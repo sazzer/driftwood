@@ -17,7 +17,7 @@ type FormikProfilePageProps = {
 /**
  * Formik wrapper around the Profile Page
  */
-export default function FormikProfilePage({user}) {
+export default function FormikProfilePage({user} : FormikProfilePageProps) {
     return (
         <NamespacesConsumer>
             {

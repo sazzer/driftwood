@@ -11,13 +11,24 @@ import accessToken from "../../authentication/accessToken";
  * The props for the Profile Page component
  */
 type ConnectedProfilePageProps = {
+    currentUserId: string,
     currentUser: UserProfile,
+
+    loadUserById: (string) => void,
 }
 
 /**
  * Wrapper around the Profile Page component that deals with the Redux Store
  */
 class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
+    /**
+     * On mounting the component, go and request the current details of the user
+     */
+    componentDidMount() {
+        this.props.loadUserById(this.props.currentUserId);
+    }
+
+
     /**
      * Actually render the corrected menu
      * @return {*} the menu
@@ -34,11 +45,23 @@ class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
  * @return The props that this component needs
  */
 function mapStateToProps(state) {
-    const currentUser = accessToken.selectCurrentUser(state);
+    const currentUserId = accessToken.selectCurrentUser(state);
 
     return {
-        currentUser: userProfiles.selectUserWithId(state, currentUser),
+        currentUserId: currentUserId,
+        currentUser: userProfiles.selectUserWithId(state, currentUserId),
     }
 }
 
-export default connect(mapStateToProps)(ConnectedProfilePage);
+
+/**
+ * Map the appropriate actions for this component
+ * @param dispatch the mechanism to dispatch actions into the store
+ * @return the actions that this component needs
+ */
+function mapDispatchToProps(dispatch) {
+    return {
+        loadUserById: (userId) => dispatch(userProfiles.loadUserById(userId)),
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(ConnectedProfilePage);
