@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {Formik} from 'formik';
+import * as Yup from 'yup';
 import ProfilePage from './ProfilePage';
 
 /**
@@ -16,6 +17,11 @@ export default function FormikProfilePage() {
     return (
         <Formik
             initialValues={user}
+            enableReinitialize={true}
+            validationSchema={Yup.object().shape({
+                name: Yup.string().required('Name is required'),
+                email: Yup.string().email('Email Address is not valid'),
+            })}
             onSubmit={(values, { setSubmitting }) => {
                 setTimeout(() => {
                     alert(JSON.stringify(values, null, 2));

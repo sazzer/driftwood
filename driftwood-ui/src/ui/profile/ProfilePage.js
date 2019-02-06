@@ -17,6 +17,7 @@ type UserDetails = {
 /** Props for the Profile Page */
 type ProfilePageProps = {
     values: UserDetails,
+    errors: { [string] : string },
     handleChange: () => void,
     handleBlur: () => void,
     handleSubmit: () => void,
@@ -27,7 +28,9 @@ type ProfilePageProps = {
 /**
  * Actually render the profile page
  */
-export default function ProfilePage({values, handleChange, handleBlur, handleSubmit, handleReset, dirty} : ProfilePageProps) {
+export default function ProfilePage({values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
+    const isError = Object.values(errors).length > 0;
+
     const panels = [
         {
             key: 'accountDetails',
@@ -35,7 +38,10 @@ export default function ProfilePage({values, handleChange, handleBlur, handleSub
                 content: <NamespacesConsumer>{(t) => t('profile.page.accountDetails.header')}</NamespacesConsumer>
             },
             content: {
-                content: <AccountDetailsSection values={values} handleChange={handleChange} handleBlur={handleBlur}/>
+                content: <AccountDetailsSection values={values}
+                                                errors={errors}
+                                                handleChange={handleChange}
+                                                handleBlur={handleBlur}/>
             },
         },
         {
@@ -54,14 +60,14 @@ export default function ProfilePage({values, handleChange, handleBlur, handleSub
             <BreadcrumbSection values={values} />
             <UserNameSection values={values} />
 
-            <Form>
+            <Form error={isError}>
                 <Accordion defaultActiveIndex={0} panels={panels} />
 
                 <NamespacesConsumer>
                     {
                         (t) => (
                             <Button.Group>
-                                <Button primary type='submit' disabled={!dirty} onClick={handleSubmit}>{t('profile.page.buttons.save')}</Button>
+                                <Button primary type='submit' disabled={!dirty || isError} onClick={handleSubmit}>{t('profile.page.buttons.save')}</Button>
                                 <Button.Or text={t('profile.page.buttons.or')}/>
                                 <Button negative disabled={!dirty} onClick={handleReset}>{t('profile.page.buttons.cancel')}</Button>
                             </Button.Group>

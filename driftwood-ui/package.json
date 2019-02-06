@@ -23,7 +23,8 @@
     "redux-saga": "^0.16.2",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.84.0",
-    "uri-template": "^1.0.1"
+    "uri-template": "^1.0.1",
+    "yup": "^0.26.10"
   },
   "scripts": {
     "start": "react-scripts start",
