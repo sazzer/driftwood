@@ -5,16 +5,19 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import ProfilePage from './ProfilePage';
 import {NamespacesConsumer} from "react-i18next";
+import type {UserProfile} from "../../users/userProfiles";
+
+/**
+ * The props for the Profile Page component
+ */
+type FormikProfilePageProps = {
+    user: UserProfile,
+}
 
 /**
  * Formik wrapper around the Profile Page
  */
-export default function FormikProfilePage() {
-    const user = {
-        name: 'Graham',
-        email: 'graham@grahamcox.co.uk',
-    };
-
+export default function FormikProfilePage({user}) {
     return (
         <NamespacesConsumer>
             {

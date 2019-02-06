@@ -4,15 +4,11 @@ import React from 'react';
 import {Breadcrumb} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import {NamespacesConsumer, Trans} from "react-i18next";
-
-/** Type describing the user details */
-type UserDetails = {
-    name?: string,
-}
+import type {UserProfile} from "../../users/userProfiles";
 
 /** Props for the Breadcrumb Section */
 type BreadcrumbSectionProps = {
-    values: UserDetails,
+    values: UserProfile,
 }
 
 /**

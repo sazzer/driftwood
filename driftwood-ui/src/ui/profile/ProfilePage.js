@@ -7,16 +7,11 @@ import BreadcrumbSection from './BreadcrumbSection';
 import UserNameSection from './UserNameSection';
 import AccountDetailsSection from './AccountDetailsSection';
 import LoginProvidersSection from './LoginProvidersSection';
-
-/** Type describing the user details */
-type UserDetails = {
-    name?: string,
-    email?: string,
-}
+import type {UserProfile} from "../../users/userProfiles";
 
 /** Props for the Profile Page */
 type ProfilePageProps = {
-    values: UserDetails,
+    values: UserProfile,
     errors: { [string] : string },
     handleChange: () => void,
     handleBlur: () => void,

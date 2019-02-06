@@ -3,16 +3,11 @@
 import React from 'react';
 import {Form, Message} from 'semantic-ui-react';
 import {NamespacesConsumer} from "react-i18next";
-
-/** Type describing the user details */
-type UserDetails = {
-    name?: string,
-    email?: string,
-}
+import type {UserProfile} from "../../users/userProfiles";
 
 /** Props for the Account Details Section */
 type AccountDetailsSectionProps = {
-    values: UserDetails,
+    values: UserProfile,
     errors: { [string] : string },
     handleChange: () => void,
     handleBlur: () => void,

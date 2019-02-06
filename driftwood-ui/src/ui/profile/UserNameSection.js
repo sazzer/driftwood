@@ -2,15 +2,11 @@
 
 import React from 'react';
 import {Header} from 'semantic-ui-react';
-
-/** Type describing the user details */
-type UserDetails = {
-    name?: string,
-}
+import type {UserProfile} from "../../users/userProfiles";
 
 /** Props for the Username Section */
 type UserNameSectionProps = {
-    values: UserDetails,
+    values: UserProfile,
 }
 
 /**
