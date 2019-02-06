@@ -26,11 +26,17 @@
         "header": "Account Details",
         "screenName": {
           "label": "Screen Name",
-          "placeholder": "Screen Name"
+          "placeholder": "Screen Name",
+          "errors": {
+            "required": "Screen Name is required"
+          }
         },
         "email": {
           "label": "Email Address",
-          "placeholder": "Email Address"
+          "placeholder": "Email Address",
+          "errors": {
+            "email": "Email Address is invalid"
+          }
         }
       },
       "loginProviders": {

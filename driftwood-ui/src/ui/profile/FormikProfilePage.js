@@ -4,6 +4,7 @@ import React from 'react';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import ProfilePage from './ProfilePage';
+import {NamespacesConsumer} from "react-i18next";
 
 /**
  * Formik wrapper around the Profile Page
@@ -15,19 +16,27 @@ export default function FormikProfilePage() {
     };
 
     return (
-        <Formik
-            initialValues={user}
-            enableReinitialize={true}
-            validationSchema={Yup.object().shape({
-                name: Yup.string().required('Name is required'),
-                email: Yup.string().email('Email Address is not valid'),
-            })}
-            onSubmit={(values, { setSubmitting }) => {
-                setTimeout(() => {
-                    alert(JSON.stringify(values, null, 2));
-                    setSubmitting(false);
-                }, 400);
-            }}
-            render={ProfilePage} />
+        <NamespacesConsumer>
+            {
+                (t) => (
+
+                    <Formik
+                        initialValues={user}
+                        enableReinitialize={true}
+                        validationSchema={Yup.object().shape({
+                            name: Yup.string().required(t('profile.page.accountDetails.screenName.errors.required')),
+                            email: Yup.string().email(t('profile.page.accountDetails.email.errors.email')),
+                        })}
+                        validateOnChange={false}
+                        onSubmit={(values, {setSubmitting}) => {
+                            setTimeout(() => {
+                                alert(JSON.stringify(values, null, 2));
+                                setSubmitting(false);
+                            }, 400);
+                        }}
+                        render={ProfilePage}/>
+                )
+            }
+        </NamespacesConsumer>
     )
 }
