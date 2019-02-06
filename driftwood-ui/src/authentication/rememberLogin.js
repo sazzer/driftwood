@@ -77,7 +77,6 @@ export function logout() {
     if (window.sessionStorage) {
         window.sessionStorage.removeItem('driftwood_authentication');
     }
-
 }
 
 ////////// The actual module definition

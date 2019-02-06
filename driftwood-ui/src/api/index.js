@@ -12,6 +12,9 @@ const requester = fetchDefaults(fetch, API_URI, {
     },
 });
 
+/** The access token to use */
+let accessToken: ?string;
+
 /** Type representing the details of a request */
 export type Request = {
     method?: string,
@@ -38,6 +41,12 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
         method: params.method || DEFAULT_REQUEST.method,
     };
 
+    if (accessToken) {
+        fetchParams.headers = {
+            authorization: `Bearer ${accessToken}`,
+        }
+    }
+
     return requester(url, fetchParams)
         .catch(e => {
             console.log('Error making HTTP request: ', e);
@@ -52,4 +61,13 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
             console.log(e);
             throw e;
         })
+}
+
+/**
+ * Set the access token to use for all future requests
+ * @param token the token to use
+ */
+export function setAccessToken(token?: string) {
+    console.log('Setting access token to %s', token);
+    accessToken = token;
 }

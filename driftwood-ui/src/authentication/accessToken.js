@@ -5,6 +5,8 @@ import {createReducer} from "redux-create-reducer";
 import produce from "immer";
 import {buildSelector} from "../redux/selector";
 import {Maybe} from "monet";
+import {setAccessToken} from "../api";
+import {buildSaga} from "../redux/buildSaga";
 
 /** The namespace for the actions */
 const NAMESPACE = 'AUTH/ACCESS_TOKEN';
@@ -74,6 +76,15 @@ export function storeAccessTokenReducer(state: State, action: StoreAccessTokenAc
     });
 }
 
+/**
+ * Saga to set the access token to use for future requests
+ * @param action the action
+ */
+export function setAccessTokenSaga(action: StoreAccessTokenAction) {
+    setAccessToken(action.payload.accessToken);
+}
+
+
 ////////// Action for logging out
 
 /** Action for logging out */
@@ -93,6 +104,13 @@ export function logoutReducer(state: State) {
     });
 }
 
+/**
+ * Saga to clear the access token to use for future requests
+ */
+export function clearAccessTokenSaga() {
+    setAccessToken(null);
+}
+
 ////////// The actual module definition
 
 /** The reducers for this module */
@@ -103,6 +121,8 @@ export const reducers = createReducer(initialState, {
 
 /** The sagas for this module */
 export const sagas = [
+    buildSaga(STORE_ACCESS_TOKEN_ACTION, setAccessTokenSaga),
+    buildSaga(LOGOUT_ACTION, clearAccessTokenSaga),
 ];
 
 /** The actual module */
