@@ -8,9 +8,11 @@ import UserNameSection from './UserNameSection';
 import AccountDetailsSection from './AccountDetailsSection';
 import LoginProvidersSection from './LoginProvidersSection';
 import type {UserProfile} from "../../users/userProfiles";
+import {USER_PROFILE_LOADING} from "../../users/userProfiles";
 
 /** Props for the Profile Page */
 type ProfilePageProps = {
+    userStatus: string,
     values: UserProfile,
     errors: { [string] : string },
     handleChange: () => void,
@@ -23,7 +25,8 @@ type ProfilePageProps = {
 /**
  * Actually render the profile page
  */
-export default function ProfilePage({values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
+export default function ProfilePage({userStatus, values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
+    console.log(userStatus);
     const isError = Object.values(errors).length > 0;
 
     const panels = [
@@ -55,7 +58,7 @@ export default function ProfilePage({values, handleChange, handleBlur, handleSub
             <BreadcrumbSection values={values} />
             <UserNameSection values={values} />
 
-            <Form error={isError}>
+            <Form error={isError} loading={userStatus === USER_PROFILE_LOADING}>
                 <Accordion defaultActiveIndex={0} panels={panels} />
 
                 <NamespacesConsumer>

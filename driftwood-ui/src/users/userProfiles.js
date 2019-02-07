@@ -65,11 +65,24 @@ const initialState: State = {
 /**
  * Select the user profile that has the given ID
  * @param state the state to get the data from
+ * @param id The id of the user
  * @return The user profile
  */
 export function selectUserWithId(state: State, id: string): ?UserProfile {
     return Maybe.fromUndefined(state.users[id])
         .map(user => user.profile)
+        .orUndefined();
+}
+
+/**
+ * Select the status of the user profile that has the given ID
+ * @param state the state to get the data from
+ * @param id The id of the user
+ * @return The status
+ */
+export function selectStatusWithId(state: State, id: string): ?UserProfile {
+    return Maybe.fromUndefined(state.users[id])
+        .map(user => user.status)
         .orUndefined();
 }
 
@@ -211,5 +224,6 @@ export default {
     loadUserById,
 
     selectUserWithId: buildSelector(MODULE_PATH, selectUserWithId),
+    selectStatusWithId: buildSelector(MODULE_PATH, selectStatusWithId),
 
 };

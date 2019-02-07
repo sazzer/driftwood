@@ -12,17 +12,17 @@ import type {UserProfile} from "../../users/userProfiles";
  */
 type FormikProfilePageProps = {
     user: UserProfile,
+    userStatus: string,
 }
 
 /**
  * Formik wrapper around the Profile Page
  */
-export default function FormikProfilePage({user} : FormikProfilePageProps) {
+export default function FormikProfilePage({user, userStatus} : FormikProfilePageProps) {
     return (
         <NamespacesConsumer>
             {
                 (t) => (
-
                     <Formik
                         initialValues={user}
                         enableReinitialize={true}
@@ -37,7 +37,9 @@ export default function FormikProfilePage({user} : FormikProfilePageProps) {
                                 setSubmitting(false);
                             }, 400);
                         }}
-                        render={ProfilePage}/>
+                        render={props => {
+                            return <ProfilePage {...props} userStatus={userStatus} />;
+                        }} />
                 )
             }
         </NamespacesConsumer>
