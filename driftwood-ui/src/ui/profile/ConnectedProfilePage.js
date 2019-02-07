@@ -3,7 +3,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import ProfilePage from './FormikProfilePage';
-import type {UserProfile} from "../../users/userProfiles";
+import type {UserDetails} from "../../users/userProfiles";
 import userProfiles, {USER_PROFILE_LOADING} from "../../users/userProfiles";
 import accessToken from "../../authentication/accessToken";
 
@@ -12,8 +12,7 @@ import accessToken from "../../authentication/accessToken";
  */
 type ConnectedProfilePageProps = {
     currentUserId: string,
-    currentUser: UserProfile,
-    currentUserStatus: string,
+    currentUser: UserDetails,
 
     loadUserById: (string) => void,
 }
@@ -36,7 +35,9 @@ class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
      */
     render() {
         return (
-            <ProfilePage user={this.props.currentUser} userStatus={this.props.currentUserStatus} />
+            <ProfilePage user={this.props.currentUser.profile}
+                         userStatus={this.props.currentUser.status || USER_PROFILE_LOADING}
+                         errorCode={this.props.currentUser.errorCode} />
         )
     }
 }
@@ -50,8 +51,7 @@ function mapStateToProps(state) {
 
     return {
         currentUserId: currentUserId,
-        currentUser: userProfiles.selectUserWithId(state, currentUserId),
-        currentUserStatus: userProfiles.selectStatusWithId(state, currentUserId) || USER_PROFILE_LOADING,
+        currentUser: userProfiles.selectDetailsWithId(state, currentUserId),
     }
 }
 

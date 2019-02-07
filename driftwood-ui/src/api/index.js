@@ -23,6 +23,7 @@ export type Request = {
 /** Type representing the response of a request */
 export type Response = {
     body: any,
+    status: number,
 }
 
 /** Default values for a request, if not otherwise specified */
@@ -53,6 +54,8 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
         })
         .then(response => response.json().then(body => {
             return {
+                status: response.status,
+                headers: response.headers,
                 body,
             }
         }))

@@ -9,6 +9,7 @@ import {request} from "../api";
 import {buildSaga} from "../redux/buildSaga";
 import {put} from "redux-saga/effects";
 import {Maybe} from "monet";
+import type {Problem} from "../api/problem";
 
 /** The namespace for the actions */
 const NAMESPACE = 'USERS/USER_PROFILES';
@@ -48,9 +49,10 @@ export const USER_PROFILE_SAVED = 'SAVED';
 export const USER_PROFILE_FAILED = 'FAILED';
 
 /** The details of a user */
-type UserDetails = {
+export type UserDetails = {
     profile: UserProfile,
     status?: string,
+    errorCode?: string,
 }
 /** The shape of the state */
 type State = {
@@ -75,14 +77,13 @@ export function selectUserWithId(state: State, id: string): ?UserProfile {
 }
 
 /**
- * Select the status of the user profile that has the given ID
+ * Select the details of the user profile that has the given ID
  * @param state the state to get the data from
  * @param id The id of the user
  * @return The status
  */
-export function selectStatusWithId(state: State, id: string): ?UserProfile {
+export function selectDetailsWithId(state: State, id: string): ?UserDetails {
     return Maybe.fromUndefined(state.users[id])
-        .map(user => user.status)
         .orUndefined();
 }
 
@@ -139,6 +140,9 @@ type LoadUserByIdStartedAction = {
 type LoadUserByIdFailedAction = {
     type: string,
     input: Array<string>,
+    payload: {
+        error: Problem
+    },
 };
 
 /** the shape of the Load User By Id Success action */
@@ -179,6 +183,7 @@ export function failedLoadingUserProfileReducer(state: State, action: LoadUserBy
             draft.users[userId] = {};
         }
         draft.users[userId].status = USER_PROFILE_FAILED;
+        draft.users[userId].errorCode = action.payload.error.type;
     });
 }
 
@@ -189,7 +194,11 @@ export function* loadUserByIdSaga(action: LoadUserByIdAction): Generator<*, *, *
     yield asyncAction(LOAD_USER_BY_ID_ACTION, (userId: string) =>
         request('/api/users/' + userId)
             .then(result => {
-                return result.body;
+                if (result.status === 200) {
+                    return result.body;
+                } else {
+                    throw result.body;
+                }
             }), action.payload);
 }
 
@@ -224,6 +233,6 @@ export default {
     loadUserById,
 
     selectUserWithId: buildSelector(MODULE_PATH, selectUserWithId),
-    selectStatusWithId: buildSelector(MODULE_PATH, selectStatusWithId),
+    selectDetailsWithId: buildSelector(MODULE_PATH, selectDetailsWithId),
 
 };

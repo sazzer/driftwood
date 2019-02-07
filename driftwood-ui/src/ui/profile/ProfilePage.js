@@ -9,10 +9,12 @@ import AccountDetailsSection from './AccountDetailsSection';
 import LoginProvidersSection from './LoginProvidersSection';
 import type {UserProfile} from "../../users/userProfiles";
 import {USER_PROFILE_LOADING} from "../../users/userProfiles";
+import Error from "./Error";
 
 /** Props for the Profile Page */
 type ProfilePageProps = {
     userStatus: string,
+    errorCode?: string,
     values: UserProfile,
     errors: { [string] : string },
     handleChange: () => void,
@@ -25,9 +27,8 @@ type ProfilePageProps = {
 /**
  * Actually render the profile page
  */
-export default function ProfilePage({userStatus, values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
-    console.log(userStatus);
-    const isError = Object.values(errors).length > 0;
+export default function ProfilePage({userStatus, errorCode, values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
+    const isError = errorCode !== undefined || Object.values(errors).length > 0;
 
     const panels = [
         {
@@ -57,6 +58,7 @@ export default function ProfilePage({userStatus, values, handleChange, handleBlu
         <Container>
             <BreadcrumbSection values={values} />
             <UserNameSection values={values} />
+            { errorCode && <Error errorCode={errorCode} />}
 
             <Form error={isError} loading={userStatus === USER_PROFILE_LOADING}>
                 <Accordion defaultActiveIndex={0} panels={panels} />

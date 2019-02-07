@@ -49,6 +49,9 @@
         "save": "Save",
         "or": "or",
         "cancel":  "Cancel"
+      },
+      "errors": {
+        "tag:2018,grahamcox_co_uk:users/problems/not-found": "The user profile was not found"
       }
     }
   }

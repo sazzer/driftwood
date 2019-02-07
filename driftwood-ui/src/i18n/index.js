@@ -17,6 +17,8 @@ i18n
         ns: ['driftwood'],
         defaultNS: 'driftwood',
 
+        nsSeparator: false,
+
         debug: false,
 
         interpolation: {
