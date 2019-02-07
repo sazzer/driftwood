@@ -29,7 +29,7 @@ export default function AccountDetailsSection({values, errors, handleChange, han
                                     error={errors.name !== undefined}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    value={values.name} />
+                                    value={values.name || ''} />
                         <Message attached='bottom' error>{errors.name}</Message>
                         <Form.Input label={t('profile.page.accountDetails.email.label')}
                                     placeholder={t('profile.page.accountDetails.email.placeholder')}
@@ -37,7 +37,7 @@ export default function AccountDetailsSection({values, errors, handleChange, han
                                     error={errors.email !== undefined}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    value={values.email} />
+                                    value={values.email || ''} />
                         <Message attached='bottom' error>{errors.email}</Message>
                     </>
                 )

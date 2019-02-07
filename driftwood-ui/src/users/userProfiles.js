@@ -4,10 +4,11 @@ import {buildActionName, createAction} from "../redux/actionCreators";
 import {createReducer} from "redux-create-reducer";
 import produce from "immer";
 import {buildSelector} from "../redux/selector";
-import {asyncAction, succeededAction} from "../redux/async";
+import {asyncAction, failedAction, startedAction, succeededAction} from "../redux/async";
 import {request} from "../api";
 import {buildSaga} from "../redux/buildSaga";
 import {put} from "redux-saga/effects";
+import {Maybe} from "monet";
 
 /** The namespace for the actions */
 const NAMESPACE = 'USERS/USER_PROFILES';
@@ -31,9 +32,29 @@ export type UserProfile = {
     providers: ?Array<UserProvider>,
 };
 
+/** Status string to indicate that a user profile is currently loading */
+export const USER_PROFILE_LOADING = 'LOADING';
+
+/** Status string to indicate that a user profile has been loaded successfully */
+export const USER_PROFILE_LOADED = 'LOADED';
+
+/** Status string to indicate that a user profile is currently saving */
+export const USER_PROFILE_SAVING = 'SAVING';
+
+/** Status string to indicate that a user profile has been saved successfully */
+export const USER_PROFILE_SAVED = 'SAVED';
+
+/** Status string to indicate that a user profile failed to load or save */
+export const USER_PROFILE_FAILED = 'FAILED';
+
+/** The details of a user */
+type UserDetails = {
+    profile: UserProfile,
+    status?: string,
+}
 /** The shape of the state */
 type State = {
-    users: { [string] : UserProfile },
+    users: { [string] : UserDetails },
 };
 
 /** The initial state */
@@ -47,7 +68,9 @@ const initialState: State = {
  * @return The user profile
  */
 export function selectUserWithId(state: State, id: string): ?UserProfile {
-    return state.users[id];
+    return Maybe.fromUndefined(state.users[id])
+        .map(user => user.profile)
+        .orUndefined();
 }
 
 ////////// Action for starting authentication by a provider
@@ -67,11 +90,15 @@ type StoreUserProfileAction = {
 /**
  * Reducer for storing a user profile
  * @param state the initial state
+ * @param action The action
  * @return the new state
  */
 export function storeUserProfileReducer(state: State, action: StoreUserProfileAction) {
     return produce(state, (draft: State) => {
-        draft.users[action.payload.id] = action.payload;
+        draft.users[action.payload.id] = {
+            profile: action.payload,
+            status: USER_PROFILE_LOADED,
+        };
     });
 }
 
@@ -89,28 +116,73 @@ type LoadUserByIdAction = {
     payload: string
 };
 
+/** the shape of the Load User By Id Started action */
+type LoadUserByIdStartedAction = {
+    type: string,
+    input: Array<string>,
+};
+
+/** the shape of the Load User By Id Failed action */
+type LoadUserByIdFailedAction = {
+    type: string,
+    input: Array<string>,
+};
+
 /** the shape of the Load User By Id Success action */
 type LoadUserByIdSuccessAction = {
     type: string,
     payload: {
         result: UserProfile
-    }
+    },
+    input: Array<string>,
+};
+
+/**
+ * Reducer for storing that we are starting to load a user profile
+ * @param state the initial state
+ * @param action The action
+ * @return the new state
+ */
+export function startLoadingUserProfileReducer(state: State, action: LoadUserByIdStartedAction) {
+    return produce(state, (draft: State) => {
+        const userId = action.input[0];
+        if (draft.users[userId] === undefined) {
+            draft.users[userId] = {};
+        }
+        draft.users[userId].status = USER_PROFILE_LOADING;
+    });
+}
+
+/**
+ * Reducer for storing that we failed to load a user profile
+ * @param state the initial state
+ * @param action The action
+ * @return the new state
+ */
+export function failedLoadingUserProfileReducer(state: State, action: LoadUserByIdFailedAction) {
+    return produce(state, (draft: State) => {
+        const userId = action.input[0];
+        if (draft.users[userId] === undefined) {
+            draft.users[userId] = {};
+        }
+        draft.users[userId].status = USER_PROFILE_FAILED;
+    });
 }
 
 /**
  * Saga to load the providers from the backend
  */
 export function* loadUserByIdSaga(action: LoadUserByIdAction): Generator<*, *, *> {
-    yield asyncAction(LOAD_USER_BY_ID_ACTION, () =>
-        request('/api/users/' + action.payload)
+    yield asyncAction(LOAD_USER_BY_ID_ACTION, (userId: string) =>
+        request('/api/users/' + userId)
             .then(result => {
                 return result.body;
-            }));
+            }), action.payload);
 }
 
 /**
  * Reducer for storing a user profile
- * @param state the initial state
+ * @param action the action
  * @return the new state
  */
 export function* loadUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Generator<*, *, *> {
@@ -123,6 +195,8 @@ export function* loadUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Gen
 /** The reducers for this module */
 export const reducers = createReducer(initialState, {
     [STORE_USER_PROFILE_ACTION]: storeUserProfileReducer,
+    [startedAction(LOAD_USER_BY_ID_ACTION)]: startLoadingUserProfileReducer,
+    [failedAction(LOAD_USER_BY_ID_ACTION)]: failedLoadingUserProfileReducer,
 });
 
 /** The sagas for this module */

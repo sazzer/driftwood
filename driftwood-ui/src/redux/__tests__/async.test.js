@@ -24,13 +24,13 @@ describe('Async Action', () => {
             const gen = testSubject.asyncAction('TEST', () => {}, 'payload');
             const yieldValue = gen.next();
             expect(yieldValue.done).toEqual(false);
-            expect(yieldValue.value).toEqual(put({type: 'TEST_STARTED', payload: {input: ['payload']}}));
+            expect(yieldValue.value).toEqual(put({type: 'TEST_STARTED', input: ['payload']}));
         });
         it('Doesn\'t include a payload if there wasn\'t one', () => {
             const gen = testSubject.asyncAction('TEST', () => {});
             const yieldValue = gen.next();
             expect(yieldValue.done).toEqual(false);
-            expect(yieldValue.value).toEqual(put({type: 'TEST_STARTED', payload: {input: []}}));
+            expect(yieldValue.value).toEqual(put({type: 'TEST_STARTED', input: []}));
         });
     });
 
@@ -63,7 +63,7 @@ describe('Async Action', () => {
                 gen.next(); // Call Function
                 const yieldValue = gen.next(1);
                 expect(yieldValue.done).toEqual(false);
-                await expect(yieldValue.value).toEqual(put({type: 'TEST_SUCCEEDED', payload: {input: ['payload'], result: 1}}));
+                await expect(yieldValue.value).toEqual(put({type: 'TEST_SUCCEEDED', input: ['payload'], payload: {result: 1}}));
             });
             it('Doesn\'t include a payload if there wasn\'t one', async () => {
                 const gen = testSubject.asyncAction('TEST', action);
@@ -71,7 +71,7 @@ describe('Async Action', () => {
                 gen.next(); // Call Function
                 const yieldValue = gen.next(1);
                 expect(yieldValue.done).toEqual(false);
-                await expect(yieldValue.value).toEqual(put({type: 'TEST_SUCCEEDED', payload: {input: [], result: 1}}));
+                await expect(yieldValue.value).toEqual(put({type: 'TEST_SUCCEEDED', input: [], payload: {result: 1}}));
             });
         });
 
@@ -83,7 +83,7 @@ describe('Async Action', () => {
                 gen.next(); // Call Succeeded
                 const yieldValue = gen.next();
                 expect(yieldValue.done).toEqual(false);
-                expect(yieldValue.value).toEqual(put({type: 'TEST_FINISHED', payload: {input: ['payload']}}));
+                expect(yieldValue.value).toEqual(put({type: 'TEST_FINISHED', input: ['payload'], payload: {}}));
             });
             it('Doesn\'t include a payload if there wasn\'t one', () => {
                 const gen = testSubject.asyncAction('TEST', action);
@@ -92,7 +92,7 @@ describe('Async Action', () => {
                 gen.next(); // Call Succeeded
                 const yieldValue = gen.next();
                 expect(yieldValue.done).toEqual(false);
-                expect(yieldValue.value).toEqual(put({type: 'TEST_FINISHED', payload: {input: []}}));
+                expect(yieldValue.value).toEqual(put({type: 'TEST_FINISHED', input: [], payload: {}}));
             });
         });
 

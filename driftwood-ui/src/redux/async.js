@@ -24,9 +24,7 @@ export const failedAction = (action: string) => action + '_FAILED';
 export function* asyncAction(type: string, callback: function, ...payload: Array<any>) : Generator<*, *, *> {
     yield put({
         type: startedAction(type),
-        payload: {
-            input: payload,
-        },
+        input: payload,
     });
 
     try {
@@ -34,16 +32,16 @@ export function* asyncAction(type: string, callback: function, ...payload: Array
 
         yield put({
             type: succeededAction(type),
+            input: payload,
             payload: {
-                input: payload,
                 result,
             },
         });
     } catch (error) {
         yield put({
             type: failedAction(type),
+            input: payload,
             payload: {
-                input: payload,
                 error,
             },
         });
@@ -51,8 +49,8 @@ export function* asyncAction(type: string, callback: function, ...payload: Array
 
     yield put({
         type: finishedAction(type),
+        input: payload,
         payload: {
-            input: payload,
         },
     });
 }
