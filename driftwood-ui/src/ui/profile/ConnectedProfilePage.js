@@ -4,7 +4,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import ProfilePage from './FormikProfilePage';
 import type {UserDetails, UserProfile} from "../../users/userProfiles";
-import userProfiles, {USER_PROFILE_LOADING} from "../../users/userProfiles";
+import userProfiles, {USER_PROFILE_PROCESSING} from "../../users/userProfiles";
 import accessToken from "../../authentication/accessToken";
 
 /**
@@ -15,6 +15,7 @@ type ConnectedProfilePageProps = {
     currentUser: UserDetails,
 
     loadUserById: (string) => void,
+    saveUserById: (string, UserProfile) => void,
 }
 
 /**
@@ -38,7 +39,7 @@ class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
     render() {
         return (
             <ProfilePage user={this.props.currentUser.profile}
-                         userStatus={this.props.currentUser.status || USER_PROFILE_LOADING}
+                         userStatus={this.props.currentUser.status || USER_PROFILE_PROCESSING}
                          errorCode={this.props.currentUser.errorCode}
                          saveUser={this._saveUser} />
         )

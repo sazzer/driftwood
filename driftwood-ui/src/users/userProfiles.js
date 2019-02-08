@@ -33,17 +33,11 @@ export type UserProfile = {
     providers: ?Array<UserProvider>,
 };
 
-/** Status string to indicate that a user profile is currently loading */
-export const USER_PROFILE_LOADING = 'LOADING';
+/** Status string to indicate that a user profile is currently loading or saving */
+export const USER_PROFILE_PROCESSING = 'PROCESSING';
 
 /** Status string to indicate that a user profile has been loaded successfully */
 export const USER_PROFILE_LOADED = 'LOADED';
-
-/** Status string to indicate that a user profile is currently saving */
-export const USER_PROFILE_SAVING = 'SAVING';
-
-/** Status string to indicate that a user profile has been saved successfully */
-export const USER_PROFILE_SAVED = 'SAVED';
 
 /** Status string to indicate that a user profile failed to load or save */
 export const USER_PROFILE_FAILED = 'FAILED';
@@ -116,6 +110,23 @@ export function storeUserProfileReducer(state: State, action: StoreUserProfileAc
     });
 }
 
+////////// Common details between loading and saving a user
+
+/** the shape of the Process User By Id Started action */
+type ProcessUserByIdStartedAction = {
+    type: string,
+    input: Array<string>,
+};
+
+/** the shape of the Load User By Id Failed action */
+type ProcessUserByIdFailedAction = {
+    type: string,
+    input: Array<string>,
+    payload: {
+        error: Problem
+    },
+};
+
 ////////// Action for loading a user by ID
 
 /** Action for loading a user by ID */
@@ -130,21 +141,6 @@ type LoadUserByIdAction = {
     payload: string
 };
 
-/** the shape of the Load User By Id Started action */
-type LoadUserByIdStartedAction = {
-    type: string,
-    input: Array<string>,
-};
-
-/** the shape of the Load User By Id Failed action */
-type LoadUserByIdFailedAction = {
-    type: string,
-    input: Array<string>,
-    payload: {
-        error: Problem
-    },
-};
-
 /** the shape of the Load User By Id Success action */
 type LoadUserByIdSuccessAction = {
     type: string,
@@ -155,28 +151,28 @@ type LoadUserByIdSuccessAction = {
 };
 
 /**
- * Reducer for storing that we are starting to load a user profile
+ * Reducer for storing that we are starting to load or save a user profile
  * @param state the initial state
  * @param action The action
  * @return the new state
  */
-export function startLoadingUserProfileReducer(state: State, action: LoadUserByIdStartedAction) {
+export function startProcessingUserProfileReducer(state: State, action: ProcessUserByIdStartedAction) {
     return produce(state, (draft: State) => {
         const userId = action.input[0];
         if (draft.users[userId] === undefined) {
             draft.users[userId] = {};
         }
-        draft.users[userId].status = USER_PROFILE_LOADING;
+        draft.users[userId].status = USER_PROFILE_PROCESSING;
     });
 }
 
 /**
- * Reducer for storing that we failed to load a user profile
+ * Reducer for storing that we failed to load or save a user profile
  * @param state the initial state
  * @param action The action
  * @return the new state
  */
-export function failedLoadingUserProfileReducer(state: State, action: LoadUserByIdFailedAction) {
+export function failedProcessingUserProfileReducer(state: State, action: ProcessUserByIdFailedAction) {
     return produce(state, (draft: State) => {
         const userId = action.input[0];
         if (draft.users[userId] === undefined) {
@@ -207,7 +203,7 @@ export function* loadUserByIdSaga(action: LoadUserByIdAction): Generator<*, *, *
  * @param action the action
  * @return the new state
  */
-export function* loadUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Generator<*, *, *> {
+export function* processUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Generator<*, *, *> {
     yield put(storeUserProfile(action.payload.result));
 }
 
@@ -240,7 +236,7 @@ export function* saveUserByIdSaga(action: SaveUserByIdAction): Generator<*, *, *
                 } else {
                     throw result.body;
                 }
-            }));
+            }), action.payload.id);
 }
 
 ////////// The actual module definition
@@ -248,17 +244,21 @@ export function* saveUserByIdSaga(action: SaveUserByIdAction): Generator<*, *, *
 /** The reducers for this module */
 export const reducers = createReducer(initialState, {
     [STORE_USER_PROFILE_ACTION]: storeUserProfileReducer,
-    [startedAction(LOAD_USER_BY_ID_ACTION)]: startLoadingUserProfileReducer,
-    [failedAction(LOAD_USER_BY_ID_ACTION)]: failedLoadingUserProfileReducer,
+
+    [startedAction(LOAD_USER_BY_ID_ACTION)]: startProcessingUserProfileReducer,
+    [failedAction(LOAD_USER_BY_ID_ACTION)]: failedProcessingUserProfileReducer,
+
+    [startedAction(SAVE_USER_BY_ID_ACTION)]: startProcessingUserProfileReducer,
+    [failedAction(SAVE_USER_BY_ID_ACTION)]: failedProcessingUserProfileReducer,
 });
 
 /** The sagas for this module */
 export const sagas = [
     buildSaga(LOAD_USER_BY_ID_ACTION, loadUserByIdSaga),
-    buildSaga(succeededAction(LOAD_USER_BY_ID_ACTION), loadUserByIdSuccessSaga),
+    buildSaga(succeededAction(LOAD_USER_BY_ID_ACTION), processUserByIdSuccessSaga),
 
     buildSaga(SAVE_USER_BY_ID_ACTION, saveUserByIdSaga),
-    buildSaga(succeededAction(SAVE_USER_BY_ID_ACTION), loadUserByIdSuccessSaga),
+    buildSaga(succeededAction(SAVE_USER_BY_ID_ACTION), processUserByIdSuccessSaga),
 ];
 
 /** The actual module */

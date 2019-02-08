@@ -42,6 +42,7 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
     const fetchParams = {
         method: params.method || DEFAULT_REQUEST.method,
         headers: {},
+        body: undefined,
     };
 
     if (accessToken) {

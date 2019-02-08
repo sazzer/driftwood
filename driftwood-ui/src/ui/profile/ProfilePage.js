@@ -8,7 +8,7 @@ import UserNameSection from './UserNameSection';
 import AccountDetailsSection from './AccountDetailsSection';
 import LoginProvidersSection from './LoginProvidersSection';
 import type {UserProfile} from "../../users/userProfiles";
-import {USER_PROFILE_LOADING} from "../../users/userProfiles";
+import {USER_PROFILE_PROCESSING} from "../../users/userProfiles";
 import Error from "./Error";
 
 /** Props for the Profile Page */
@@ -60,7 +60,7 @@ export default function ProfilePage({userStatus, errorCode, values, handleChange
             <UserNameSection values={values} />
             { errorCode && <Error errorCode={errorCode} />}
 
-            <Form error={isError} loading={userStatus === USER_PROFILE_LOADING}>
+            <Form error={isError} loading={userStatus === USER_PROFILE_PROCESSING}>
                 <Accordion defaultActiveIndex={0} panels={panels} />
 
                 <NamespacesConsumer>
