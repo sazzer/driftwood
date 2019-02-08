@@ -30,7 +30,7 @@ export type UserProfile = {
     id: string,
     name: string,
     email: ?string,
-    providers: ?Array<UserProvider>,
+    logins: ?Array<UserProvider>,
 };
 
 /** Status string to indicate that a user profile is currently loading or saving */

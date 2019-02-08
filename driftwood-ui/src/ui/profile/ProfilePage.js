@@ -49,7 +49,7 @@ export default function ProfilePage({userStatus, errorCode, values, handleChange
                 content: <NamespacesConsumer>{(t) => t('profile.page.loginProviders.header')}</NamespacesConsumer>
             },
             content: {
-                content: <LoginProvidersSection />
+                content: <LoginProvidersSection values={values} />
             },
         },
     ];
