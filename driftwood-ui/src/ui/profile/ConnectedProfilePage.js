@@ -3,7 +3,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import ProfilePage from './FormikProfilePage';
-import type {UserDetails} from "../../users/userProfiles";
+import type {UserDetails, UserProfile} from "../../users/userProfiles";
 import userProfiles, {USER_PROFILE_LOADING} from "../../users/userProfiles";
 import accessToken from "../../authentication/accessToken";
 
@@ -21,6 +21,8 @@ type ConnectedProfilePageProps = {
  * Wrapper around the Profile Page component that deals with the Redux Store
  */
 class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
+    _saveUser = (userProfile: UserProfile) => this.props.saveUserById(this.props.currentUserId, userProfile);
+
     /**
      * On mounting the component, go and request the current details of the user
      */
@@ -37,7 +39,8 @@ class ConnectedProfilePage extends React.Component<ConnectedProfilePageProps> {
         return (
             <ProfilePage user={this.props.currentUser.profile}
                          userStatus={this.props.currentUser.status || USER_PROFILE_LOADING}
-                         errorCode={this.props.currentUser.errorCode} />
+                         errorCode={this.props.currentUser.errorCode}
+                         saveUser={this._saveUser} />
         )
     }
 }
@@ -64,6 +67,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         loadUserById: (userId) => dispatch(userProfiles.loadUserById(userId)),
+        saveUserById: (userId, userProfile) => dispatch(userProfiles.saveUserById({id: userId, user: userProfile})),
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ConnectedProfilePage);

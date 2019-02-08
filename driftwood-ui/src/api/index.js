@@ -18,6 +18,7 @@ let accessToken: string | null;
 /** Type representing the details of a request */
 export type Request = {
     method?: string,
+    data?: any,
 };
 
 /** Type representing the response of a request */
@@ -40,11 +41,16 @@ const DEFAULT_REQUEST = {
 export function request(url: string, params: Request = DEFAULT_REQUEST) : Promise<Response> {
     const fetchParams = {
         method: params.method || DEFAULT_REQUEST.method,
-        headers: {}
+        headers: {},
     };
 
     if (accessToken) {
         fetchParams.headers.authorization = `Bearer ${accessToken}`;
+    }
+
+    if (params.data) {
+        fetchParams.body = JSON.stringify(params.data);
+        fetchParams.headers['content-type'] = 'application/json';
     }
 
     return requester(url, fetchParams)

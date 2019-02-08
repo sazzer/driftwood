@@ -211,6 +211,37 @@ export function* loadUserByIdSuccessSaga(action: LoadUserByIdSuccessAction): Gen
     yield put(storeUserProfile(action.payload.result));
 }
 
+////////// Action for saving a user by ID
+
+/** Action for saving a user by ID */
+const SAVE_USER_BY_ID_ACTION = buildActionName('SAVE_USER_BY_ID', NAMESPACE);
+
+/** Action Creator for saving a user by ID */
+export const saveUserById = createAction(SAVE_USER_BY_ID_ACTION);
+
+/** the shape of the Save User By Id action */
+type SaveUserByIdAction = {
+    type: string,
+    payload: {
+        id: string,
+        user: UserProfile
+    }
+};
+
+/**
+ * Saga to save the providers from the backend
+ */
+export function* saveUserByIdSaga(action: SaveUserByIdAction): Generator<*, *, *> {
+    yield asyncAction(SAVE_USER_BY_ID_ACTION, () =>
+        request('/api/users/' + action.payload.id, {method: 'put', data: action.payload.user})
+            .then(result => {
+                if (result.status === 200) {
+                    return result.body;
+                } else {
+                    throw result.body;
+                }
+            }));
+}
 
 ////////// The actual module definition
 
@@ -225,12 +256,16 @@ export const reducers = createReducer(initialState, {
 export const sagas = [
     buildSaga(LOAD_USER_BY_ID_ACTION, loadUserByIdSaga),
     buildSaga(succeededAction(LOAD_USER_BY_ID_ACTION), loadUserByIdSuccessSaga),
+
+    buildSaga(SAVE_USER_BY_ID_ACTION, saveUserByIdSaga),
+    buildSaga(succeededAction(SAVE_USER_BY_ID_ACTION), loadUserByIdSuccessSaga),
 ];
 
 /** The actual module */
 export default {
     storeUserProfile,
     loadUserById,
+    saveUserById,
 
     selectUserWithId: buildSelector(MODULE_PATH, selectUserWithId),
     selectDetailsWithId: buildSelector(MODULE_PATH, selectDetailsWithId),

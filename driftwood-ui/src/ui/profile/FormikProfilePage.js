@@ -14,12 +14,14 @@ type FormikProfilePageProps = {
     user: UserProfile,
     userStatus: string,
     errorCode?: string,
+
+    saveUser: (UserProfile) => void,
 }
 
 /**
  * Formik wrapper around the Profile Page
  */
-export default function FormikProfilePage({user, userStatus, errorCode} : FormikProfilePageProps) {
+export default function FormikProfilePage({user, userStatus, errorCode, saveUser} : FormikProfilePageProps) {
     return (
         <NamespacesConsumer>
             {
@@ -32,11 +34,8 @@ export default function FormikProfilePage({user, userStatus, errorCode} : Formik
                             email: Yup.string().email(t('profile.page.accountDetails.email.errors.email')),
                         })}
                         validateOnChange={false}
-                        onSubmit={(values, {setSubmitting}) => {
-                            setTimeout(() => {
-                                alert(JSON.stringify(values, null, 2));
-                                setSubmitting(false);
-                            }, 400);
+                        onSubmit={(values) => {
+                            saveUser(values);
                         }}
                         render={props => {
                             return <ProfilePage {...props} errorCode={errorCode} userStatus={userStatus} />;
