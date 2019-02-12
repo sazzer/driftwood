@@ -1,16 +1,9 @@
 // @flow
 
-import fetchDefaults from 'fetch-defaults';
+import axios from 'axios';
 
 /** The Base URI for the API */
 const API_URI = process.env.REACT_APP_API_URI || window.DRIFTWOOD_CONFIG.API_URI;
-
-const requester = fetchDefaults(fetch, API_URI, {
-    mode: 'cors',
-    headers: {
-        accept: 'application/json',
-    },
-});
 
 /** The access token to use */
 let accessToken: string | null;
@@ -40,9 +33,11 @@ const DEFAULT_REQUEST = {
  */
 export function request(url: string, params: Request = DEFAULT_REQUEST) : Promise<Response> {
     const fetchParams = {
+        url,
+        baseURL: API_URI,
         method: params.method || DEFAULT_REQUEST.method,
         headers: {},
-        body: undefined,
+        data: undefined,
     };
 
     if (accessToken) {
@@ -50,26 +45,22 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
     }
 
     if (params.data) {
-        fetchParams.body = JSON.stringify(params.data);
+        fetchParams.data = params.data;
         fetchParams.headers['content-type'] = 'application/json';
     }
 
-    return requester(url, fetchParams)
+    return axios(fetchParams)
         .catch(e => {
             console.log('Error making HTTP request: ', e);
             throw e;
         })
-        .then(response => response.json().then(body => {
-            return {
+        .then(response => (
+            {
                 status: response.status,
                 headers: response.headers,
-                body,
+                body: response.data,
             }
-        }))
-        .catch(e => {
-            console.log(e);
-            throw e;
-        })
+        ));
 }
 
 /**
