@@ -1,13 +1,12 @@
 // @flow
 
 import {connectRouter, routerMiddleware} from 'connected-react-router';
-import {createStore, combineReducers, applyMiddleware, compose} from 'redux';
+import {applyMiddleware, combineReducers, compose, createStore} from 'redux';
 import createSagaMiddleware from 'redux-saga'
 import {all} from 'redux-saga/effects'
 import {createBrowserHistory} from 'history';
 import reducers from './reducers';
 import sagas from './sagas';
-import logger from 'redux-logger'
 
 /** The browser history */
 export const history = createBrowserHistory();
