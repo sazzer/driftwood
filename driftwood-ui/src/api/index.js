@@ -51,7 +51,7 @@ export function request(url: string, params: Request = DEFAULT_REQUEST) : Promis
 
     return axios(fetchParams)
         .catch(e => {
-            console.log('Error making HTTP request: ', e);
+            console.log('Error making HTTP request: %s', url, e);
             throw e;
         })
         .then(response => (

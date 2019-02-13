@@ -3,7 +3,7 @@ import i18n from './i18n';
 import {I18nextProvider, translate} from 'react-i18next';
 import {Provider} from 'react-redux';
 import {ConnectedRouter as Router} from 'connected-react-router';
-import {history, store} from './redux';
+import {history, buildStore} from './redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './ui/App';
@@ -19,7 +19,7 @@ const TranslatedAppContents = translate(['driftwood'], {wait: true})(App);
  */
 const AppWrapper = () => (
     <I18nextProvider i18n={ i18n }>
-        <Provider store={store}>
+        <Provider store={buildStore()}>
             <Router history={history}>
                 <TranslatedAppContents />
             </Router>

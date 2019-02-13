@@ -7,6 +7,7 @@ import {all} from 'redux-saga/effects'
 import {createBrowserHistory} from 'history';
 import reducers from './reducers';
 import sagas from './sagas';
+import logger from 'redux-logger'
 
 /** The browser history */
 export const history = createBrowserHistory();
@@ -21,18 +22,24 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const sagaMiddleware = createSagaMiddleware();
 
-/** The Redux store to use */
-export const store = createStore(
-    reducer,
-    {},
-    composeEnhancers(
-        applyMiddleware(
-            routerMiddleware(history),
-            sagaMiddleware,
-        ),
-    ),
-);
 
-sagaMiddleware.run(function* rootSaga() {
-    yield all(sagas.map(saga => saga()));
-});
+export function buildStore() {
+    /** The Redux store to use */
+    const store = createStore(
+        reducer,
+        {},
+        composeEnhancers(
+            applyMiddleware(
+                routerMiddleware(history),
+                sagaMiddleware,
+            ),
+        ),
+    );
+
+    sagaMiddleware.run(function* rootSaga() {
+        yield all(sagas.map(saga => saga()));
+    });
+
+
+    return store;
+}
