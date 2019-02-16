@@ -21,13 +21,16 @@ export const flushAllPromises = async () => {
 export function buildTest() {
     const TranslatedAppContents = translate(['driftwood'], {wait: true})(App);
 
-    return mount(
+    const store = buildStore();
+    const app = mount(
         <I18nextProvider i18n={ i18n }>
-            <Provider store={buildStore()}>
+            <Provider store={store}>
                 <Router history={history}>
                     <TranslatedAppContents />
                 </Router>
             </Provider>
         </I18nextProvider>
     );
+
+    return {app, store};
 }

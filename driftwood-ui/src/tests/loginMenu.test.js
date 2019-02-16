@@ -12,7 +12,7 @@ describe('Login Menu', () => {
         axiosMock.onGet('/api/authentication/external')
             .reply(200, []);
 
-        const app = buildTest();
+        const {app} = buildTest();
 
         app.render();
         app.update();
@@ -30,7 +30,7 @@ describe('Login Menu', () => {
         axiosMock.onGet('/api/authentication/external')
             .reply(200, ['google', 'twitter']);
 
-        const app = buildTest();
+        const {app} = buildTest();
 
         await flushAllPromises();
 
@@ -52,7 +52,7 @@ describe('Login Menu', () => {
         axiosMock.onGet('/api/authentication/external')
             .timeout();
 
-        const app = buildTest();
+        const {app} = buildTest();
 
         await flushAllPromises();
 

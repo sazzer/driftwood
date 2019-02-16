@@ -9,12 +9,15 @@ const axiosMock = new MockAdapter(axios);
 
 describe('Authentication', () => {
     let app;
+    let store;
 
     beforeAll(async () => {
         axiosMock.onGet('/api/authentication/external')
             .reply(200, ['google']);
 
-        app = buildTest();
+        const test = buildTest();
+        app = test.app;
+        store = test.store;
 
         await flushAllPromises();
 
@@ -37,6 +40,11 @@ describe('Authentication', () => {
         loginMenu.find('div[data-provider="google"]').simulate('click');
 
         expect(authenticateCallback).not.toBeUndefined();
+
+        if (!authenticateCallback) {
+            // This can't happen because of the above, but is here to keep Flow happy
+            return;
+        }
 
         authenticateCallback({
             data: {
@@ -64,5 +72,32 @@ describe('Authentication', () => {
         expect(profileMenu).toExist();
 
         expect(profileMenu.find('div[role="alert"]')).toHaveText('Users Name');
+    });
+
+    it('Updates the store correctly when authenticated', async () => {
+        expect(store.getState()).toMatchObject({
+            auth: {
+                accessToken: {
+                    token: {
+                        accessToken: 'accessToken',
+                        expires: 'expires',
+                        userId: 'user'
+                    }
+                }
+            },
+            users: {
+                userProfiles: {
+                    users: {
+                        user: {
+                            profile: {
+                                id: 'user',
+                                name: 'Users Name'
+                            },
+                            status: 'LOADED'
+                        }
+                    }
+                }
+            }
+        });
     });
 });
