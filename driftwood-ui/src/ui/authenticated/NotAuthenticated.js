@@ -7,7 +7,7 @@ import {NamespacesConsumer} from "react-i18next";
  */
 export default function NotAuthenticated() {
     return (
-        <Grid>
+        <Grid className='notAuthenticated'>
             <Grid.Row></Grid.Row>
             <Grid.Row>
                 <Grid.Column width={4}></Grid.Column>

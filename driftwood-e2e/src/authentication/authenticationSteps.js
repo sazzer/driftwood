@@ -1,6 +1,7 @@
 const {Then, When} = require('cucumber');
 const expect = require('unexpected');
 const HomePage = require('../pages/HomePage');
+const BasePage = require('../pages/BasePage');
 
 When('I authenticate with {string}', async function (provider) {
     const homePage = this._browser.getPageModel(HomePage);
@@ -44,4 +45,10 @@ Then('I am logged in as {string}', async function (expectedUsername) {
     const userName = await profileMenu.getUserName();
 
     expect(userName, 'to equal', expectedUsername);
+});
+
+Then('I get an error that I am not authenticated', async function() {
+    const page = this._browser.getPageModel(BasePage);
+    const notAuthenticated = await page.getNotAuthenticated();
+    expect(notAuthenticated, 'to equal', true);
 });

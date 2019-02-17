@@ -15,6 +15,12 @@ class BasePage {
         const headerElement = await pageRoot.findElement(By.css('[data-test="header"]'));
         return new PageHeader(headerElement);
     }
+
+    async getNotAuthenticated() {
+        const pageRoot = await this._browser.getPageRoot();
+        const notAuthenticatedElement = await pageRoot.findElement(By.css('.notAuthenticated'));
+        return notAuthenticatedElement != undefined;
+    }
 }
 
 module.exports = BasePage;
