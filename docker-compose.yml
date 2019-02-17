@@ -7,32 +7,32 @@ services:
             POSTGRES_USER: driftwood
             POSTGRES_PASSWORD: driftwood
         ports:
-            - "127.0.0.1:5432:5432"
+            - "127.0.0.1:35432:5432"
     driftwood-phppgadmin:
         image: dpage/pgadmin4
         environment:
             PGADMIN_DEFAULT_EMAIL: graham@grahamcox.co.uk
             PGADMIN_DEFAULT_PASSWORD: driftwood
         ports:
-            - "127.0.0.1:8090:80"
+            - "127.0.0.1:38090:80"
     fakeauth:
         image: sazzer/fakeauth
         ports:
-            - "127.0.0.1:3000:3000"
+            - "127.0.0.1:33000:3000"
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
             DRIFTWOOD_LOGGING_LEVEL: DEBUG
             DRIFTWOOD_PG_URL: jdbc:postgresql://driftwood-postgres/driftwood?user=driftwood&password=driftwood
-            DRIFTWOOD_GOOGLE_AUTHURL: http://localhost:3000/google/o/oauth2/v2/auth
+            DRIFTWOOD_GOOGLE_AUTHURL: http://localhost:33000/google/o/oauth2/v2/auth
             DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token
             DRIFTWOOD_GOOGLE_CLIENTID: 484625354845-d8v3pkn5corneerhbh4c03dg42nvj360.apps.googleusercontent.com
             DRIFTWOOD_GOOGLE_CLIENTSECRET: smPtH3V7rAFUPQ3qZ48Txa8a
         ports:
-            - "127.0.0.1:8080:8080"
+            - "127.0.0.1:38080:8080"
     driftwood-ui:
         image: uk.co.grahamcox.driftwood/driftwood-ui:latest
         environment:
-            API_URI: http://localhost:8080
+            API_URI: http://localhost:38080
         ports:
-            - "127.0.0.1:8000:80"
+            - "127.0.0.1:38000:80"
