@@ -8,6 +8,8 @@ services:
             POSTGRES_PASSWORD: driftwood
         ports:
             - "127.0.0.1:35432:5432"
+        networks:
+            - driftwood-dev
     driftwood-phppgadmin:
         image: dpage/pgadmin4
         environment:
@@ -15,10 +17,14 @@ services:
             PGADMIN_DEFAULT_PASSWORD: driftwood
         ports:
             - "127.0.0.1:38090:80"
+        networks:
+            - driftwood-dev
     fakeauth:
         image: sazzer/fakeauth
         ports:
             - "127.0.0.1:33000:3000"
+        networks:
+            - driftwood-dev
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
@@ -30,9 +36,15 @@ services:
             DRIFTWOOD_GOOGLE_CLIENTSECRET: smPtH3V7rAFUPQ3qZ48Txa8a
         ports:
             - "127.0.0.1:38080:8080"
+        networks:
+            - driftwood-dev
     driftwood-ui:
         image: uk.co.grahamcox.driftwood/driftwood-ui:latest
         environment:
             API_URI: http://localhost:38080
         ports:
             - "127.0.0.1:38000:80"
+        networks:
+            - driftwood-dev
+networks:
+    driftwood-dev:

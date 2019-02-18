@@ -1,20 +1,37 @@
 package uk.co.grahamcox.driftwood.e2e
 
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.boot.runApplication
+import cucumber.api.CucumberOptions
+import cucumber.api.junit.Cucumber
+import org.junit.internal.TextListener
+import org.junit.runner.JUnitCore
+import org.junit.runner.RunWith
 
-/**
- * Main configuration for the application
- */
-@SpringBootConfiguration
-@EnableAutoConfiguration
-class DriftwoodE2eApplication
+@RunWith(Cucumber::class)
+@CucumberOptions(
+        tags = ["not @ignore", "@wip"],
+        strict = false,
+        junit = ["--step-notifications"]
+)
+class Wip
+
+@RunWith(Cucumber::class)
+@CucumberOptions(
+        tags = ["not @ignore", "not @wip"],
+        strict = true,
+        junit = ["--step-notifications"]
+)
+class All
 
 /**
  * Entrypoint into the application
  * @param args The commandline arguments
  */
 fun main(args: Array<String>) {
-    runApplication<DriftwoodE2eApplication>(*args)
+    val junit = JUnitCore()
+    junit.addListener(TextListener(System.out))
+    val result = junit.run(All::class.java)
+
+    if (!result.wasSuccessful()) {
+        System.exit(1)
+    }
 }

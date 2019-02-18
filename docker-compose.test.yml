@@ -6,10 +6,16 @@ services:
             POSTGRES_DB: driftwood
             POSTGRES_USER: driftwood
             POSTGRES_PASSWORD: driftwood
+        networks:
+            - driftwood-e2e
     fakeauth:
         image: sazzer/fakeauth
+        networks:
+            - driftwood-e2e
     chrome:
         image: selenium/standalone-chrome:3.141.59-europium
+        networks:
+            - driftwood-e2e
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
@@ -18,15 +24,23 @@ services:
             DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token
             DRIFTWOOD_GOOGLE_CLIENTID: 484625354845-d8v3pkn5corneerhbh4c03dg42nvj360.apps.googleusercontent.com
             DRIFTWOOD_GOOGLE_CLIENTSECRET: smPtH3V7rAFUPQ3qZ48Txa8a
+        networks:
+            - driftwood-e2e
     driftwood-ui:
         image: uk.co.grahamcox.driftwood/driftwood-ui:latest
         environment:
             API_URI: http://driftwood-service:8080
+        networks:
+            - driftwood-e2e
     driftwood-e2e:
-        image: uk.co.grahamcox.driftwood/driftwood-e2e:latest
+        image: uk.co.grahamcox.driftwood.e2e/driftwood-e2e:latest
         environment:
-            - DRIFTWOOD_BASE_URL=http://driftwood-ui
-            - DRIFTWOOD_PG_URL=postgresql://driftwood:driftwood@postgres:5432/driftwood
-            - SELENIUM_REMOTE_URL=http://chrome:4444/wd/hub
+            DRIFTWOOD_BASE_URL: http://driftwood-ui
+            DRIFTWOOD_PG_URL: jdbc:postgresql://postgres/driftwood?user=driftwood&password=driftwood
+            SELENIUM_REMOTE_URL: http://chrome:4444/wd/hub
         volumes:
             - "./screenshots:/opt/driftwood/screenshots"
+        networks:
+            - driftwood-e2e
+networks:
+    driftwood-e2e:
