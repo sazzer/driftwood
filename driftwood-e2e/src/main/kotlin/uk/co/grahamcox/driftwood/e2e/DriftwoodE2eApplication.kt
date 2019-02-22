@@ -10,7 +10,8 @@ import org.junit.runner.RunWith
 @CucumberOptions(
         tags = ["not @ignore", "@wip"],
         strict = false,
-        junit = ["--step-notifications"]
+        junit = ["--step-notifications"],
+        plugin = ["pretty"]
 )
 class Wip
 
@@ -18,7 +19,8 @@ class Wip
 @CucumberOptions(
         tags = ["not @ignore", "not @wip"],
         strict = true,
-        junit = ["--step-notifications"]
+        junit = ["--step-notifications"],
+        plugin = ["pretty"]
 )
 class All
 
