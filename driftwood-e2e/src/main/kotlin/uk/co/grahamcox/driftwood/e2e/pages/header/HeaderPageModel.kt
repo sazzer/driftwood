@@ -1,4 +1,4 @@
-package uk.co.grahamcox.driftwood.e2e.pages
+package uk.co.grahamcox.driftwood.e2e.pages.header
 
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.FindBy
@@ -22,4 +22,10 @@ class HeaderPageModel(root: WebElement) {
      */
     val loggedIn: Boolean
         get() = !loginMenuElement.isDisplayed
+
+    /**
+     * Get the login menu
+     */
+    val loginMenu: LoginMenuPageModel
+        get() = LoginMenuPageModel(loginMenuElement)
 }
