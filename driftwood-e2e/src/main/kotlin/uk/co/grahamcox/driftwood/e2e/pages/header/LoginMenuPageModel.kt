@@ -11,12 +11,14 @@ import uk.co.grahamcox.driftwood.e2e.selenium.hasClassName
  * Page Model representing the login menu
  */
 class LoginMenuPageModel(private val root: WebElement) {
+    /** The list of elements representing the providers */
+    private val providerElements
+        get() = root.findElements(By.cssSelector("[data-provider]"))
 
     /** The IDs of the providers */
     val providers: List<String>
         get() {
             open()
-            val providerElements = root.findElements(By.cssSelector("[data-provider]"))
             return providerElements.map { provider -> provider.getAttribute("data-provider") }
         }
 
@@ -32,6 +34,16 @@ class LoginMenuPageModel(private val root: WebElement) {
                     .ignoreException(NoSuchElementException::class.java)
                     .until { root.hasClassName("visible") }
         }
+    }
+
+    /**
+     * Authenticate with the given provider
+     * @param provider The provider to authenticate as
+     */
+    fun authenticate(provider: String) {
+        open()
+        providerElements.first { providerElement -> providerElement.getAttribute("data-provider") == provider }
+                .click()
     }
 
     /**

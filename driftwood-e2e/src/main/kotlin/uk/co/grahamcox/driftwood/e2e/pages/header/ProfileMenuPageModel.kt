@@ -2,50 +2,46 @@ package uk.co.grahamcox.driftwood.e2e.pages.header
 
 import org.awaitility.Duration
 import org.awaitility.kotlin.await
+import org.openqa.selenium.By
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.FindBy
 import org.openqa.selenium.support.PageFactory
 import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory
+import uk.co.grahamcox.driftwood.e2e.selenium.hasClassName
 
 /**
- * Page model representing the header of the page
+ * Page Model representing the profile menu
  */
-class HeaderPageModel(root: WebElement) {
-    /** The web element representing the login menu */
-    @FindBy(css = "[data-test=\"loginMenu\"]")
-    private lateinit var loginMenuElement: WebElement
-
+class ProfileMenuPageModel(root: WebElement) {
     /** The web element representing the profile menu */
     @FindBy(css = "[data-test=\"profileMenu\"]")
     private lateinit var profileMenuElement: WebElement
+
+    /** The web element representing the users name */
+    @FindBy(css = "div.text[role=\"alert\"]")
+    private lateinit var usernameElement: WebElement
 
     init {
         PageFactory.initElements(DefaultElementLocatorFactory(root), this)
     }
 
     /**
-     * Get whether we are logged in - i.e. the Login Menu is not visible
+     * Get the user name that we are logged in as
      */
-    val loggedIn: Boolean
-        get() = !loginMenuElement.isDisplayed
+    val userName: String
+        get() = usernameElement.text
 
     /**
-     * Get the login menu
+     * Open the profile menu
      */
-    val loginMenu: LoginMenuPageModel
-        get() = LoginMenuPageModel(loginMenuElement)
-
-    /**
-     * Get the profile menu
-     */
-    val profileMenu: ProfileMenuPageModel
-        get() {
-            await.alias("Profile Menu Visible")
+    fun open() {
+        if (!profileMenuElement.hasClassName("visible")) {
+            profileMenuElement.click()
+            await.alias("Login Menu Opened")
                     .atMost(Duration.FIVE_HUNDRED_MILLISECONDS)
                     .ignoreException(NoSuchElementException::class.java)
-                    .until { profileMenuElement.isDisplayed }
-
-            return ProfileMenuPageModel(profileMenuElement)
+                    .until { profileMenuElement.hasClassName("visible") }
         }
+    }
 }

@@ -17,6 +17,10 @@ class AuthenticationSteps : En {
     private lateinit var browser: Browser
 
     init {
+        When("I authenticate with {string}") { provider: String ->
+            BasePage(browser).header.loginMenu.authenticate(provider)
+        }
+
         Then("I am not logged in") {
             Assert.assertFalse(BasePage(browser).header.loggedIn)
         }
@@ -24,5 +28,10 @@ class AuthenticationSteps : En {
         Then("the authentication options are:") { dataTable: DataTable ->
             Assert.assertEquals(dataTable.asList(), BasePage(browser).header.loginMenu.providers)
         }
+
+        Then("I am logged in as {string}") { userName: String ->
+            Assert.assertEquals(userName, BasePage(browser).header.profileMenu.userName)
+        }
+
     }
 }
