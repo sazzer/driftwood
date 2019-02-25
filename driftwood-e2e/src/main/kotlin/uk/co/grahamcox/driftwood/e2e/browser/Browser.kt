@@ -1,6 +1,7 @@
 package uk.co.grahamcox.driftwood.e2e.browser
 
 import org.openqa.selenium.WebDriver
+import org.openqa.selenium.html5.WebStorage
 import org.springframework.beans.factory.DisposableBean
 import java.net.URI
 
@@ -8,6 +9,13 @@ import java.net.URI
  * Wrapper around the web browser to use
  */
 class Browser(val webDriver: WebDriver, private val baseUrl: URI) : DisposableBean {
+    /**
+     * Reset the browser
+     */
+    fun reset() {
+        navigateTo("/")
+        (webDriver as WebStorage).sessionStorage.clear()
+    }
     /**
      * Navigate to the page
      */

@@ -14,16 +14,19 @@ import uk.co.grahamcox.driftwood.e2e.selenium.hasClassName
  * Page Model representing the profile menu
  */
 class ProfileMenuPageModel(root: WebElement) {
-    /** The web element representing the profile menu */
-    @FindBy(css = "[data-test=\"profileMenu\"]")
-    private lateinit var profileMenuElement: WebElement
+    private val profileMenuElement: WebElement
 
     /** The web element representing the users name */
     @FindBy(css = "div.text[role=\"alert\"]")
     private lateinit var usernameElement: WebElement
 
+    /** The web element representing the logout menu item */
+    @FindBy(css = "[data-test=\"logout\"]")
+    private lateinit var logoutElement: WebElement
+
     init {
         PageFactory.initElements(DefaultElementLocatorFactory(root), this)
+        profileMenuElement = root
     }
 
     /**
@@ -43,5 +46,13 @@ class ProfileMenuPageModel(root: WebElement) {
                     .ignoreException(NoSuchElementException::class.java)
                     .until { profileMenuElement.hasClassName("visible") }
         }
+    }
+
+    /**
+     * Log out from the system
+     */
+    fun logout() {
+        open()
+        logoutElement.click()
     }
 }

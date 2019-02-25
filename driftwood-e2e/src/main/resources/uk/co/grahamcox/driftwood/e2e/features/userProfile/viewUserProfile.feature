@@ -1,3 +1,4 @@
+@ignore
 Feature: Viewing the User Profile
 
   Background:

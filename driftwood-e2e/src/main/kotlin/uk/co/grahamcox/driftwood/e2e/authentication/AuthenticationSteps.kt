@@ -21,6 +21,10 @@ class AuthenticationSteps : En {
             BasePage(browser).header.loginMenu.authenticate(provider)
         }
 
+        When("I log out") {
+            BasePage(browser).header.profileMenu.logout()
+        }
+
         Then("I am not logged in") {
             Assert.assertFalse(BasePage(browser).header.loggedIn)
         }

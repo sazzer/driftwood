@@ -1,5 +1,6 @@
 package uk.co.grahamcox.driftwood.e2e.browser
 
+import cucumber.api.Scenario
 import cucumber.api.java8.En
 import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,10 @@ class BrowserSteps : En {
     private lateinit var browser: Browser
 
     init {
+        Before { body: Scenario ->
+            browser.reset()
+        }
+
         Then("the page title should be {string}") { title: String ->
             Assert.assertEquals(title, browser.title)
         }
