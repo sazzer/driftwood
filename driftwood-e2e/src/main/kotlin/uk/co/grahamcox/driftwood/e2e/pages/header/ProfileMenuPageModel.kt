@@ -41,7 +41,7 @@ class ProfileMenuPageModel(root: WebElement) {
     fun open() {
         if (!profileMenuElement.hasClassName("visible")) {
             profileMenuElement.click()
-            await.alias("Login Menu Opened")
+            await.alias("Profile Menu Opened")
                     .atMost(Duration.FIVE_HUNDRED_MILLISECONDS)
                     .ignoreException(NoSuchElementException::class.java)
                     .until { profileMenuElement.hasClassName("visible") }

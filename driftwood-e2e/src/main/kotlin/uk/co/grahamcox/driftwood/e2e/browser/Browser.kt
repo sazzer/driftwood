@@ -1,8 +1,11 @@
 package uk.co.grahamcox.driftwood.e2e.browser
 
+import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.OutputType
+import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.html5.WebStorage
 import org.springframework.beans.factory.DisposableBean
+import java.io.File
 import java.net.URI
 
 /**
@@ -14,8 +17,22 @@ class Browser(val webDriver: WebDriver, private val baseUrl: URI) : DisposableBe
      */
     fun reset() {
         navigateTo("/")
-        (webDriver as WebStorage).sessionStorage.clear()
+
+        (webDriver as JavascriptExecutor).run {
+            executeScript("window.sessionStorage.clear();")
+            executeScript("window.localStorage.clear();")
+        }
     }
+
+    /**
+     * Save a screenshot of the current browser to the given path
+     * @param path The path to save the screenshot to
+     */
+    fun saveScreenshot(path: String) {
+        val screenshot = (webDriver as TakesScreenshot).getScreenshotAs(OutputType.BYTES)
+        File(path).writeBytes(screenshot)
+    }
+
     /**
      * Navigate to the page
      */

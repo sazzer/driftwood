@@ -1,0 +1,6 @@
+spring.datasource.url=$DRIFTWOOD_PG_URL
+
+selenium.url=${SELENIUM_REMOTE_URL}
+selenium.baseUrl=${DRIFTWOOD_BASE_URL}
+selenium.screenshotPath=${DRIFTWOOD_SCREENSHOTS_PATH}
+

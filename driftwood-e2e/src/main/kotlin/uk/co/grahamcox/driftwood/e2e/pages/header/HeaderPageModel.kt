@@ -42,7 +42,7 @@ class HeaderPageModel(root: WebElement) {
     val profileMenu: ProfileMenuPageModel
         get() {
             await.alias("Profile Menu Visible")
-                    .atMost(Duration.FIVE_HUNDRED_MILLISECONDS)
+                    .atMost(Duration.FIVE_SECONDS)
                     .ignoreException(NoSuchElementException::class.java)
                     .until { profileMenuElement.isDisplayed }
 

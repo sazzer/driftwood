@@ -38,6 +38,7 @@ services:
             DRIFTWOOD_BASE_URL: http://driftwood-ui
             DRIFTWOOD_PG_URL: jdbc:postgresql://postgres/driftwood?user=driftwood&password=driftwood
             SELENIUM_REMOTE_URL: http://chrome:4444/wd/hub
+            DRIFTWOOD_SCREENSHOTS_PATH: /opt/driftwood/screenshots/
         volumes:
             - "./screenshots:/opt/driftwood/screenshots"
         networks:
