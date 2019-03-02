@@ -1,4 +1,3 @@
-@ignore
 Feature: Viewing the User Profile
 
   Background:
@@ -12,6 +11,7 @@ Feature: Viewing the User Profile
     When I load the user profile page
     Then I get an error that I am not authenticated
 
+  @ignore
   Scenario: Viewing the User Profile when logged in
     Given I authenticate with "google"
     When I load the user profile page

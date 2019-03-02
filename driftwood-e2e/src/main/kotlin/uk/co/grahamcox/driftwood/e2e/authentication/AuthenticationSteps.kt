@@ -37,5 +37,9 @@ class AuthenticationSteps : En {
             Assert.assertEquals(userName, BasePage(browser).header.profileMenu.userName)
         }
 
+        Then("I get an error that I am not authenticated") {
+            BasePage(browser).awaitAuthenticationErrorVisible()
+        }
+
     }
 }

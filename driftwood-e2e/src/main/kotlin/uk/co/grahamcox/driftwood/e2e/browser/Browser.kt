@@ -5,6 +5,7 @@ import org.openqa.selenium.OutputType
 import org.openqa.selenium.TakesScreenshot
 import org.openqa.selenium.WebDriver
 import org.springframework.beans.factory.DisposableBean
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.net.URI
 
@@ -37,7 +38,11 @@ class Browser(val webDriver: WebDriver, private val baseUrl: URI) : DisposableBe
      * Navigate to the page
      */
     fun navigateTo(url: String) {
-        webDriver.get(baseUrl.toString())
+        val targetUrl = UriComponentsBuilder.fromUri(baseUrl)
+                .path(url)
+                .build()
+                .toString()
+        webDriver.get(targetUrl)
     }
 
     /** Get the title of the current page */
