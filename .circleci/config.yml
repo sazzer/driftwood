@@ -102,10 +102,17 @@ jobs:
 
   build_e2e: 
     docker: 
-      - image: "circleci/node:11.4.0"
+      - image: "circleci/openjdk:11-jdk"
+    environment: 
+      MAVEN_OPTS: "-Xmx3200m"
     working_directory: ~/repo
     steps: 
       - checkout
+
+      - restore_cache: 
+          keys: 
+            - "maven-dependencies-e2e-{{ checksum \"driftwood-e2e/pom.xml\" }}"
+            - maven-dependencies-e2e-
 
       - setup_remote_docker
 
@@ -113,23 +120,25 @@ jobs:
           name: "Build and Export Docker image"
           working_directory: ~/repo/driftwood-e2e
           command: |
-              docker build -t uk.co.grahamcox.driftwood/driftwood-e2e:latest .
+              mvn clean install -B -Pdocker
               mkdir -p /tmp/docker_images
-              docker save -o /tmp/docker_images/driftwood-e2e.tar uk.co.grahamcox.driftwood/driftwood-e2e:latest
+              docker save -o /tmp/docker_images/driftwood-e2e.tar uk.co.grahamcox.driftwood.e2e/driftwood-e2e:latest
 
       - persist_to_workspace: 
           root: /tmp/docker_images
           paths: 
             - driftwood-e2e.tar
 
+      - save_cache: 
+          key: "maven-dependencies-e2e-{{ checksum \"driftwood-e2e/pom.xml\" }}"
+          paths: 
+            - ~/.m2
+
   run_e2e_tests:
-    docker: 
-      - image: "circleci/node:11.4.0"
+    machine: true
     working_directory: ~/repo
     steps: 
       - checkout
-
-      - setup_remote_docker
 
       - attach_workspace: 
           at: /tmp/workspace
@@ -145,6 +154,11 @@ jobs:
           name: "Run tests"
           working_directory: ~/repo
           command: docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from driftwood-e2e
+
+      - store_artifacts: 
+          name: "Save Screenshots"
+          path: ~/repo/screenshots
+          destination: driftwood-e2e-screenshots
 
   deploy_service: 
     docker: 
