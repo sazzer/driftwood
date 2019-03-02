@@ -15,7 +15,6 @@ Feature: Authentication Providers
     | Provider | User Name |
     | google   | Test User |
 
-  @ignore
   Scenario Outline: Authenticate as an existing user with <Provider>
     Given a user exists with details:
       | Name      | <User Name>                          |
