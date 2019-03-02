@@ -4,6 +4,7 @@ import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Import
 import uk.co.grahamcox.driftwood.e2e.browser.BrowserConfig
+import uk.co.grahamcox.driftwood.e2e.database.DatabaseConfig
 
 /**
  * The main Spring Boot configuration
@@ -11,6 +12,7 @@ import uk.co.grahamcox.driftwood.e2e.browser.BrowserConfig
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @Import(
-        BrowserConfig::class
+        BrowserConfig::class,
+        DatabaseConfig::class
 )
 class CucumberContext
