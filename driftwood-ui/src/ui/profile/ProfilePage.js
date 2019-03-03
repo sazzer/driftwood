@@ -1,7 +1,7 @@
 // @flow
 
-import React from 'react';
-import {Accordion, Button, Container, Form} from 'semantic-ui-react';
+import React, {useState} from 'react';
+import {Accordion, Button, Container, Form, Icon} from 'semantic-ui-react';
 import {NamespacesConsumer} from "react-i18next";
 import BreadcrumbSection from './BreadcrumbSection';
 import UserNameSection from './UserNameSection';
@@ -30,29 +30,9 @@ type ProfilePageProps = {
 export default function ProfilePage({userStatus, errorCode, values, handleChange, handleBlur, handleSubmit, handleReset, dirty, errors} : ProfilePageProps) {
     const isError = errorCode !== undefined || Object.values(errors).length > 0;
 
-    const panels = [
-        {
-            key: 'accountDetails',
-            title: {
-                content: <NamespacesConsumer>{(t) => t('profile.page.accountDetails.header')}</NamespacesConsumer>
-            },
-            content: {
-                content: <AccountDetailsSection values={values}
-                                                errors={errors}
-                                                handleChange={handleChange}
-                                                handleBlur={handleBlur}/>
-            },
-        },
-        {
-            key: 'loginProviders',
-            title: {
-                content: <NamespacesConsumer>{(t) => t('profile.page.loginProviders.header')}</NamespacesConsumer>
-            },
-            content: {
-                content: <LoginProvidersSection values={values} />
-            },
-        },
-    ];
+    const [openAccordion, setOpenAccordion] = useState(0);
+
+    const handleOpenAccordion = (e, {index}) => setOpenAccordion(index);
 
     return (
         <Container>
@@ -61,16 +41,36 @@ export default function ProfilePage({userStatus, errorCode, values, handleChange
             { errorCode && <Error errorCode={errorCode} />}
 
             <Form error={isError} loading={userStatus === USER_PROFILE_PROCESSING}>
-                <Accordion defaultActiveIndex={0} panels={panels} />
-
                 <NamespacesConsumer>
                     {
                         (t) => (
-                            <Button.Group>
-                                <Button primary type='submit' disabled={!dirty || isError} onClick={handleSubmit}>{t('profile.page.buttons.save')}</Button>
-                                <Button.Or text={t('profile.page.buttons.or')}/>
-                                <Button negative disabled={!dirty} onClick={handleReset}>{t('profile.page.buttons.cancel')}</Button>
-                            </Button.Group>
+                            <>
+                                <Accordion styles>
+                                    <Accordion.Title active={openAccordion === 0} index={0} onClick={handleOpenAccordion}>
+                                        <Icon name="dropdown" />
+                                        {t('profile.page.accountDetails.header')}
+                                    </Accordion.Title>
+                                    <Accordion.Content active={openAccordion === 0}>
+                                        <AccountDetailsSection values={values}
+                                                               errors={errors}
+                                                               handleChange={handleChange}
+                                                               handleBlur={handleBlur}/>
+                                    </Accordion.Content>
+                                    <Accordion.Title active={openAccordion === 1} index={1} onClick={handleOpenAccordion}>
+                                        <Icon name="dropdown" />
+                                        {t('profile.page.loginProviders.header')}
+                                    </Accordion.Title>
+                                    <Accordion.Content active={openAccordion === 1}>
+                                        <LoginProvidersSection values={values} />
+                                    </Accordion.Content>
+                                </Accordion>
+
+                                <Button.Group>
+                                    <Button primary type='submit' disabled={!dirty || isError} onClick={handleSubmit}>{t('profile.page.buttons.save')}</Button>
+                                    <Button.Or text={t('profile.page.buttons.or')}/>
+                                    <Button negative disabled={!dirty} onClick={handleReset}>{t('profile.page.buttons.cancel')}</Button>
+                                </Button.Group>
+                            </>
                         )
                     }
                 </NamespacesConsumer>
