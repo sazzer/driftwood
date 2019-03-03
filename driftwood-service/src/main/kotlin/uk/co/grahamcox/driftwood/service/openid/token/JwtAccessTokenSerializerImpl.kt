@@ -1,15 +1,14 @@
 package uk.co.grahamcox.driftwood.service.openid.token
 
+import io.fusionauth.jwt.JWTException
 import io.fusionauth.jwt.Signer
 import io.fusionauth.jwt.Verifier
 import io.fusionauth.jwt.domain.JWT
-import io.fusionauth.jwt.domain.JWTException
 import org.slf4j.LoggerFactory
 import uk.co.grahamcox.driftwood.service.clients.ClientId
 import uk.co.grahamcox.driftwood.service.openid.scopes.Scope
 import uk.co.grahamcox.driftwood.service.openid.scopes.ScopeRegistry
 import uk.co.grahamcox.driftwood.service.users.UserId
-import java.lang.IllegalArgumentException
 import java.time.ZoneId
 import java.util.*
 
