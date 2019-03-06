@@ -32,7 +32,15 @@ class AccountDetailsPageModel(root: WebElement) {
         get() = screenNameElement.getAttribute("value")
         set(newValue) {
             screenNameElement.clear()
+            await.alias("Screen Name Cleared")
+                    .atMost(Duration.FIVE_SECONDS)
+                    .ignoreException(NoSuchElementException::class.java)
+                    .until { screenNameElement.getAttribute("value") == "" }
             screenNameElement.sendKeys(newValue)
+            await.alias("Screen Name Populated")
+                    .atMost(Duration.FIVE_SECONDS)
+                    .ignoreException(NoSuchElementException::class.java)
+                    .until { screenNameElement.getAttribute("value") == newValue }
         }
 
     /** The current value of the email address */
@@ -40,6 +48,14 @@ class AccountDetailsPageModel(root: WebElement) {
         get() = emailElement.getAttribute("value")
         set(newValue) {
             emailElement.clear()
+            await.alias("Email Cleared")
+                    .atMost(Duration.FIVE_SECONDS)
+                    .ignoreException(NoSuchElementException::class.java)
+                    .until { emailElement.getAttribute("value") == "" }
             emailElement.sendKeys(newValue)
+            await.alias("Email Populated")
+                    .atMost(Duration.FIVE_SECONDS)
+                    .ignoreException(NoSuchElementException::class.java)
+                    .until { emailElement.getAttribute("value") == newValue }
         }
 }
