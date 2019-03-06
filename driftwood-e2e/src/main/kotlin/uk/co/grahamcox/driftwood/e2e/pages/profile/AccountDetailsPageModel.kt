@@ -28,10 +28,18 @@ class AccountDetailsPageModel(root: WebElement) {
     }
 
     /** The current value of the screen name */
-    val screenName: String
+    var screenName: String
         get() = screenNameElement.getAttribute("value")
+        set(newValue) {
+            screenNameElement.clear()
+            screenNameElement.sendKeys(newValue)
+        }
 
     /** The current value of the email address */
-    val email: String
+    var email: String
         get() = emailElement.getAttribute("value")
+        set(newValue) {
+            emailElement.clear()
+            emailElement.sendKeys(newValue)
+        }
 }

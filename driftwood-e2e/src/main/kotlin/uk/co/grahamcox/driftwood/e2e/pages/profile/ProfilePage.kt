@@ -35,6 +35,14 @@ class ProfilePage(browser: Browser) : BasePage(browser) {
     @FindBy(css = "[data-test=\"loginProvidersContent\"]")
     private lateinit var loginProvidersContentElement: WebElement
 
+    /** The web element representing the save button */
+    @FindBy(css = "div.buttons button.primary")
+    private lateinit var saveButtonElement: WebElement
+
+    /** The web element representing the cancel button */
+    @FindBy(css = "div.buttons button.negative")
+    private lateinit var cancelButtonElement: WebElement
+
     init {
         PageFactory.initElements(DefaultElementLocatorFactory(browser.webDriver), this)
     }
@@ -71,6 +79,22 @@ class ProfilePage(browser: Browser) : BasePage(browser) {
 
             return LoginProvidersPageModel(loginProvidersContentElement)
         }
+
+    /**
+     * Save changes to the profile
+     */
+    fun save() {
+        saveButtonElement.click()
+        waitUntilFormLoaded()
+    }
+
+    /**
+     * Cancel changes to the profile
+     */
+    fun cancel() {
+        cancelButtonElement.click()
+        waitUntilFormLoaded()
+    }
 
     /**
      * Wait until the form has finished loading

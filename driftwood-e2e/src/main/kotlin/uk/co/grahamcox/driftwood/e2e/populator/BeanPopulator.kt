@@ -1,14 +1,15 @@
-package uk.co.grahamcox.driftwood.e2e.matcher
+package uk.co.grahamcox.driftwood.e2e.populator
 
 import org.junit.Assert
+import kotlin.reflect.KMutableProperty1
 
 /**
- * Mechanism to match a single bean to the provided data
+ * Mechanism to populate a single bean to the provided data
  */
-class BeanMatcher<T>(private val fields: Map<String, FieldDefinition<T, *>>) {
+class BeanPopulator<T>(private val fields: Map<String, FieldDefinition<T>>) {
     /** Representation of a field that can be matched against */
-    data class FieldDefinition<T, R>(
-            val extractor: (T) -> R
+    data class FieldDefinition<T>(
+            val populator: KMutableProperty1<T, String>
     )
 
     /**
@@ -16,7 +17,7 @@ class BeanMatcher<T>(private val fields: Map<String, FieldDefinition<T, *>>) {
      * @param expected The expected values
      * @param actual The actual values
      */
-    fun match(expected: Map<String, String>, actual: T) {
+    fun populate(expected: Map<String, String>, actual: T) {
         val unexpected = expected.keys
                 .filterNot(fields::containsKey)
         Assert.assertTrue("Unexpected fields: $unexpected", unexpected.isEmpty())
@@ -24,9 +25,8 @@ class BeanMatcher<T>(private val fields: Map<String, FieldDefinition<T, *>>) {
         fields.entries
                 .filter { expected.containsKey(it.key) }
                 .forEach { (field, definition) ->
-                    val realValue = definition.extractor(actual)
-
-                    Assert.assertEquals("Field didn't match: $field", expected[field], realValue)
+                    val converted = expected.getValue(field)
+                    definition.populator.set(actual, converted)
                 }
     }
 }

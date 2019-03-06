@@ -2,8 +2,8 @@ Feature: Viewing the User Profile
 
   Background:
     Given a user exists with details:
-      | Name      | My User                              |
-      | Email     | test@example.com                     |
+      | Name      | My User                                                                 |
+      | Email     | test@example.com                                                        |
       | Providers | google:testuserid-1234567890:My User;twitter:twitter-1234567890:@MyUser |
     Given I load the home page
 
