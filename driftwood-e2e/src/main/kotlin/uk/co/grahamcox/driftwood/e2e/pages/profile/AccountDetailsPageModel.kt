@@ -10,6 +10,7 @@ import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory
 import uk.co.grahamcox.driftwood.e2e.browser.Browser
 import uk.co.grahamcox.driftwood.e2e.pages.BasePage
 import uk.co.grahamcox.driftwood.e2e.selenium.hasClassName
+import uk.co.grahamcox.driftwood.e2e.selenium.setValue
 
 /**
  * Representation of the Account Details section of the Profile Page
@@ -31,31 +32,13 @@ class AccountDetailsPageModel(root: WebElement) {
     var screenName: String
         get() = screenNameElement.getAttribute("value")
         set(newValue) {
-            screenNameElement.clear()
-            await.alias("Screen Name Cleared")
-                    .atMost(Duration.FIVE_SECONDS)
-                    .ignoreException(NoSuchElementException::class.java)
-                    .until { screenNameElement.getAttribute("value") == "" }
-            screenNameElement.sendKeys(newValue)
-            await.alias("Screen Name Populated")
-                    .atMost(Duration.FIVE_SECONDS)
-                    .ignoreException(NoSuchElementException::class.java)
-                    .until { screenNameElement.getAttribute("value") == newValue }
+            screenNameElement.setValue(newValue)
         }
 
     /** The current value of the email address */
     var email: String
         get() = emailElement.getAttribute("value")
         set(newValue) {
-            emailElement.clear()
-            await.alias("Email Cleared")
-                    .atMost(Duration.FIVE_SECONDS)
-                    .ignoreException(NoSuchElementException::class.java)
-                    .until { emailElement.getAttribute("value") == "" }
-            emailElement.sendKeys(newValue)
-            await.alias("Email Populated")
-                    .atMost(Duration.FIVE_SECONDS)
-                    .ignoreException(NoSuchElementException::class.java)
-                    .until { emailElement.getAttribute("value") == newValue }
+            emailElement.setValue(newValue)
         }
 }
