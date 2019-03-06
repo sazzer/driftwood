@@ -35,7 +35,7 @@ export default function ProfilePage({userStatus, errorCode, values, handleChange
     const handleOpenAccordion = (e, {index}) => setOpenAccordion(index);
 
     return (
-        <Container>
+        <Container data-test="userProfile">
             <BreadcrumbSection values={values} />
             <UserNameSection values={values} />
             { errorCode && <Error errorCode={errorCode} />}
@@ -46,21 +46,21 @@ export default function ProfilePage({userStatus, errorCode, values, handleChange
                         (t) => (
                             <>
                                 <Accordion styles>
-                                    <Accordion.Title active={openAccordion === 0} index={0} onClick={handleOpenAccordion}>
+                                    <Accordion.Title active={openAccordion === 0} index={0} onClick={handleOpenAccordion} data-test="accountDetailsHeader">
                                         <Icon name="dropdown" />
                                         {t('profile.page.accountDetails.header')}
                                     </Accordion.Title>
-                                    <Accordion.Content active={openAccordion === 0}>
+                                    <Accordion.Content active={openAccordion === 0} data-test="accountDetailsContent">
                                         <AccountDetailsSection values={values}
                                                                errors={errors}
                                                                handleChange={handleChange}
                                                                handleBlur={handleBlur}/>
                                     </Accordion.Content>
-                                    <Accordion.Title active={openAccordion === 1} index={1} onClick={handleOpenAccordion}>
+                                    <Accordion.Title active={openAccordion === 1} index={1} onClick={handleOpenAccordion}  data-test="loginProvidersHeader">
                                         <Icon name="dropdown" />
                                         {t('profile.page.loginProviders.header')}
                                     </Accordion.Title>
-                                    <Accordion.Content active={openAccordion === 1}>
+                                    <Accordion.Content active={openAccordion === 1} data-test="loginProvidersContent">
                                         <LoginProvidersSection values={values} />
                                     </Accordion.Content>
                                 </Accordion>
