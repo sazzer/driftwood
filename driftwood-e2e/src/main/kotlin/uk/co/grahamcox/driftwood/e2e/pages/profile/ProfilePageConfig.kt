@@ -1,5 +1,6 @@
 package uk.co.grahamcox.driftwood.e2e.pages.profile
 
+import org.apache.commons.lang3.BooleanUtils
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.beans
@@ -20,8 +21,22 @@ class ProfilePageConfig(context: GenericApplicationContext) {
                                 "Name" to BeanMatcher.FieldDefinition(
                                         extractor = AccountDetailsPageModel::screenName
                                 ),
+                                "Name is valid?" to BeanMatcher.FieldDefinition(
+                                        extractor = AccountDetailsPageModel::screenNameValid,
+                                        converter = { BooleanUtils.toBoolean(it) }
+                                ),
+                                "Name validation error" to BeanMatcher.FieldDefinition(
+                                        extractor = AccountDetailsPageModel::screenNameMessages
+                                ),
                                 "Email" to BeanMatcher.FieldDefinition(
                                         extractor = AccountDetailsPageModel::email
+                                ),
+                                "Email is valid?" to BeanMatcher.FieldDefinition(
+                                        extractor = AccountDetailsPageModel::emailValid,
+                                        converter = { BooleanUtils.toBoolean(it) }
+                                ),
+                                "Email validation error" to BeanMatcher.FieldDefinition(
+                                        extractor = AccountDetailsPageModel::emailMessages
                                 )
                         )
                 )

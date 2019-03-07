@@ -8,7 +8,8 @@ import org.junit.Assert
 class BeanMatcher<T>(private val fields: Map<String, FieldDefinition<T, *>>) {
     /** Representation of a field that can be matched against */
     data class FieldDefinition<T, R>(
-            val extractor: (T) -> R
+            val extractor: (T) -> R,
+            val converter: ((String) -> R)? = null
     )
 
     /**
@@ -25,8 +26,12 @@ class BeanMatcher<T>(private val fields: Map<String, FieldDefinition<T, *>>) {
                 .filter { expected.containsKey(it.key) }
                 .forEach { (field, definition) ->
                     val realValue = definition.extractor(actual)
+                    val expectedValue = when(definition.converter) {
+                        null -> expected[field]
+                        else -> definition.converter.invoke(expected.getValue(field))
+                    }
 
-                    Assert.assertEquals("Field didn't match: $field", expected[field], realValue)
+                    Assert.assertEquals("Field didn't match: $field", expectedValue, realValue)
                 }
     }
 }

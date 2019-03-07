@@ -26,4 +26,5 @@ fun WebElement.setValue(value: String) {
     }
 
     value.forEach { this.sendKeys(it.toString()) }
+    this.sendKeys(Keys.TAB)
 }
