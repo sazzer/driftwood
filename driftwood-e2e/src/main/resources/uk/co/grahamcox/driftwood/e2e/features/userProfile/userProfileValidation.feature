@@ -7,7 +7,6 @@ Feature: User Profile Validation
       | Providers | google:testuserid-1234567890:My User;twitter:twitter-1234567890:@MyUser |
     Given I load the home page
 
-  @wip
   Scenario Outline: Updating the User Profile with invalid data
     Given I authenticate with "google"
     And I am logged in as "My User"
