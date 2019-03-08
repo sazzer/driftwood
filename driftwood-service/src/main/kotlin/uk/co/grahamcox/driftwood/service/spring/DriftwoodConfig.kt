@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate
 import uk.co.grahamcox.driftwood.service.VersionController
 import uk.co.grahamcox.driftwood.service.authentication.spring.AuthenticationConfig
 import uk.co.grahamcox.driftwood.service.authorization.spring.AuthorizationConfig
+import uk.co.grahamcox.driftwood.service.characters.spring.CharactersConfig
 import uk.co.grahamcox.driftwood.service.clients.spring.ClientsConfig
 import uk.co.grahamcox.driftwood.service.openid.spring.OpenIDConfig
 import uk.co.grahamcox.driftwood.service.rest.problem.ProblemResponseBodyAdvice
@@ -30,6 +31,7 @@ import java.util.*
         AuthorizationConfig::class,
         OpenIDConfig::class,
         AuthenticationConfig::class,
+        CharactersConfig::class,
         WebMvcConfig::class
 )
 class DriftwoodConfig(context: GenericApplicationContext) {
