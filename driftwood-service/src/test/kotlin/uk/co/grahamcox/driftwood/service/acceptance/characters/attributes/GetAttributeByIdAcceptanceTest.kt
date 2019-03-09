@@ -70,4 +70,25 @@ class GetAttributeByIdAcceptanceTest : AcceptanceTestBase() {
                 }""".trimMargin()) }
         )
     }
+
+    /**
+     * Test getting an attribute where the ID is not valid
+     */
+    @Test
+    fun getAttributeWithInvalidId() {
+        val otherUserId = "invalid"
+
+        val userResponse = requester.get("/api/attributes/$otherUserId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.BAD_REQUEST, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                  "type" : "tag:2018,grahamcox.co.uk:problems/imvalid-argument",
+                  "title" : "Request argument was not valid",
+                  "status" : 400,
+                  "name" : "id",
+                  "value" : "invalid"
+                }""".trimMargin()) }
+        )
+    }
 }

@@ -114,4 +114,25 @@ class GetUserByIdAcceptanceTest : UserAcceptanceTestBase() {
                 }""".trimMargin()) }
         )
     }
+
+    /**
+     * Test getting a user where the ID is not valid
+     */
+    @Test
+    fun getUserWithInvalidId() {
+        val otherUserId = "invalid"
+
+        val userResponse = requester.get("/api/users/$otherUserId")
+        Assertions.assertAll(
+                Executable { Assertions.assertEquals(HttpStatus.BAD_REQUEST, userResponse.statusCode) },
+
+                Executable { userResponse.assertBody("""{
+                  "type" : "tag:2018,grahamcox.co.uk:problems/imvalid-argument",
+                  "title" : "Request argument was not valid",
+                  "status" : 400,
+                  "name" : "id",
+                  "value" : "invalid"
+                }""".trimMargin()) }
+        )
+    }
 }

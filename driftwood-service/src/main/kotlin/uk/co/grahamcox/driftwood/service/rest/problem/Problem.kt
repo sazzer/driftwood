@@ -21,7 +21,7 @@ data class Problem(
         @JsonIgnore val statusCode: HttpStatus,
         val instance: URI? = null,
         val detail: String? = null,
-        @get:JsonAnyGetter val extraData: Map<String, Any> = emptyMap()
+        @get:JsonAnyGetter val extraData: Map<String, Any?> = emptyMap()
 ) {
     val status = statusCode.value()
 }
