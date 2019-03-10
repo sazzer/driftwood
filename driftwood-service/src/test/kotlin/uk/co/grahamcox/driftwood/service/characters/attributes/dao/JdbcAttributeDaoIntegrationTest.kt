@@ -1,14 +1,16 @@
 package uk.co.grahamcox.driftwood.service.characters.attributes.dao
 
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.function.Executable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeFilters
 import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeId
 import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeNotFoundException
+import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeSortField
 import uk.co.grahamcox.driftwood.service.dao.DaoTestBase
 import uk.co.grahamcox.driftwood.service.dao.DatabaseSeeder
+import uk.co.grahamcox.driftwood.service.model.SortDirection
 import java.time.Instant
 import java.util.*
 
@@ -24,7 +26,7 @@ internal class JdbcAttributeDaoIntegrationTest : DaoTestBase() {
     /** The means to seed attribute records */
     @Autowired
     private lateinit var attributeSeeder: DatabaseSeeder
-    
+
     /** The test subject */
     @Autowired
     private lateinit var testSubject: JdbcAttributeDao
@@ -45,7 +47,7 @@ internal class JdbcAttributeDaoIntegrationTest : DaoTestBase() {
 
         Assertions.assertEquals(JdbcAttributeDaoIntegrationTest.ATTRIBUTE_ID, e.id)
     }
-    
+
     /**
      * Test getting a attribute by ID when the attribute does exist
      */
@@ -73,5 +75,35 @@ internal class JdbcAttributeDaoIntegrationTest : DaoTestBase() {
                 Executable { Assertions.assertEquals("Strength", attribute.data.name) },
                 Executable { Assertions.assertEquals("How strong I am", attribute.data.description) }
         )
+    }
+
+    /**
+     * Test various iterations where there is no data to return
+     */
+    @Disabled
+    @TestFactory
+    fun listNoAttributes(): List<DynamicTest> {
+        data class Test(
+                val filters: AttributeFilters,
+                val sorts: List<Pair<AttributeSortField, SortDirection>>,
+                val offset: Int,
+                val pageSize: Int,
+                val description: String
+        )
+
+        return listOf(
+                Test(AttributeFilters(), emptyList(), 0, Integer.MAX_VALUE, "Default values"),
+                Test(AttributeFilters(), emptyList(), 0, 0, "Page Size = 0")
+        ).map { test ->
+            DynamicTest.dynamicTest(test.toString()) {
+                val results = testSubject.list(test.filters, test.sorts, test.offset, test.pageSize)
+
+                Assertions.assertAll(
+                        Executable { Assertions.assertEquals(test.offset, results.offset) },
+                        Executable { Assertions.assertEquals(0, results.total) },
+                        Executable { Assertions.assertEquals(0, results.data.size) }
+                )
+            }
+        }
     }
 }

@@ -5,13 +5,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.transaction.annotation.Transactional
-import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeData
-import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeId
-import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeNotFoundException
-import uk.co.grahamcox.driftwood.service.characters.attributes.AttributeRetriever
+import uk.co.grahamcox.driftwood.service.characters.attributes.*
 import uk.co.grahamcox.driftwood.service.database.getUUID
 import uk.co.grahamcox.driftwood.service.model.Identity
+import uk.co.grahamcox.driftwood.service.model.Page
 import uk.co.grahamcox.driftwood.service.model.Resource
+import uk.co.grahamcox.driftwood.service.model.SortDirection
 import java.sql.ResultSet
 import java.time.Clock
 
@@ -49,6 +48,20 @@ class JdbcAttributeDao(
 
         LOG.debug("Found attribute with ID {}: {}", id, attribute)
         return attribute
+    }
+
+    /**
+     * Get a list of all the matching attributes
+     * @param filters The filters to apply to the list
+     * @param sorts The sorts to apply to the list
+     * @param offset The offset of the first attribute
+     * @param pageSize The page size to return
+     */
+    override fun list(filters: AttributeFilters,
+                      sorts: List<Pair<AttributeSortField, SortDirection>>,
+                      offset: Int,
+                      pageSize: Int): Page<AttributeId, AttributeData> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     /**
