@@ -1,4 +1,4 @@
-module github.com/sazzer/driftwood/service
+module github.com/sazzer/driftwood
 
 go 1.12
 

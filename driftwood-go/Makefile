@@ -10,6 +10,11 @@ clean:
 
 build: driftwood
 
+docker: lint test
+	${GOCMD} mod vendor
+	docker build -t uk.co.grahamcox.driftwood.service/driftwood-service:latest .
+	rm -rf vendor
+
 run: get-deps lint test
 	${GOCMD} run cmd/driftwood/driftwood.go
 
@@ -17,7 +22,7 @@ test: get-deps
 	${GOCMD} test -v ./...
 
 lint: get-deps
-	${GOCMD} get -u github.com/mgechev/revive
+	${GOCMD} get github.com/mgechev/revive
 	${GOCMD} fmt ./...
 	revive -config revive.toml -formatter stylish ./...
 	${GOCMD} vet ./...
