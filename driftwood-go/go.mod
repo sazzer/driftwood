@@ -4,8 +4,11 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/heetch/confita v0.5.1
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/labstack/echo v3.3.10+incompatible
+	github.com/labstack/gommon v0.2.8 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.6 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
@@ -15,8 +18,7 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/sirupsen/logrus v1.3.0
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 // indirect
-	golang.org/x/net v0.0.0-20190311031020-56fb01167e7d // indirect
-	golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa // indirect
-	golang.org/x/tools v0.0.0-20190308174544-00c44ba9c14f // indirect
+	github.com/valyala/fasttemplate v1.0.0 // indirect
+	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
+	golang.org/x/tools v0.0.0-20190311215038-5c2858a9cfe5 // indirect
 )
