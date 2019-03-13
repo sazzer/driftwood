@@ -2,13 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/heetch/confita"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	log "github.com/sirupsen/logrus"
-	"net/http"
 	"os"
+
+	"github.com/heetch/confita"
+	log "github.com/sirupsen/logrus"
+
+	attributesDao "github.com/sazzer/driftwood/internal/characters/attributes/dao"
+	attributesHttp "github.com/sazzer/driftwood/internal/characters/attributes/http"
+	attributesService "github.com/sazzer/driftwood/internal/characters/attributes/service"
+	"github.com/sazzer/driftwood/internal/server"
 )
 
 // Config represents the environment configuration for the application
@@ -36,16 +38,11 @@ func main() {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	log.WithFields(log.Fields{
-		"animal": "walrus",
-		"size":   10,
-	}).Debug("A group of walrus emerges from the ocean")
+	attributesDao := attributesDao.New()
+	attributesService := attributesService.New(attributesDao)
+	attributesHandlers := attributesHttp.NewHandlerRegistrationFunc(attributesService)
 
-	e := echo.New()
-	e.Use(middleware.Logger())
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	log.Debug(e.Start(fmt.Sprintf(":%d", cfg.Port)))
+	server := server.New()
+	server.RegisterHandlers(attributesHandlers)
+	server.Start(cfg.Port)
 }
