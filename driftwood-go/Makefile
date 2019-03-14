@@ -15,10 +15,10 @@ docker: lint test
 	docker build -t uk.co.grahamcox.driftwood.service/driftwood-service:latest .
 	rm -rf vendor
 
-run: get-deps lint test
+run: get-deps generate lint test
 	${GOCMD} run cmd/driftwood/driftwood.go
 
-test: get-deps
+test: get-deps generate
 	${GOCMD} test -v ./...
 
 lint: get-deps
@@ -30,7 +30,10 @@ lint: get-deps
 get-deps:
 	${GOCMD} get
 
+generate:
+	${GOCMD} generate ./...
+
 # Individual build targets
-driftwood: get-deps
+driftwood: get-deps generate
 	mkdir -p ${OUTPUT}
 	${GOCMD} build -o ${OUTPUT}/driftwood cmd/driftwood/driftwood.go

@@ -9,6 +9,6 @@ import (
 // NewHandlerRegistrationFunc returns the function to register all the handlers for working with Attributes
 func NewHandlerRegistrationFunc(service attributes.Retriever) server.HandlerRegistrationFunc {
 	return func(e *echo.Echo) {
-		e.GET("/api/attributes/:id", NewGetByIDHandler(service))
+		RegisterGetByIDHandler(e, service)
 	}
 }
