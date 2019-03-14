@@ -13,15 +13,24 @@ import (
 func RegisterGetByIDHandler(e *echo.Echo, service attributes.Retriever) {
 	e.GET("/api/attributes/:id", func(c echo.Context) error {
 		attributeID := c.Param("id")
-		attribute := service.GetByID(attributes.AttributeID(attributeID))
+		attribute, err := service.GetByID(attributes.AttributeID(attributeID))
 
-		if attribute == nil {
+		if err != nil {
 			c.Response().Header().Set(echo.HeaderContentType, "application/problem+json")
-			return c.JSON(http.StatusNotFound, problem.Problem{
-				Status: http.StatusNotFound,
-				Type:   "tag:2018,grahamcox_co_uk:attributes/problems/not-found",
-				Title:  "The requested Attribute could not be found",
-			})
+			switch err.(type) {
+			case attributes.UnknownAttributeError:
+				return c.JSON(http.StatusNotFound, problem.Problem{
+					Status: http.StatusNotFound,
+					Type:   "tag:2018,grahamcox_co_uk:attributes/problems/not-found",
+					Title:  "The requested Attribute could not be found",
+				})
+			default:
+				return c.JSON(http.StatusNotFound, problem.Problem{
+					Status: http.StatusInternalServerError,
+					Type:   "tag:2018,grahamcox_co_uk:attributes/problems/unexpected-error",
+					Title:  "An unexpected error occurred",
+				})
+			}
 		}
 
 		return c.JSON(http.StatusOK, Attribute{

@@ -14,3 +14,11 @@ type Attribute struct {
 	Name        string
 	Description string
 }
+
+// UnknownAttributeError is an error to indicate that the requested attribute does not exist
+type UnknownAttributeError struct{}
+
+// Error returns the error message for an Unknown Attribute error
+func (e UnknownAttributeError) Error() string {
+	return "The requested attribute does not exist"
+}

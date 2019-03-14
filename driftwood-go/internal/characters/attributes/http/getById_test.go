@@ -1,11 +1,11 @@
 package http_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-	"fmt"
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
@@ -40,7 +40,7 @@ func (suite *GetByIDSuite) TestGetUnknownByID() {
 	suite.retriever.
 		EXPECT().
 		GetByID(attributes.AttributeID("unknown")).
-		Return(nil).
+		Return(attributes.Attribute{}, attributes.UnknownAttributeError{}).
 		Times(1)
 
 	rec := suite.testGetById("unknown")
@@ -59,14 +59,14 @@ func (suite *GetByIDSuite) TestGetKnownByID() {
 	suite.retriever.
 		EXPECT().
 		GetByID(attributes.AttributeID("known")).
-		Return(&attributes.Attribute{
+		Return(attributes.Attribute{
 			ID:          attributes.AttributeID("known"),
 			Version:     "version",
 			Created:     now,
 			Updated:     now,
 			Name:        "Strength",
 			Description: "How strong you are",
-		}).
+		}, nil).
 		Times(1)
 
 	rec := suite.testGetById("known")

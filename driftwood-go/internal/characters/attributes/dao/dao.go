@@ -8,5 +8,5 @@ import (
 
 // AttributeDao represents the means to access Attributes in the Database
 type AttributeDao interface {
-	GetByID(id attributes.AttributeID) *attributes.Attribute
+	GetByID(id attributes.AttributeID) (attributes.Attribute, error)
 }

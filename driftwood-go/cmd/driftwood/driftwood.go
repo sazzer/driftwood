@@ -38,7 +38,7 @@ func main() {
 		log.SetLevel(log.InfoLevel)
 	}
 
-	attributesDao := attributesDao.New()
+	attributesDao := attributesDao.New(nil)
 	attributesService := attributesService.New(attributesDao)
 	attributesHandlers := attributesHttp.NewHandlerRegistrationFunc(attributesService)
 
