@@ -1,10 +1,12 @@
 package dao
 
-// AttributeDao represents the means to access Attributes in the Database
-type AttributeDao struct {
-}
+//go:generate mockgen -destination=mocks/mock_dao.go -package=mocks github.com/sazzer/driftwood/internal/characters/attributes/dao AttributeDao
 
-// New creates a new instance of the Attribute DAO
-func New() AttributeDao {
-	return AttributeDao{}
+import (
+	"github.com/sazzer/driftwood/internal/characters/attributes"
+)
+
+// AttributeDao represents the means to access Attributes in the Database
+type AttributeDao interface {
+	GetByID(id attributes.AttributeID) *attributes.Attribute
 }

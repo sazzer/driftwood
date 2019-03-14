@@ -21,6 +21,12 @@ run: get-deps generate lint test
 test: get-deps generate
 	${GOCMD} test -v ./...
 
+cover: get-deps generate
+	${GOCMD} test -v -covermode=count -coverprofile=${OUTPUT}/coverage.out ./...
+
+cover-report: cover
+	${GOCMD} tool cover -html=${OUTPUT}/coverage.out
+
 lint: get-deps
 	${GOCMD} get github.com/mgechev/revive
 	${GOCMD} fmt ./...

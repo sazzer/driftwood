@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
+	"fmt"
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
@@ -57,7 +58,7 @@ func (suite *GetByIDSuite) TestGetKnownByID() {
 
 	suite.retriever.
 		EXPECT().
-		GetByID(attributes.AttributeID("unknown")).
+		GetByID(attributes.AttributeID("known")).
 		Return(&attributes.Attribute{
 			ID:          attributes.AttributeID("known"),
 			Version:     "version",
@@ -80,7 +81,8 @@ func (suite *GetByIDSuite) TestGetKnownByID() {
 
 func (suite *GetByIDSuite) testGetById(id string) *httptest.ResponseRecorder {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/api/attributes/unknown", nil)
+	url := fmt.Sprintf("/api/attributes/%s", id)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	rec := httptest.NewRecorder()
 
 	attributesHttp.RegisterGetByIDHandler(e, suite.retriever)

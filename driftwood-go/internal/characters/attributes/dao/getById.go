@@ -5,6 +5,6 @@ import (
 )
 
 // GetByID represents a way that we can retrieve an Attribute by it's unique ID
-func (a *AttributeDao) GetByID(id attributes.AttributeID) *attributes.Attribute {
+func (a AttributeDaoImpl) GetByID(id attributes.AttributeID) *attributes.Attribute {
 	return nil
 }
