@@ -7,10 +7,10 @@ type AttributeID string
 
 // Attribute represents an attribute that a character has
 type Attribute struct {
-	id          AttributeID
-	created     time.Time
-	updated     time.Time
-	version     string
-	name        string
-	description string
+	ID          AttributeID
+	Created     time.Time
+	Updated     time.Time
+	Version     string
+	Name        string
+	Description string
 }

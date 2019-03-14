@@ -23,6 +23,11 @@ func RegisterGetByIDHandler(e *echo.Echo, service attributes.Retriever) {
 				Title:  "The requested Attribute could not be found",
 			})
 		}
-		return c.String(http.StatusOK, "Hello, World!")
+
+		return c.JSON(http.StatusOK, Attribute{
+			ID:          string(attribute.ID),
+			Name:        attribute.Name,
+			Description: attribute.Description,
+		})
 	})
 }
