@@ -16,13 +16,13 @@ docker: lint test
 	rm -rf vendor
 
 run: get-deps generate lint test
-	${GOCMD} run cmd/driftwood/driftwood.go
+	${GOCMD} run cmd/driftwood/*.go
 
 test: get-deps generate
-	${GOCMD} test -v ./...
+	${GOCMD} test ./...
 
 cover: get-deps generate
-	${GOCMD} test -v -covermode=count -coverprofile=${OUTPUT}/coverage.out ./...
+	${GOCMD} test -covermode=count -coverprofile=${OUTPUT}/coverage.out ./...
 
 cover-report: cover
 	${GOCMD} tool cover -html=${OUTPUT}/coverage.out
@@ -42,4 +42,4 @@ generate:
 # Individual build targets
 driftwood: get-deps generate
 	mkdir -p ${OUTPUT}
-	${GOCMD} build -o ${OUTPUT}/driftwood cmd/driftwood/driftwood.go
+	${GOCMD} build -o ${OUTPUT}/driftwood cmd/driftwood/*.go
