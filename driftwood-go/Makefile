@@ -17,7 +17,7 @@ docker: clean lint test
 	rm -rf vendor
 
 run: get-deps generate lint test
-	${GOCMD} run cmd/driftwood/*.go
+	DEBUG=1 ${GOCMD} run -tags docker github.com/sazzer/driftwood/cmd/driftwood
 
 test: get-deps generate
 	${GOCMD} test ./...
@@ -43,4 +43,4 @@ generate:
 # Individual build targets
 driftwood: get-deps generate
 	mkdir -p ${OUTPUT}
-	${GOCMD} build -o ${OUTPUT}/driftwood cmd/driftwood/*.go
+	${GOCMD} build -o ${OUTPUT}/driftwood github.com/sazzer/driftwood/cmd/driftwood

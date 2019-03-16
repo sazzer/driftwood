@@ -5,7 +5,12 @@ func main() {
 
 	configureLogging(cfg)
 
+	dbWrapper := dbWrapper{}
+	dbWrapper.launchDb()
+	defer dbWrapper.stopDb()
+
 	server := buildServer()
 
 	server.Start(cfg.Port)
+
 }
