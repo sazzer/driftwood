@@ -10,7 +10,7 @@ ENV GO111MODULE=on
 ENV GOPATH=/src
 ENV GOFLAGS=-mod=vendor
 
-RUN go install /src/github.com/sazzer/driftwood/cmd/driftwood/driftwood.go
+RUN go install /src/github.com/sazzer/driftwood/cmd/driftwood
 
 # final stage
 FROM alpine

@@ -3,6 +3,8 @@ package server
 import (
 	"fmt"
 
+	"github.com/facebookgo/grace/gracehttp"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
@@ -44,12 +46,14 @@ func (s *Server) Start(port int) error {
 	address := fmt.Sprintf(":%d", port)
 	log.WithFields(log.Fields{
 		"address": address,
-	}).Debug("Starting server")
+	}).Info("Starting server")
 
-	err := s.server.Start(address)
+	s.server.Server.Addr = address
+	err := gracehttp.Serve(s.server.Server)
 	if err != nil {
 		log.WithError(err).Error("Failed to start server")
 	}
 
+	log.Info("Stopping Server")
 	return err
 }

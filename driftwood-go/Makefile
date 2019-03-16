@@ -7,10 +7,11 @@ all: lint test build
 
 clean: 
 	rm -rf ${OUTPUT}
+	rm -rf vendor
 
 build: driftwood
 
-docker: lint test
+docker: clean lint test
 	${GOCMD} mod vendor
 	docker build -t uk.co.grahamcox.driftwood.service/driftwood-service:latest .
 	rm -rf vendor
