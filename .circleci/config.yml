@@ -1,5 +1,62 @@
 version: 2
 jobs: 
+  build_go:
+    docker:
+      - image: "circleci/golang:1.12"
+    environment:
+      GO111MODULE: "on"
+    working_directory: ~/repo
+    steps: 
+      - checkout
+
+      - restore_cache: 
+          keys: 
+            - "go-dependencies-{{ checksum \"driftwood-go/go.sum\" }}"
+            - go-dependencies-
+
+      - setup_remote_docker
+
+      - run:
+          name: "Get Dependencies"
+          working_directory: ~/repo/driftwood-go
+          command: |
+              go get
+              go install github.com/golang/mock/mockgen
+              go get github.com/mgechev/revive
+              go generate ./...
+
+      - run:
+           name: "Lint"
+           working_directory: ~/repo/driftwood-go
+           command: |
+              go fmt ./...
+              go vet ./...
+              revive -config revive.toml -formatter stylish ./...
+
+      - run:
+           name: "Test"
+           working_directory: ~/repo/driftwood-go
+           command: go test ./...
+
+      - run:
+           name: "Build Docker image"
+           working_directory: ~/repo/driftwood-go
+           command: |
+              go mod vendor
+              docker build -t uk.co.grahamcox.driftwood.service/driftwood-service:latest .
+              rm -rf vendor
+
+      - run: 
+          name: "Export Docker image"
+          command: |
+              mkdir -p /tmp/docker_images
+              docker save -o /tmp/docker_images/driftwood-go.tar uk.co.grahamcox.driftwood.service/driftwood-service:latest
+
+      - save_cache: 
+          key: "go-dependencies-{{ checksum \"driftwood-go/go.sum\" }}"
+          paths: 
+            - "/go/pkg"
+
   build_service: 
     docker: 
       - image: "circleci/openjdk:11-jdk"
@@ -210,6 +267,7 @@ workflows:
   version: 2
   full_build: 
     jobs: 
+      - build_go
       - build_service
       - build_ui
       - build_e2e
