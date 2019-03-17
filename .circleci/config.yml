@@ -23,7 +23,9 @@ jobs:
               go get
               go install github.com/golang/mock/mockgen
               go get github.com/mgechev/revive
+              go get -u github.com/gobuffalo/packr/packr
               go generate ./...
+              packr
 
       - run:
            name: "Lint"

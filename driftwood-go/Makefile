@@ -8,6 +8,7 @@ all: lint test build
 clean: 
 	rm -rf ${OUTPUT}
 	rm -rf vendor
+	packr clean
 
 build: driftwood
 
@@ -36,9 +37,11 @@ lint: get-deps
 
 get-deps:
 	${GOCMD} get
+	go get -u github.com/gobuffalo/packr/packr
 
 generate:
 	${GOCMD} generate ./...
+	packr
 
 # Individual build targets
 driftwood: get-deps generate

@@ -20,6 +20,11 @@ func buildServer(cfg Config) server.Server {
 		panic(err)
 	}
 
+	err = migrateDb(db)
+	if err != nil {
+		panic(err)
+	}
+
 	database := database.New(db)
 	healthchecks := make(map[string]health.Healthchecker)
 
