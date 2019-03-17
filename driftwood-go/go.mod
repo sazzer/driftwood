@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	docker.io/go-docker v1.0.0
+	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-connections v0.4.0
@@ -17,6 +18,7 @@ require (
 	github.com/heetch/confita v0.5.1
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.2.8 // indirect
+	github.com/lib/pq v1.0.0
 	github.com/mgechev/revive v0.0.0-20190301194522-6a62ee9f0248 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect

@@ -11,3 +11,7 @@ func (dbWrapper) launchDb() {
 func (dbWrapper) stopDb() {
 	panic("No Docker Support")
 }
+
+func (dbWrapper) getConnectionURL() string {
+	panic("No Docker Support")
+}

@@ -3,6 +3,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/sazzer/driftwood/utils/docker"
 )
 
@@ -23,4 +25,9 @@ func (d *dbWrapper) stopDb() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (d *dbWrapper) getConnectionURL() string {
+	return fmt.Sprintf("host=127.0.0.1 port=%d user=postgres password=postgres dbname=postgres sslmode=disable",
+		d.wrapper.GetPortMapping(5432))
 }
