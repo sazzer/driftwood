@@ -28,8 +28,9 @@ services:
     driftwood-service:
         image: uk.co.grahamcox.driftwood.service/driftwood-service:latest
         environment: 
-            DRIFTWOOD_LOGGING_LEVEL: DEBUG
-            DRIFTWOOD_PG_URL: jdbc:postgresql://driftwood-postgres/driftwood?user=driftwood&password=driftwood
+            PORT: 8080
+            DEBUG: 1
+            DB_URL: host=driftwood-postgres port=5432 user=driftwood password=driftwood dbname=driftwood sslmode=disable
             DRIFTWOOD_GOOGLE_AUTHURL: http://localhost:33000/google/o/oauth2/v2/auth
             DRIFTWOOD_GOOGLE_TOKENURL: http://fakeauth:3000/google/oauth2/v4/token
             DRIFTWOOD_GOOGLE_CLIENTID: 484625354845-d8v3pkn5corneerhbh4c03dg42nvj360.apps.googleusercontent.com
