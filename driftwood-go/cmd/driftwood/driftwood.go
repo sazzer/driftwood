@@ -1,6 +1,10 @@
 package main
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/sirupsen/logrus"
+
+	"github.com/sazzer/driftwood/cmd/driftwood/driftwood"
+)
 
 func main() {
 	cfg := loadConfig()
@@ -8,15 +12,15 @@ func main() {
 	configureLogging(cfg)
 
 	if cfg.Database == "" {
-		db := dbWrapper{}
-		db.launchDb()
-		defer db.stopDb()
+		db := driftwood.DbWrapper{}
+		db.LaunchDb()
+		defer db.StopDb()
 
-		cfg.Database = db.getConnectionURL()
+		cfg.Database = db.GetConnectionURL()
 		logrus.WithField("database", cfg.Database).Debug("Connecting to docker database")
 	}
 
-	server := buildServer(cfg)
+	server := driftwood.BuildServer(cfg)
 
 	server.Start(cfg.Port)
 

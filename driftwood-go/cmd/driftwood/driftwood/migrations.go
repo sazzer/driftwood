@@ -1,4 +1,4 @@
-package main
+package driftwood
 
 import (
 	"database/sql"
@@ -12,7 +12,7 @@ import (
 
 func migrateDb(db *sql.DB) error {
 	migrations := &migrate.PackrMigrationSource{
-		Box: packr.NewBox("../../migrations"),
+		Box: packr.NewBox("../../../migrations"),
 	}
 
 	time.Sleep(10 * time.Second)

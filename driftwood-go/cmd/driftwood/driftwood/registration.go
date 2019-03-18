@@ -1,8 +1,9 @@
-package main
+package driftwood
 
 import (
 	"database/sql"
 
+	// Load the Postgres drivers
 	_ "github.com/lib/pq"
 
 	attributesDao "github.com/sazzer/driftwood/internal/characters/attributes/dao"
@@ -14,7 +15,8 @@ import (
 	"github.com/sazzer/driftwood/internal/server"
 )
 
-func buildServer(cfg Config) server.Server {
+// BuildServer will construct the actual server to work with
+func BuildServer(cfg Config) server.Server {
 	db, err := sql.Open("postgres", cfg.Database)
 	if err != nil {
 		panic(err)
@@ -30,7 +32,7 @@ func buildServer(cfg Config) server.Server {
 
 	healthchecks["database"] = database
 
-	attributesDao := attributesDao.New(nil)
+	attributesDao := attributesDao.New(&database)
 	attributesService := attributesService.New(attributesDao)
 	attributesHandlers := attributesHttp.NewHandlerRegistrationFunc(attributesService)
 

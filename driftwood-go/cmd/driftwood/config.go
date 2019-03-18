@@ -4,18 +4,12 @@ import (
 	"context"
 
 	"github.com/heetch/confita"
+
+	"github.com/sazzer/driftwood/cmd/driftwood/driftwood"
 )
 
-// Config represents the environment configuration for the application
-type Config struct {
-	// Debug represents whether we are executing in Debug mode or not
-	Debug    bool   `config:"debug"`
-	Port     int    `config:"port"`
-	Database string `config:"DB_URL"`
-}
-
-func loadConfig() Config {
-	cfg := Config{
+func loadConfig() driftwood.Config {
+	cfg := driftwood.Config{
 		Debug: false,
 		Port:  3000,
 	}
