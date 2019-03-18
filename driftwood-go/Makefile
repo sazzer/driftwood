@@ -24,6 +24,7 @@ test: get-deps generate
 	${GOCMD} test ./...
 
 cover: get-deps generate
+	mkdir -p output
 	${GOCMD} test -covermode=count -coverprofile=${OUTPUT}/coverage.out ./...
 
 cover-report: cover
@@ -37,7 +38,7 @@ lint: get-deps
 
 get-deps:
 	${GOCMD} get
-	go get -u github.com/gobuffalo/packr/packr
+	go get github.com/gobuffalo/packr/packr
 
 generate:
 	${GOCMD} generate ./...

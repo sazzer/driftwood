@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.37.0 // indirect
 	docker.io/go-docker v1.0.0
 	github.com/DATA-DOG/go-sqlmock v1.3.3
+	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20190315220205-a8ed825ac853 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
@@ -22,6 +23,7 @@ require (
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/golang/mock v1.2.0
 	github.com/heetch/confita v0.5.1
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.2.8 // indirect
@@ -42,7 +44,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190313024323-a1f597ede03a // indirect
 	golang.org/x/net v0.0.0-20190313220215-9f648a60d977 // indirect
 	golang.org/x/sys v0.0.0-20190316082340-a2f829d7f35f // indirect
-	golang.org/x/tools v0.0.0-20190315214010-f0bfdbff1f9c // indirect
+	golang.org/x/tools v0.0.0-20190318005222-63e6ed9258fa // indirect
 	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/gorp.v1 v1.7.2 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
