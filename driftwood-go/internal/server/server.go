@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/facebookgo/grace/gracehttp"
 
@@ -56,4 +57,9 @@ func (s *Server) Start(port int) error {
 
 	log.Info("Stopping Server")
 	return err
+}
+
+// HandleRequest will send a request to the server without it needing to have been started
+func (s *Server) HandleRequest(req *http.Request, res http.ResponseWriter) {
+	s.server.ServeHTTP(res, req)
 }

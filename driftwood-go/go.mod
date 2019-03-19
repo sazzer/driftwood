@@ -29,8 +29,10 @@ require (
 	github.com/labstack/gommon v0.2.8 // indirect
 	github.com/lib/pq v1.0.0
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
-	github.com/mgechev/revive v0.0.0-20190301194522-6a62ee9f0248 // indirect
+	github.com/mgechev/revive v0.0.0-20190321163101-a3077922284a // indirect
 	github.com/mitchellh/cli v1.0.0 // indirect
+	github.com/onsi/ginkgo v1.8.0
+	github.com/onsi/gomega v1.5.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2

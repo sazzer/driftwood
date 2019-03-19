@@ -2,7 +2,7 @@ version: 2
 jobs: 
   build_go:
     docker:
-      - image: "circleci/golang:1.12"
+      - image: circleci/golang:1.12
     environment:
       GO111MODULE: "on"
     working_directory: ~/repo
@@ -24,6 +24,7 @@ jobs:
               go install github.com/golang/mock/mockgen
               go get github.com/mgechev/revive
               go get -u github.com/gobuffalo/packr/packr
+              go get github.com/onsi/ginkgo/ginkgo
               go generate ./...
               packr
 
@@ -38,7 +39,12 @@ jobs:
       - run:
            name: "Test"
            working_directory: ~/repo/driftwood-go
-           command: go test ./...
+           command: go test github.com/sazzer/driftwood/internal/...
+
+      - run:
+           name: "Integration Test"
+           working_directory: ~/repo/driftwood-go
+           command: ginkgo -tags docker integration/...
 
       - run:
            name: "Build Docker image"

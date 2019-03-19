@@ -3,6 +3,8 @@ package docker
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
 	"time"
 
 	"docker.io/go-docker"
@@ -68,6 +70,12 @@ func (wrapper *Wrapper) Start() error {
 		return err
 	}
 	defer cli.Close()
+
+	if closer, err := cli.ImagePull(context.Background(), wrapper.container, types.ImagePullOptions{}); err != nil {
+		panic(err)
+	} else {
+		io.Copy(os.Stdout, closer)
+	}
 
 	container, err := cli.ContainerCreate(context.Background(), &containerConfig, &hostConfig, nil, "")
 	if err != nil {

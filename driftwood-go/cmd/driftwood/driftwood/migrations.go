@@ -2,6 +2,8 @@ package driftwood
 
 import (
 	"database/sql"
+	"fmt"
+	"os/exec"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -15,7 +17,15 @@ func migrateDb(db *sql.DB) error {
 		Box: packr.NewBox("../../../migrations"),
 	}
 
-	time.Sleep(10 * time.Second)
+	logrus.Info("Waiting...")
+	time.Sleep(60 * time.Second)
+
+	out, err := exec.Command("docker", "ps").Output()
+	if err != nil {
+		logrus.WithError(err).Error("Command failed")
+	}
+	fmt.Printf("The output is %s\n", out)
+
 	n, err := migrate.Exec(db, "postgres", migrations, migrate.Up)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to migrate database")
