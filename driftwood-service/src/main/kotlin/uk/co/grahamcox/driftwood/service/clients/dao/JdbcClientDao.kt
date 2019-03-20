@@ -8,6 +8,7 @@ import uk.co.grahamcox.driftwood.service.database.getStringArray
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.UserId
+import uk.co.grahamcox.skl.select
 import java.net.URI
 import java.sql.ResultSet
 import java.util.*
@@ -31,9 +32,15 @@ class JdbcClientDao(
      */
     override fun getById(id: ClientId): Resource<ClientId, ClientData> {
         LOG.debug("Loading Client with ID: {}", id)
+        val query = select {
+            from("clients")
+            where {
+                eq(field("client_id"), bind(id.id))
+            }
+        }.build()
+
         val client = try {
-            jdbcTemplate.queryForObject("SELECT * FROM clients WHERE client_id = :clientid::uuid",
-                    mapOf("clientid" to id.id)) {
+            jdbcTemplate.queryForObject(query.sql, query.binds) {
                 rs, _ -> parseClientRow(rs)
             }!!
         } catch (e: EmptyResultDataAccessException) {
@@ -53,12 +60,16 @@ class JdbcClientDao(
      */
     override fun getByCredentials(id: ClientId, secret: ClientSecret): Resource<ClientId, ClientData> {
         LOG.debug("Loading Client with ID: {}", id)
+        val query = select {
+            from("clients")
+            where {
+                eq(field("client_id"), bind(id.id))
+                eq(field("client_secret"), bind(secret.id))
+            }
+        }.build()
+
         val client = try {
-            jdbcTemplate.queryForObject("SELECT * FROM clients WHERE client_id = :clientid::uuid AND client_secret = :clientSecret::uuid",
-                    mapOf(
-                            "clientid" to id.id,
-                            "clientSecret" to secret.id
-                    )) {
+            jdbcTemplate.queryForObject(query.sql, query.binds) {
                 rs, _ -> parseClientRow(rs)
             }!!
         } catch (e: EmptyResultDataAccessException) {

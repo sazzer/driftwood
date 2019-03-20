@@ -1,6 +1,5 @@
 package uk.co.grahamcox.driftwood.service.characters.attributes.dao
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -11,8 +10,8 @@ import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Page
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.model.SortDirection
+import uk.co.grahamcox.skl.select
 import java.sql.ResultSet
-import java.time.Clock
 
 /**
  * DAO for accessing Attribute data
@@ -20,9 +19,7 @@ import java.time.Clock
  */
 @Transactional
 class JdbcAttributeDao(
-        private val jdbcTemplate: NamedParameterJdbcTemplate,
-        private val objectMapper: ObjectMapper,
-        private val clock: Clock
+        private val jdbcTemplate: NamedParameterJdbcTemplate
 ) : AttributeRetriever {
     companion object {
         /** The logger to use */
@@ -36,9 +33,15 @@ class JdbcAttributeDao(
     @Transactional(readOnly = true)
     override fun getById(id: AttributeId): Resource<AttributeId, AttributeData> {
         LOG.debug("Loading Attribute with ID: {}", id)
+        val query = select {
+            from("attributes")
+            where {
+                eq(field("attribute_id"), bind(id.id))
+            }
+        }.build()
+
         val attribute = try {
-            jdbcTemplate.queryForObject("SELECT * FROM attributes WHERE attribute_id = :attributeid::uuid",
-                    mapOf("attributeid" to id.id)) {
+            jdbcTemplate.queryForObject(query.sql, query.binds) {
                 rs, _ -> parseAttributeRow(rs)
             }!!
         } catch (e: EmptyResultDataAccessException) {

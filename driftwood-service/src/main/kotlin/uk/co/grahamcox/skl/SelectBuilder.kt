@@ -1,0 +1,104 @@
+package uk.co.grahamcox.skl
+
+/**
+ * Builder for building a SELECT statement
+ */
+class SelectBuilder {
+    /** The list of table names to work with */
+    private val tableNames = mutableListOf<String>()
+
+    /** The list of where clauses to add */
+    private val whereClauses = mutableListOf<WhereClause>()
+
+    /** The map of bind values */
+    private val binds = mutableMapOf<String, Any?>()
+
+    /**
+     * Invoke a lambda to allow the SELECT statement to be populated
+     * @param builder The builder to use
+     * @return this, for chaining
+     */
+    fun invoke(builder: SelectBuilder.() -> Unit): SelectBuilder {
+        builder.invoke(this)
+        return this
+    }
+
+    /**
+     * Actually build the query that we want to execute
+     * @return the build query
+     */
+    fun build(): Query {
+        val builder = StringBuilder()
+        builder.append("SELECT ")
+        builder.append("*")
+        builder.append(" FROM ")
+        builder.append(tableNames.joinToString(", "))
+
+        if (whereClauses.isNotEmpty()) {
+            val totalWhereClause = whereClauses
+                    .map(WhereClause::build)
+                    .joinToString(" AND ")
+            builder.append(" WHERE ")
+            builder.append(totalWhereClause)
+        }
+        return Query(builder.toString(), binds)
+    }
+
+    /**
+     * Specify a table to perform the SELECT from
+     * @param tableName The name of the table
+     * @return this, for chaining
+     */
+    fun from(vararg tableNames: String): SelectBuilder {
+        this.tableNames.addAll(tableNames)
+        return this
+    }
+
+    /**
+     * Build a WHERE Clause
+     * @param builder The builder to use
+     */
+    fun where(builder: WhereClauseBuilder.() -> Unit) {
+        val whereClauseBuilder = WhereClauseBuilder("AND")
+        builder(whereClauseBuilder)
+
+        whereClauses.add(whereClauseBuilder.build())
+    }
+
+    /**
+     * Build a Bind parameter to use
+     * @param value The value of the bind
+     * @return the bind term
+     */
+    fun bind(value: Any?): BindTerm {
+        val bindKey = "bv${binds.size}"
+        binds[bindKey] = value
+
+        return BindTerm(bindKey)
+    }
+
+    /**
+     * Build a Field Term to use
+     * @param tableName The name of the table
+     * @param fieldName The name of the field
+     * @return the field term
+     */
+    fun field(tableName: String?, fieldName: String) : FieldTerm {
+        return FieldTerm(fieldName, tableName)
+    }
+
+    /**
+     * Build a Field Term to use
+     * @param fieldName The name of the field
+     * @return the field term
+     */
+    fun field(fieldName: String) = field(null, fieldName)
+
+    /**
+     * Cast the given term to the given type
+     * @param term The term to cast
+     * @param castTo The type to cast to
+     * @return the cast term
+     */
+    fun cast(term: Any, castTo: String) = CastTerm(term, castTo)
+}

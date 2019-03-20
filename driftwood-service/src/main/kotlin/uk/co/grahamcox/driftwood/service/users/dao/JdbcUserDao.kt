@@ -10,6 +10,7 @@ import uk.co.grahamcox.driftwood.service.database.getUUID
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.*
+import uk.co.grahamcox.skl.select
 import java.sql.ResultSet
 import java.time.Clock
 import java.util.*
@@ -36,9 +37,15 @@ class JdbcUserDao(
     @Transactional(readOnly = true)
     override fun getById(id: UserId): Resource<UserId, UserData> {
         LOG.debug("Loading User with ID: {}", id)
+        val query = select {
+            from("users")
+            where {
+                eq(field("user_id"), bind(id.id))
+            }
+        }.build()
+
         val user = try {
-            jdbcTemplate.queryForObject("SELECT * FROM users WHERE user_id = :userid::uuid",
-                    mapOf("userid" to id.id)) {
+            jdbcTemplate.queryForObject(query.sql, query.binds) {
                 rs, _ -> parseUserRow(rs)
             }!!
         } catch (e: EmptyResultDataAccessException) {
@@ -58,11 +65,21 @@ class JdbcUserDao(
      */
     override fun getByProviderId(provider: String, id: String): Resource<UserId, UserData>? {
         LOG.debug("Loading User with ID {} at provider {}", id, provider)
-        val user = try {
-            val providerParam = listOf(mapOf("provider" to provider, "providerId" to id))
 
-            jdbcTemplate.queryForObject("SELECT * FROM users WHERE authentication @> :provider::jsonb",
-                    mapOf("provider" to objectMapper.writeValueAsString(providerParam))) {
+        val providerParam = objectMapper.writeValueAsString(
+                listOf(mapOf("provider" to provider, "providerId" to id))
+        )
+        val query = select {
+            from("users")
+            where {
+                where(field("authentication"), "@>", cast(bind(providerParam), "jsonb"))
+            }
+        }.build()
+
+
+        val user = try {
+
+            jdbcTemplate.queryForObject(query.sql, query.binds) {
                 rs, _ -> parseUserRow(rs)
             }
         } catch (e: EmptyResultDataAccessException) {
