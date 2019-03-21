@@ -126,10 +126,18 @@ class JdbcUserDao(
                             "newAuthentication" to objectMapper.writeValueAsString(user.data.logins)
                     )) { rs, _ -> parseUserRow(rs) }!!
         } catch (e: EmptyResultDataAccessException) {
+            val query = select {
+                from("users")
+                returning(field("version"))
+                where {
+                    eq(field("user_id"), bind(user.identity.id.id))
+                }
+            }.build()
+
             try {
-                val currentVersion = jdbcTemplate.queryForObject("SELECT version FROM users WHERE user_id = :userid::uuid", mapOf(
-                        "userid" to user.identity.id.id
-                )) { rs, _ -> rs.getUUID("version") }!!
+                val currentVersion = jdbcTemplate.queryForObject(query.sql, query.binds) { rs, _ ->
+                    rs.getUUID("version")
+                }!!
 
                 LOG.warn("User found with ID {}, but database version {} didn't match provided version {}",
                         user.identity.id, currentVersion, user.identity.version)

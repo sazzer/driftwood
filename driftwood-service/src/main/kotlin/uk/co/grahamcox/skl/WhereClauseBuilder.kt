@@ -63,7 +63,6 @@ class WhereClauseBuilder(private val joinClause: String) {
         whereClauses.add(SimpleWhereClause(clauseBuilder.toString()))
 
         return this
-
     }
 
     /**
@@ -110,25 +109,6 @@ class WhereClauseBuilder(private val joinClause: String) {
         whereClauses.add(whereClauseBuilder.build())
 
         return this
-    }
-
-    /**
-     * Format up a term to use in a clause
-     * @param term The term to format
-     * @return the formatted term
-     */
-    private fun formatTerm(term: Any): String = when (term) {
-        is String -> "'$term'"
-        is BindTerm -> ":${term.name}"
-        is FieldTerm -> {
-            if (term.tableName == null) {
-                term.fieldName
-            } else {
-                "${term.tableName}.${term.fieldName}"
-            }
-        }
-        is CastTerm -> "${formatTerm(term.term)}::${term.castTo}"
-        else -> term.toString()
     }
 
     /**

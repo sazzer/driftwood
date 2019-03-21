@@ -7,6 +7,9 @@ class SelectBuilder {
     /** The list of table names to work with */
     private val tableNames = mutableListOf<String>()
 
+    /** The list of fields to return */
+    private val selectFields = mutableListOf<SelectField>()
+
     /** The list of where clauses to add */
     private val whereClauses = mutableListOf<WhereClause>()
 
@@ -30,7 +33,18 @@ class SelectBuilder {
     fun build(): Query {
         val builder = StringBuilder()
         builder.append("SELECT ")
-        builder.append("*")
+        if (selectFields.isNotEmpty()) {
+            val formatted = selectFields.map { field ->
+                if (field.alias.isNullOrBlank()) {
+                    formatTerm(field.term)
+                } else {
+                    "${formatTerm(field.term)} AS ${field.alias}"
+                }
+            }
+            builder.append(formatted.joinToString(", "))
+        } else {
+            builder.append("*")
+        }
         builder.append(" FROM ")
         builder.append(tableNames.joinToString(", "))
 
@@ -51,6 +65,17 @@ class SelectBuilder {
      */
     fun from(vararg tableNames: String): SelectBuilder {
         this.tableNames.addAll(tableNames)
+        return this
+    }
+
+    /**
+     * Add a definition to return from the SELECT statement
+     * @param term The term to return
+     * @param alias An alias for the term
+     * @return this, for chaining
+     */
+    fun returning(term: Any, alias: String? = null) : SelectBuilder {
+        selectFields.add(SelectField(term, alias))
         return this
     }
 

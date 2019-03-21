@@ -250,6 +250,54 @@ internal class DSLTest {
                         },
                         expectedSql = "SELECT * FROM theTable WHERE (bar = :bv0::jsonb)",
                         expectedBinds = mapOf("bv0" to 5)
+                ),
+                TestCase(
+                        name = "Select with return field",
+                        test = {
+                            select {
+                                from("theTable")
+                                returning(field("bar"))
+                            }
+                        },
+                        expectedSql = "SELECT bar FROM theTable",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select with multiple return fields",
+                        test = {
+                            select {
+                                from("theTable")
+                                returning(field("foo"))
+                                returning(field("bar"))
+                            }
+                        },
+                        expectedSql = "SELECT foo, bar FROM theTable",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select returning an aliased value",
+                        test = {
+                            select {
+                                from("theTable")
+                                returning(1, "one")
+                            }
+                        },
+                        expectedSql = "SELECT 1 AS one FROM theTable",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select returning a field with a condition",
+                        test = {
+                            select {
+                                from("theTable")
+                                returning(field("foo"))
+                                where {
+                                    eq(field("bar"), bind("baz"))
+                                }
+                            }
+                        },
+                        expectedSql = "SELECT foo FROM theTable WHERE (bar = :bv0)",
+                        expectedBinds = mapOf("bv0" to "baz")
                 )
         )
 
