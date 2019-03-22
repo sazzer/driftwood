@@ -10,6 +10,7 @@ import uk.co.grahamcox.driftwood.service.database.getUUID
 import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.*
+import uk.co.grahamcox.skl.insert
 import uk.co.grahamcox.skl.select
 import java.sql.ResultSet
 import java.time.Clock
@@ -160,18 +161,20 @@ class JdbcUserDao(
     override fun save(user: UserData): Resource<UserId, UserData> {
         LOG.debug("Creating user: {}", user)
 
-        val savedUser = jdbcTemplate.queryForObject("""
-            INSERT INTO users(user_id, version, created, updated, name, email, authentication)
-            VALUES (:userId::uuid, :version::uuid, :now, :now, :name, :email, :authentication::jsonb)
-            RETURNING *
-        """, mapOf(
-                "userId" to UUID.randomUUID(),
-                "version" to UUID.randomUUID(),
-                "now" to Date.from(clock.instant()),
-                "name" to user.name,
-                "email" to user.email,
-                "authentication" to objectMapper.writeValueAsString(user.logins)
-        )) { rs, _ -> parseUserRow(rs) }!!
+        val query = insert("users") {
+            set("user_id", bind(UUID.randomUUID()))
+            set("version", bind(UUID.randomUUID()))
+            set("created", bind(Date.from(clock.instant())))
+            set("updated", bind(Date.from(clock.instant())))
+            set("name", bind(user.name))
+            set("email", bind(user.email))
+            set("authentication", cast(bind(objectMapper.writeValueAsString(user.logins)), "jsonb"))
+            returnAll()
+        }.build()
+
+        val savedUser = jdbcTemplate.queryForObject(query.sql, query.binds) { rs, _ ->
+            parseUserRow(rs)
+        }!!
 
         LOG.debug("Created user: {}", savedUser)
 

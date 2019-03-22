@@ -3,7 +3,7 @@ package uk.co.grahamcox.skl
 /**
  * Builder for building a SELECT statement
  */
-class SelectBuilder {
+class SelectBuilder : QueryBuilder {
     /** The list of table names to work with */
     private val tableNames = mutableListOf<String>()
 
@@ -30,7 +30,7 @@ class SelectBuilder {
      * Actually build the query that we want to execute
      * @return the build query
      */
-    fun build(): Query {
+    override fun build(): Query {
         val builder = StringBuilder()
         builder.append("SELECT ")
         if (selectFields.isNotEmpty()) {

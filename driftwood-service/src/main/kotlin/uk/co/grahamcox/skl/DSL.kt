@@ -10,3 +10,15 @@ fun select(builder: SelectBuilder.() -> Unit): SelectBuilder {
     result.invoke(builder)
     return result
 }
+
+/**
+ * Mechanism to build a INSERT statement
+ * @param table The table to insert into
+ * @param builder The builder to use
+ * @return the Insert Builder
+ */
+fun insert(table: String, builder: InsertBuilder.() -> Unit): InsertBuilder {
+    val result = InsertBuilder(table)
+    result.invoke(builder)
+    return result
+}

@@ -8,17 +8,18 @@ import org.junit.jupiter.api.TestFactory
  * Unit tests for the SQL Builder DSL
  */
 internal class DSLTest {
+    data class TestCase(
+            val name: String,
+            val test: () -> QueryBuilder,
+            val expectedSql: String,
+            val expectedBinds: Map<String, Any?>
+    )
+
     /**
      * Test cases for building SELECT statements
      */
     @TestFactory
     fun testBuildSelects(): List<DynamicTest> {
-        data class TestCase(
-                val name: String,
-                val test: () -> SelectBuilder,
-                val expectedSql: String,
-                val expectedBinds: Map<String, Any?>
-        )
 
         val tests = listOf(
                 TestCase(
@@ -298,6 +299,95 @@ internal class DSLTest {
                         },
                         expectedSql = "SELECT foo FROM theTable WHERE (bar = :bv0)",
                         expectedBinds = mapOf("bv0" to "baz")
+                )
+        )
+
+        return tests.map { test ->
+            DynamicTest.dynamicTest(test.name) {
+                val query = test.test().build()
+
+                Assertions.assertEquals(test.expectedSql, query.sql)
+                Assertions.assertEquals(test.expectedBinds, query.binds)
+            }
+        }
+    }
+
+
+    /**
+     * Test cases for building INSERT statements
+     */
+    @TestFactory
+    fun testBuildInserts(): List<DynamicTest> {
+
+        val tests = listOf(
+                TestCase(
+                        name = "Trivial insert",
+                        test = {
+                            insert("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (1, 'baz')",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Insert with binds",
+                        test = {
+                            insert("theTable") {
+                                set("foo", bind(1))
+                                set("bar", bind("baz"))
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (:bv0, :bv1)",
+                        expectedBinds = mapOf("bv0" to 1, "bv1" to "baz")
+                ),
+                TestCase(
+                        name = "Insert with binds cast to a value",
+                        test = {
+                            insert("theTable") {
+                                set("foo", cast(bind(1), "jsonb"))
+                                set("bar", bind("baz"))
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (:bv0::jsonb, :bv1)",
+                        expectedBinds = mapOf("bv0" to 1, "bv1" to "baz")
+                ),
+                TestCase(
+                        name = "Insert returning the new row",
+                        test = {
+                            insert("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returnAll()
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (1, 'baz') RETURNING *",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Insert returning the a single field",
+                        test = {
+                            insert("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returns("foo")
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (1, 'baz') RETURNING foo",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Insert returning the several field",
+                        test = {
+                            insert("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returns("foo", "bar")
+                            }
+                        },
+                        expectedSql = "INSERT INTO theTable(foo, bar) VALUES (1, 'baz') RETURNING foo, bar",
+                        expectedBinds = emptyMap()
                 )
         )
 
