@@ -3,10 +3,7 @@ package uk.co.grahamcox.skl
 /**
  * Builder for building an INSERT statement
  */
-class InsertBuilder(private val table: String) : QueryBuilder {
-
-    /** The map of bind values */
-    private val binds = mutableMapOf<String, Any?>()
+class InsertBuilder(private val table: String) : QueryBuilder() {
 
     /** The list of fields to set values on */
     private val fields = mutableListOf<Pair<String, Any>>()
@@ -34,26 +31,6 @@ class InsertBuilder(private val table: String) : QueryBuilder {
         fields.add(Pair(field, value))
         return this
     }
-
-    /**
-     * Build a Bind parameter to use
-     * @param value The value of the bind
-     * @return the bind term
-     */
-    fun bind(value: Any?): BindTerm {
-        val bindKey = "bv${binds.size}"
-        binds[bindKey] = value
-
-        return BindTerm(bindKey)
-    }
-
-    /**
-     * Cast the given term to the given type
-     * @param term The term to cast
-     * @param castTo The type to cast to
-     * @return the cast term
-     */
-    fun cast(term: Any, castTo: String) = CastTerm(term, castTo)
 
     /**
      * Indicate that the entire new row should be returned

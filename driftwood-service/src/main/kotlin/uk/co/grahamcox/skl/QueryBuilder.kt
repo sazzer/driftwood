@@ -1,9 +1,37 @@
 package uk.co.grahamcox.skl
 
-interface QueryBuilder {
+/**
+ * Base that all query builders inherit from
+ */
+abstract class QueryBuilder {
+
+    /** The map of bind values */
+    protected val binds = mutableMapOf<String, Any?>()
+
     /**
      * Actually build the query that we want to execute
      * @return the build query
      */
-    fun build(): Query
+    abstract fun build(): Query
+
+    /**
+     * Build a Bind parameter to use
+     * @param value The value of the bind
+     * @return the bind term
+     */
+    fun bind(value: Any?): BindTerm {
+        val bindKey = "bv${binds.size}"
+        binds[bindKey] = value
+
+        return BindTerm(bindKey)
+    }
+
+    /**
+     * Cast the given term to the given type
+     * @param term The term to cast
+     * @param castTo The type to cast to
+     * @return the cast term
+     */
+    fun cast(term: Any, castTo: String) = CastTerm(term, castTo)
+
 }
