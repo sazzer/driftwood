@@ -86,21 +86,4 @@ class SelectBuilder : QueryBuilder() {
 
         whereClauses.add(whereClauseBuilder.build())
     }
-
-    /**
-     * Build a Field Term to use
-     * @param tableName The name of the table
-     * @param fieldName The name of the field
-     * @return the field term
-     */
-    fun field(tableName: String?, fieldName: String) : FieldTerm {
-        return FieldTerm(fieldName, tableName)
-    }
-
-    /**
-     * Build a Field Term to use
-     * @param fieldName The name of the field
-     * @return the field term
-     */
-    fun field(fieldName: String) = field(null, fieldName)
 }

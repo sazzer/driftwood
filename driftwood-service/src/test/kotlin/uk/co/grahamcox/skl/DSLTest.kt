@@ -312,7 +312,6 @@ internal class DSLTest {
         }
     }
 
-
     /**
      * Test cases for building INSERT statements
      */
@@ -387,6 +386,108 @@ internal class DSLTest {
                             }
                         },
                         expectedSql = "INSERT INTO theTable(foo, bar) VALUES (1, 'baz') RETURNING foo, bar",
+                        expectedBinds = emptyMap()
+                )
+        )
+
+        return tests.map { test ->
+            DynamicTest.dynamicTest(test.name) {
+                val query = test.test().build()
+
+                Assertions.assertEquals(test.expectedSql, query.sql)
+                Assertions.assertEquals(test.expectedBinds, query.binds)
+            }
+        }
+    }
+
+    /**
+     * Test cases for building UPDATE statements
+     */
+    @TestFactory
+    fun testBuildUpdates(): List<DynamicTest> {
+
+        val tests = listOf(
+                TestCase(
+                        name = "Trivial update",
+                        test = {
+                            update("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = 1, bar = 'baz'",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Update with binds",
+                        test = {
+                            update("theTable") {
+                                set("foo", bind(1))
+                                set("bar", bind("baz"))
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = :bv0, bar = :bv1",
+                        expectedBinds = mapOf("bv0" to 1, "bv1" to "baz")
+                ),
+                TestCase(
+                        name = "Update with binds cast to a value",
+                        test = {
+                            update("theTable") {
+                                set("foo", cast(bind(1), "jsonb"))
+                                set("bar", bind("baz"))
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = :bv0::jsonb, bar = :bv1",
+                        expectedBinds = mapOf("bv0" to 1, "bv1" to "baz")
+                ),
+                TestCase(
+                        name = "Update returning the new row",
+                        test = {
+                            update("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returnAll()
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = 1, bar = 'baz' RETURNING *",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Update returning a single field",
+                        test = {
+                            update("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returns("foo")
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = 1, bar = 'baz' RETURNING foo",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Update returning several fields",
+                        test = {
+                            update("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                returns("foo", "bar")
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = 1, bar = 'baz' RETURNING foo, bar",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Update with a where clause",
+                        test = {
+                            update("theTable") {
+                                set("foo", 1)
+                                set("bar", "baz")
+                                where {
+                                    eq(field("foo"), 2)
+                                }
+                            }
+                        },
+                        expectedSql = "UPDATE theTable SET foo = 1, bar = 'baz' WHERE (foo = 2)",
                         expectedBinds = emptyMap()
                 )
         )

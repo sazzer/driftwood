@@ -12,6 +12,7 @@ import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.users.*
 import uk.co.grahamcox.skl.insert
 import uk.co.grahamcox.skl.select
+import uk.co.grahamcox.skl.update
 import java.sql.ResultSet
 import java.time.Clock
 import java.util.*
@@ -101,33 +102,26 @@ class JdbcUserDao(
     override fun save(user: Resource<UserId, UserData>): Resource<UserId, UserData> {
         LOG.debug("Saving User with ID: {}", user.identity.id)
 
+        val updateQuery = update("users") {
+            set("version", bind(UUID.randomUUID()))
+            set("updated", bind(Date.from(clock.instant())))
+            set("name", bind(user.data.name))
+            set("email", bind(user.data.email))
+            set("authentication", cast(bind(objectMapper.writeValueAsString(user.data.logins)), "jsonb"))
+
+            where {
+                eq(field("user_id"), bind(user.identity.id.id))
+                eq(field("version"), bind(user.identity.version))
+            }
+
+            returnAll()
+        }.build()
         val updated = try {
-            jdbcTemplate.queryForObject("""
-                UPDATE
-                    users
-                SET
-                    version = :newVersion::uuid,
-                    updated = :newUpdated,
-                    name = :newName,
-                    email = :newEmail,
-                    authentication = :newAuthentication::jsonb
-                WHERE
-                    user_id = :userid::uuid
-                    AND version = :version::uuid
-                RETURNING
-                    *
-                """,
-                    mapOf(
-                            "userid" to user.identity.id.id,
-                            "version" to user.identity.version,
-                            "newVersion" to UUID.randomUUID(),
-                            "newUpdated" to Date.from(clock.instant()),
-                            "newName" to user.data.name,
-                            "newEmail" to user.data.email,
-                            "newAuthentication" to objectMapper.writeValueAsString(user.data.logins)
-                    )) { rs, _ -> parseUserRow(rs) }!!
+            jdbcTemplate.queryForObject(updateQuery.sql, updateQuery.binds) { rs, _ ->
+                parseUserRow(rs)
+            }!!
         } catch (e: EmptyResultDataAccessException) {
-            val query = select {
+            val versionCheckQuery = select {
                 from("users")
                 returning(field("version"))
                 where {
@@ -136,7 +130,7 @@ class JdbcUserDao(
             }.build()
 
             try {
-                val currentVersion = jdbcTemplate.queryForObject(query.sql, query.binds) { rs, _ ->
+                val currentVersion = jdbcTemplate.queryForObject(versionCheckQuery.sql, versionCheckQuery.binds) { rs, _ ->
                     rs.getUUID("version")
                 }!!
 
