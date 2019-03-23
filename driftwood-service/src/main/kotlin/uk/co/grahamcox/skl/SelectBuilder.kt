@@ -13,6 +13,9 @@ class SelectBuilder : QueryBuilder() {
     /** The list of where clauses to add */
     private val whereClauses = mutableListOf<WhereClause>()
 
+    /** The list of sort clauses to add */
+    private val sorts = mutableListOf<String>()
+
     /** The offset to select from */
     private var offset: Int? = null
 
@@ -60,6 +63,10 @@ class SelectBuilder : QueryBuilder() {
                 builder.append(" WHERE ")
                 builder.append(totalWhereClause)
             }
+        }
+
+        if (sorts.isNotEmpty()) {
+            builder.append(" ORDER BY ").append(sorts.joinToString(", "))
         }
 
         offset?.let { builder.append(" OFFSET $it") }
@@ -114,5 +121,21 @@ class SelectBuilder : QueryBuilder() {
      */
     fun limit(value: Int) {
         this.limit = value
+    }
+
+    /**
+     * Indicate that we should sort ascending by the given field
+     * @param field The field to sort by
+     */
+    fun sortAscending(field: String) {
+        sorts.add("$field ASC")
+    }
+
+    /**
+     * Indicate that we should sort descending by the given field
+     * @param field The field to sort by
+     */
+    fun sortDescending(field: String) {
+        sorts.add("$field DESC")
     }
 }

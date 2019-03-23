@@ -210,7 +210,13 @@ internal class JdbcAttributeDaoIntegrationTest : DaoTestBase() {
                 Test(filters = AttributeFilters(createdAfter = Instant.parse("2019-03-21T10:02:00Z")), expected = listOf("Strength", "Wisdom"), description = "Created After 2019-03-21T10:02:00Z"),
                 Test(filters = AttributeFilters(createdBefore = Instant.parse("2019-03-22T10:02:00Z")), expected = listOf("Intelligence", "Wisdom"), description = "Created Before 2019-03-22T10:02:00Z"),
                 Test(filters = AttributeFilters(updatedAfter = Instant.parse("2019-03-21T10:02:00Z")), expected = listOf("Strength", "Intelligence"), description = "Updated After 2019-03-21T10:02:00Z"),
-                Test(filters = AttributeFilters(updatedBefore = Instant.parse("2019-03-23T10:02:00Z")), expected = listOf("Strength", "Wisdom"), description = "Updated Before 2019-03-23T10:02:00Z")
+                Test(filters = AttributeFilters(updatedBefore = Instant.parse("2019-03-23T10:02:00Z")), expected = listOf("Strength", "Wisdom"), description = "Updated Before 2019-03-23T10:02:00Z"),
+                Test(sorts = listOf(Pair(AttributeSortField.NAME, SortDirection.ASCENDING)), expected = listOf("Intelligence", "Strength", "Wisdom"), description = "Sort by Name Ascending"),
+                Test(sorts = listOf(Pair(AttributeSortField.NAME, SortDirection.DESCENDING)), expected = listOf("Wisdom", "Strength", "Intelligence"), description = "Sort by Name Descending"),
+                Test(sorts = listOf(Pair(AttributeSortField.CREATED, SortDirection.ASCENDING)), expected = listOf("Intelligence", "Wisdom", "Strength"), description = "Sort by Created Ascending"),
+                Test(sorts = listOf(Pair(AttributeSortField.CREATED, SortDirection.DESCENDING)), expected = listOf("Strength", "Wisdom", "Intelligence"), description = "Sort by Created Descending"),
+                Test(sorts = listOf(Pair(AttributeSortField.UPDATED, SortDirection.ASCENDING)), expected = listOf("Wisdom", "Strength", "Intelligence"), description = "Sort by Updated Ascending"),
+                Test(sorts = listOf(Pair(AttributeSortField.UPDATED, SortDirection.DESCENDING)), expected = listOf("Intelligence", "Strength", "Wisdom"), description = "Sort by Updated Descending")
         ).map { test ->
             DynamicTest.dynamicTest(test.toString()) {
                 val results = testSubject.list(test.filters, test.sorts, test.offset, test.pageSize)

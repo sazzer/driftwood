@@ -25,6 +25,13 @@ class JdbcAttributeDao(
     companion object {
         /** The logger to use */
         private val LOG = LoggerFactory.getLogger(JdbcAttributeDao::class.java)
+
+        /** The names of field to sort by */
+        private val SORT_FIELDS = mapOf(
+                AttributeSortField.NAME to "name",
+                AttributeSortField.CREATED to "created",
+                AttributeSortField.UPDATED to "updated"
+        )
     }
     /**
      * Get the Attribute with the given ID
@@ -68,6 +75,14 @@ class JdbcAttributeDao(
         val query = select {
             from("attributes")
             buildListFilters(filters)
+            sorts.forEach { (sortField, sortDirection) ->
+                val sortFieldName = SORT_FIELDS.getValue(sortField)
+                when (sortDirection) {
+                    SortDirection.ASCENDING -> sortAscending(sortFieldName)
+                    SortDirection.DESCENDING -> sortDescending(sortFieldName)
+                }
+            }
+            sortAscending("attribute_id")
             offset(offset)
             limit(pageSize)
         }.build()

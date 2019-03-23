@@ -373,6 +373,41 @@ internal class DSLTest {
                         },
                         expectedSql = "SELECT * FROM theTable OFFSET 5 LIMIT 10",
                         expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select sorting by name",
+                        test = {
+                            select {
+                                from("theTable")
+                                sortAscending("name")
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable ORDER BY name ASC",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select sorting by name and age",
+                        test = {
+                            select {
+                                from("theTable")
+                                sortAscending("name")
+                                sortAscending("age")
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable ORDER BY name ASC, age ASC",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select sorting by name ascending and age descending",
+                        test = {
+                            select {
+                                from("theTable")
+                                sortAscending("name")
+                                sortDescending("age")
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable ORDER BY name ASC, age DESC",
+                        expectedBinds = emptyMap()
                 )
         )
 
