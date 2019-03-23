@@ -17,7 +17,7 @@ abstract class MutatingQueryBuilder : QueryBuilder() {
      * @param value The value to use
      */
     fun set(field: String, value: Any) {
-        fields.add(Pair(field, value))
+        fields.add(field to value)
     }
 
     /**

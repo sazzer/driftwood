@@ -40,7 +40,7 @@ class UpdateBuilder(private val table: String) : MutatingQueryBuilder() {
         builder.append(" SET ")
 
         val updates = fields
-                .map { Pair(it.first, formatTerm(it.second)) }
+                .map { it.first to formatTerm(it.second) }
                 .map { "${it.first} = ${it.second}" }
         builder.append(updates.joinToString(", "))
 

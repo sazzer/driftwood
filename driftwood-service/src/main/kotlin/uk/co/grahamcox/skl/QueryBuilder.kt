@@ -46,9 +46,7 @@ abstract class QueryBuilder {
      * @param fieldName The name of the field
      * @return the field term
      */
-    fun field(tableName: String?, fieldName: String) : FieldTerm {
-        return FieldTerm(fieldName, tableName)
-    }
+    fun field(tableName: String?, fieldName: String) = FieldTerm(fieldName, tableName)
 
     /**
      * Build a Field Term to use

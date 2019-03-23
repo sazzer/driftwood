@@ -115,7 +115,5 @@ class WhereClauseBuilder(private val joinClause: String) {
      * Build the actual WHERE Clause we are dealing with here
      * @return the built clause
      */
-    fun build() : WhereClause {
-        return JoiningWhereClause(whereClauses, joinClause)
-    }
+    fun build() : WhereClause = JoiningWhereClause(whereClauses, joinClause)
 }
