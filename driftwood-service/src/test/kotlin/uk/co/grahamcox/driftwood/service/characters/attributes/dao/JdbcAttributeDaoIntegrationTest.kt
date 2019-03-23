@@ -159,4 +159,65 @@ internal class JdbcAttributeDaoIntegrationTest : DaoTestBase() {
             }
         }
     }
+
+    /**
+     * Test various iterations where there is data but none of it is returned
+     */
+    @TestFactory
+    fun listAttributesSomeReturned(): List<DynamicTest> {
+        // Sorted by name: I, S, W
+        // Sorted by created: I, W, S
+        // Sorted by updated: W, S, I
+        // Not sorted: S, I, W
+        attributeSeeder(
+                "attributeId" to "00000000-0000-0000-0000-000000000001",
+                "created" to "2019-03-23T10:01:00Z",
+                "updated" to "2019-03-23T10:01:00Z",
+                "name" to "Strength",
+                "description" to "How strong I am"
+        )
+        attributeSeeder(
+                "attributeId" to "00000000-0000-0000-0000-000000000002",
+                "created" to "2019-03-21T10:01:00Z",
+                "updated" to "2019-03-24T10:01:00Z",
+                "name" to "Intelligence",
+                "description" to "How intelligent I am"
+        )
+        attributeSeeder(
+                "attributeId" to "00000000-0000-0000-0000-000000000003",
+                "created" to "2019-03-22T10:01:00Z",
+                "updated" to "2019-03-21T10:01:00Z",
+                "name" to "Wisdom",
+                "description" to "How wise I am"
+        )
+
+        data class Test(
+                val filters: AttributeFilters = AttributeFilters(),
+                val sorts: List<Pair<AttributeSortField, SortDirection>> = emptyList(),
+                val offset: Int = 0,
+                val pageSize: Int = Integer.MAX_VALUE,
+                val expected: List<String>,
+                val description: String
+        )
+
+        return listOf(
+                Test(expected = listOf("Strength", "Intelligence", "Wisdom"), description = "Default values"),
+                Test(pageSize = 2, expected = listOf("Strength", "Intelligence"), description = "Page Size = 2"),
+                Test(offset = 2, expected = listOf("Wisdom"), description = "Offset = 2"),
+                Test(filters = AttributeFilters(name = "Intelligence"), expected = listOf("Intelligence"), description = "Name = Intelligence"),
+                Test(filters = AttributeFilters(name = "INTELLIGENCE"), expected = listOf("Intelligence"), description = "Name = INTELLIGENCE"),
+                Test(filters = AttributeFilters(name = "intelligence"), expected = listOf("Intelligence"), description = "Name = intelligence"),
+                Test(filters = AttributeFilters(createdAfter = Instant.parse("2019-03-21T10:02:00Z")), expected = listOf("Strength", "Wisdom"), description = "Created After 2019-03-21T10:02:00Z"),
+                Test(filters = AttributeFilters(createdBefore = Instant.parse("2019-03-22T10:02:00Z")), expected = listOf("Intelligence", "Wisdom"), description = "Created Before 2019-03-22T10:02:00Z"),
+                Test(filters = AttributeFilters(updatedAfter = Instant.parse("2019-03-21T10:02:00Z")), expected = listOf("Strength", "Intelligence"), description = "Updated After 2019-03-21T10:02:00Z"),
+                Test(filters = AttributeFilters(updatedBefore = Instant.parse("2019-03-23T10:02:00Z")), expected = listOf("Strength", "Wisdom"), description = "Updated Before 2019-03-23T10:02:00Z")
+        ).map { test ->
+            DynamicTest.dynamicTest(test.toString()) {
+                val results = testSubject.list(test.filters, test.sorts, test.offset, test.pageSize)
+
+                val returnedNames = results.data.map { it.data.name }
+                Assertions.assertEquals(test.expected, returnedNames)
+            }
+        }
+    }
 }
