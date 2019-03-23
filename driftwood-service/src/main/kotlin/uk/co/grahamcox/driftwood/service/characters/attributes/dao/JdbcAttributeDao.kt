@@ -10,6 +10,7 @@ import uk.co.grahamcox.driftwood.service.model.Identity
 import uk.co.grahamcox.driftwood.service.model.Page
 import uk.co.grahamcox.driftwood.service.model.Resource
 import uk.co.grahamcox.driftwood.service.model.SortDirection
+import uk.co.grahamcox.skl.SelectBuilder
 import uk.co.grahamcox.skl.select
 import java.sql.ResultSet
 
@@ -64,7 +65,43 @@ class JdbcAttributeDao(
                       sorts: List<Pair<AttributeSortField, SortDirection>>,
                       offset: Int,
                       pageSize: Int): Page<AttributeId, AttributeData> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val query = select {
+            from("attributes")
+            buildListFilters(filters)
+            offset(offset)
+            limit(pageSize)
+        }.build()
+
+        val attributes = jdbcTemplate.query(query.sql, query.binds) {
+            rs, _ -> parseAttributeRow(rs)
+        }
+
+        val count = if (attributes.size == 0 || attributes.size == pageSize) {
+            val countQuery = select {
+                from("attributes")
+                returning(field("COUNT(*)"), "count")
+                buildListFilters(filters)
+            }.build()
+            jdbcTemplate.queryForObject(countQuery.sql, countQuery.binds, Integer::class.java)?.toInt() ?: 0
+        } else {
+            0
+        }
+
+        return Page(attributes, offset, count)
+    }
+
+    /**
+     * Build the where clause for filtering a list of attributes
+     * @param filters The filters to apply
+     */
+    private fun SelectBuilder.buildListFilters(filters: AttributeFilters) {
+        where {
+            filters.name?.let { eq(function("UPPER", field("name")), function("UPPER", bind(it))) }
+            filters.createdAfter?.let { where(field("created"), ">=", bind(it)) }
+            filters.createdBefore?.let { where(field("created"), "<=", bind(it)) }
+            filters.updatedAfter?.let { where(field("updated"), ">=", bind(it)) }
+            filters.updatedBefore?.let { where(field("updated"), "<=", bind(it)) }
+        }
     }
 
     /**

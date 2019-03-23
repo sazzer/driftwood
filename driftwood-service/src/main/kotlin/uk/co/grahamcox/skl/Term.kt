@@ -16,5 +16,6 @@ fun formatTerm(term: Any): String = when (term) {
         }
     }
     is CastTerm -> "${formatTerm(term.term)}::${term.castTo}"
+    is FunctionTerm -> "${term.function}(${formatTerm(term.term)})"
     else -> term.toString()
 }

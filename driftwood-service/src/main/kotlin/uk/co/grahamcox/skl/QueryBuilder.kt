@@ -1,5 +1,8 @@
 package uk.co.grahamcox.skl
 
+import java.time.Instant
+import java.util.*
+
 /**
  * Base that all query builders inherit from
  */
@@ -21,7 +24,10 @@ abstract class QueryBuilder {
      */
     fun bind(value: Any?): BindTerm {
         val bindKey = "bv${binds.size}"
-        binds[bindKey] = value
+        binds[bindKey] = when (value) {
+            is Instant -> Date.from(value)
+            else -> value
+        }
 
         return BindTerm(bindKey)
     }
@@ -50,4 +56,12 @@ abstract class QueryBuilder {
      * @return the field term
      */
     fun field(fieldName: String) = field(null, fieldName)
+
+    /**
+     * Build a Function Term to use
+     * @param function The function
+     * @param term The term
+     * @return the function term
+     */
+    fun function(function: String, term: Any) = FunctionTerm(function, term)
 }

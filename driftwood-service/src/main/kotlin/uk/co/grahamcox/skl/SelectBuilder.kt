@@ -13,6 +13,12 @@ class SelectBuilder : QueryBuilder() {
     /** The list of where clauses to add */
     private val whereClauses = mutableListOf<WhereClause>()
 
+    /** The offset to select from */
+    private var offset: Int? = null
+
+    /** The limit to select */
+    private var limit: Int? = null
+
     /**
      * Invoke a lambda to allow the SELECT statement to be populated
      * @param builder The builder to use
@@ -48,10 +54,17 @@ class SelectBuilder : QueryBuilder() {
         if (whereClauses.isNotEmpty()) {
             val totalWhereClause = whereClauses
                     .map(WhereClause::build)
+                    .filterNot { it.isBlank() }
                     .joinToString(" AND ")
-            builder.append(" WHERE ")
-            builder.append(totalWhereClause)
+            if (!totalWhereClause.isNullOrBlank()) {
+                builder.append(" WHERE ")
+                builder.append(totalWhereClause)
+            }
         }
+
+        offset?.let { builder.append(" OFFSET $it") }
+        limit?.let { builder.append(" LIMIT $it") }
+
         return Query(builder.toString(), binds)
     }
 
@@ -85,5 +98,21 @@ class SelectBuilder : QueryBuilder() {
         builder(whereClauseBuilder)
 
         whereClauses.add(whereClauseBuilder.build())
+    }
+
+    /**
+     * Set the offset to select from
+     * @param value The value to use
+     */
+    fun offset(value: Int) {
+        this.offset = value
+    }
+
+    /**
+     * Set the limit to select by
+     * @param value The value to use
+     */
+    fun limit(value: Int) {
+        this.limit = value
     }
 }

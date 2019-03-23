@@ -54,6 +54,18 @@ internal class DSLTest {
                         expectedBinds = emptyMap()
                 ),
                 TestCase(
+                        name = "Select with an empty where clause",
+                        test = {
+                            select {
+                                from("theTable")
+                                where {
+                                }
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
                         name = "Select with a single trivial Where clause containing numbers",
                         test = {
                             select {
@@ -134,6 +146,21 @@ internal class DSLTest {
                             }
                         },
                         expectedSql = "SELECT * FROM theTable WHERE (1 IS NOT NULL AND ('foo' = 'bar' AND 1 != 2))",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select with an empty nested AND clause",
+                        test = {
+                            select {
+                                from("theTable")
+                                where {
+                                    notNull(1)
+                                    and {
+                                    }
+                                }
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable WHERE (1 IS NOT NULL)",
                         expectedBinds = emptyMap()
                 ),
                 TestCase(
@@ -253,6 +280,19 @@ internal class DSLTest {
                         expectedBinds = mapOf("bv0" to 5)
                 ),
                 TestCase(
+                        name = "Select with a function on both sides",
+                        test = {
+                            select {
+                                from("theTable")
+                                where {
+                                    eq(function("UPPER", field("foo")), function("UPPER", bind("bar")))
+                                }
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable WHERE (UPPER(foo) = UPPER(:bv0))",
+                        expectedBinds = mapOf("bv0" to "bar")
+                ),
+                TestCase(
                         name = "Select with return field",
                         test = {
                             select {
@@ -299,6 +339,40 @@ internal class DSLTest {
                         },
                         expectedSql = "SELECT foo FROM theTable WHERE (bar = :bv0)",
                         expectedBinds = mapOf("bv0" to "baz")
+                ),
+                TestCase(
+                        name = "Select using an offset",
+                        test = {
+                            select {
+                                from("theTable")
+                                offset(5)
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable OFFSET 5",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select using a limit",
+                        test = {
+                            select {
+                                from("theTable")
+                                limit(5)
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable LIMIT 5",
+                        expectedBinds = emptyMap()
+                ),
+                TestCase(
+                        name = "Select using an offset and limit",
+                        test = {
+                            select {
+                                from("theTable")
+                                offset(5)
+                                limit(10)
+                            }
+                        },
+                        expectedSql = "SELECT * FROM theTable OFFSET 5 LIMIT 10",
+                        expectedBinds = emptyMap()
                 )
         )
 

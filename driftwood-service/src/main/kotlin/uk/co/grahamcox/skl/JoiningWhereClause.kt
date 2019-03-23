@@ -14,6 +14,7 @@ data class JoiningWhereClause(val clauses: List<WhereClause>, val join: String) 
         return if (clauses.isNotEmpty()) {
             clauses
                     .map(WhereClause::build)
+                    .filterNot(String::isNullOrBlank)
                     .joinToString(" $join ", "(", ")")
         } else {
             ""
